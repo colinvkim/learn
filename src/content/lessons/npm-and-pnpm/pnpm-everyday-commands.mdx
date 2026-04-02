@@ -2,9 +2,12 @@
 title: "pnpm: everyday commands"
 description: Learn the small set of pnpm commands you actually need to start using it in real projects.
 course: npm-and-pnpm
-order: 6
+order: 7
 status: published
 ---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
 
 Once pnpm is installed, the daily command set is small.
 
@@ -20,7 +23,7 @@ pnpm install
 
 This is the command to run after cloning a repository, switching branches, or pulling dependency changes from someone else.
 
-This parallels `npm install`. The difference is that in pnpm, `install` is mainly about bringing the project into the state it already declares.
+This parallels `npm install`. In pnpm, though, `install` is mainly about bringing the project into the state it already declares.
 
 ## `pnpm add` adds new packages to the project
 
@@ -50,7 +53,9 @@ pnpm add -D typescript eslint prettier
 
 This is one of the clearest differences from npm. In pnpm, `add` is the main verb for introducing new dependencies.
 
-For many learners, this naming is easier to reason about because it separates "install what the project already has" from "add something new to the project."
+<Tip title="Use pnpm add for one package or many">
+  <p><code>pnpm add</code> is not limited to one package. If several packages belong to the same setup step, add them together with one command, such as <code>pnpm add react react-dom</code>.</p>
+</Tip>
 
 ## Removing a package
 
@@ -74,7 +79,11 @@ pnpm build
 pnpm test
 ```
 
-The pnpm CLI docs note that `pnpm <cmd>` is the equivalent of `npm run <cmd>` for common script usage. That shorter form is one reason many developers find pnpm pleasant to use.
+The pnpm CLI docs describe `pnpm <cmd>` as the equivalent of `npm run <cmd>` for common script usage.
+
+<Note title="The script shorthand matters">
+  <p><code>pnpm dev</code> is shorter than <code>npm run dev</code>, but it is doing the same broad kind of work: it is running a script defined by the project.</p>
+</Note>
 
 ## Running a locally installed tool
 
@@ -120,4 +129,4 @@ A strict explicit command is:
 pnpm install --frozen-lockfile
 ```
 
-The official pnpm install docs say that `--frozen-lockfile` defaults to `true` in CI environments when a lockfile is present. That means CI is expected to reject drift instead of silently rewriting the lockfile.
+The pnpm install docs say that `--frozen-lockfile` defaults to `true` in CI environments when a lockfile is present. That means CI is expected to reject drift instead of silently rewriting the lockfile.

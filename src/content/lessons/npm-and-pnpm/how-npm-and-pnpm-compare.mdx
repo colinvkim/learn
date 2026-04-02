@@ -2,11 +2,14 @@
 title: How npm and pnpm compare
 description: Compare npm and pnpm only after both tools make sense on their own.
 course: npm-and-pnpm
-order: 7
+order: 9
 status: published
 ---
 
-Now the comparison can be made on useful terms.
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+At this point, the comparison can be made on useful terms.
 
 At a high level, `npm` and `pnpm` do the same job.
 
@@ -20,8 +23,6 @@ Both can:
 
 The important question is not which tool is more legitimate. The important question is which workflow fits the repository.
 
-One of the most useful beginner takeaways is that `pnpm` is not a different package universe. In many cases, the same kinds of packages and project structures are in play. The difference is how the package manager behaves.
-
 ## The biggest similarity
 
 The underlying concepts are the same:
@@ -33,6 +34,10 @@ The underlying concepts are the same:
 - local project installs
 
 That is why moving from one tool to the other is usually easier than it first appears.
+
+<Note title="The package ecosystem is mostly the same">
+  <p>In most day-to-day work, npm and pnpm are operating in the same Node.js ecosystem. The main differences are the package-manager workflow, command style, and installation model.</p>
+</Note>
 
 ## The biggest differences
 
@@ -70,12 +75,21 @@ Common reasons include:
 | Run a local binary directly | `npm exec -- eslint .` | `pnpm exec eslint .` |
 | Run a one-off package | `npx create-vite@latest my-app` | `pnpm dlx create-vite@latest my-app` |
 
-That table is the practical heart of the comparison. The concepts are shared, but some of the muscle memory is different.
+The concepts are shared, but the command habits are not identical.
 
 The biggest mindset difference is often this:
 
 - in npm, `install` commonly means both "install what the project already has" and "add a new package"
 - in pnpm, `install` and `add` are separated more explicitly
+
+## Use the reference pages for command recall
+
+If you need a quick command lookup, use the dedicated reference pages:
+
+- [npm reference](/courses/npm-and-pnpm/npm-reference)
+- [pnpm reference](/courses/npm-and-pnpm/pnpm-reference)
+
+Those pages are better for recall. This page is better for understanding the tradeoffs.
 
 ## What does not change
 
@@ -83,7 +97,8 @@ Whichever package manager a repository uses:
 
 - commit the lockfile
 - use one package manager per repository
-- avoid mixing lockfiles
 - review dependency changes carefully
 
-Those habits matter more than tool loyalty.
+<Warning title="Do not mix package-manager workflows in one repository">
+  <p>Do not casually switch between npm and pnpm in the same project. Mixed lockfiles and mixed install commands make the dependency state harder to reason about and create avoidable diffs.</p>
+</Warning>

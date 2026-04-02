@@ -1,0 +1,128 @@
+---
+title: "npm: running scripts and understanding package-lock.json"
+description: Learn how npm runs project commands and why the lockfile matters for consistency.
+course: npm-and-pnpm
+order: 4
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+After dependencies are in place, two parts of npm start showing up constantly:
+
+- scripts
+- the lockfile
+
+## Scripts turn long commands into project commands
+
+Many projects define scripts inside `package.json`.
+
+For example:
+
+```json
+{
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "test": "vitest"
+  }
+}
+```
+
+Those keys become commands npm can run:
+
+```bash
+npm run dev
+npm run build
+npm run test
+```
+
+This gives the project a stable command surface. A repository can tell contributors to run `npm run dev` even if the underlying tool changes later.
+
+It also keeps tool details out of the onboarding path. A new contributor does not need to know where a local binary lives or which flags it needs if the project already exposes a script for the task.
+
+## Why scripts are used so heavily
+
+Scripts give a repository a shared vocabulary.
+
+Instead of asking everyone to remember exact tool invocations, the project can document a small set of commands:
+
+- run the app with `npm run dev`
+- build it with `npm run build`
+- run tests with `npm run test`
+
+That makes setup instructions shorter and day-to-day work more consistent.
+
+## Running a tool without adding it permanently
+
+Sometimes a package is needed for one task, not as a lasting project dependency.
+
+This is where `npx` and `npm exec` are useful.
+
+Examples:
+
+```bash
+npx create-vite@latest my-app
+npm exec -- eslint .
+```
+
+Typical use cases:
+
+- scaffolding a new project once
+- running a local tool directly
+- trying a tool without adding it to `package.json`
+
+<Note title="npx and npm exec">
+  <p><code>npm exec</code> is the underlying modern npm command. <code>npx</code> is still common in tutorials, READMEs, and everyday usage, so it is worth recognizing both forms.</p>
+</Note>
+
+## What `package-lock.json` does
+
+When npm installs packages, it writes a lockfile named `package-lock.json`.
+
+The lockfile records the exact dependency graph that was resolved, not just the package names you typed directly.
+
+That means it answers a more precise question than `package.json`:
+
+**What exact versions did this project install?**
+
+This is what allows installs to stay reproducible across machines and environments.
+
+## `package.json` and `package-lock.json` do different jobs
+
+It helps to separate them clearly:
+
+- `package.json` records what the project intends to depend on
+- `package-lock.json` records what exact versions were resolved
+
+According to the npm CLI docs, when `npm install` runs with no arguments, npm compares the manifest and the lockfile. If the lockfile still satisfies the ranges in `package.json`, npm uses the locked versions. If it no longer does, npm resolves new versions and updates the lockfile.
+
+That is why changing a dependency range in `package.json` can also change `package-lock.json`, even if only one file was edited directly.
+
+## `npm install` vs `npm ci`
+
+For local development, the usual command is:
+
+```bash
+npm install
+```
+
+For CI and other automated environments, npm provides:
+
+```bash
+npm ci
+```
+
+The npm docs describe `npm ci` as a clean install for automated environments. Its key differences are:
+
+- it requires an existing lockfile
+- it fails if `package.json` and the lockfile do not agree
+- it removes an existing `node_modules` before installing
+- it does not write to `package.json` or the lockfile
+
+That stricter behavior is why teams prefer it in CI.
+
+<Warning title="Do not use npm ci as your normal add-dependency command">
+  <p><code>npm ci</code> is for reproducing an existing dependency state. It is not the command to use when adding packages or updating dependency ranges during normal development.</p>
+</Warning>

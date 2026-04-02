@@ -1,0 +1,107 @@
+---
+title: "npm reference"
+description: Use this page as a compact reference for the npm commands you are most likely to need first.
+course: npm-and-pnpm
+order: 5
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+This page is a quick reference, not a replacement for the earlier lessons.
+
+Use it when you already know the basic concepts and want the right command quickly.
+
+## Install the dependencies a project already declares
+
+Run this in a project directory that already has a `package.json` file:
+
+```bash
+npm install
+```
+
+This installs the dependencies already declared by the project.
+
+## Add a new dependency
+
+```bash
+npm install react
+```
+
+This adds `react` to `dependencies`, updates `package-lock.json`, and installs it into `node_modules`.
+
+To add more than one dependency at once:
+
+```bash
+npm install react react-dom
+```
+
+## Add development dependencies
+
+```bash
+npm install -D typescript
+```
+
+To add several development dependencies in one command:
+
+```bash
+npm install -D typescript eslint prettier
+```
+
+Use this for packages needed during development, testing, building, or formatting.
+
+## Remove a package
+
+```bash
+npm uninstall react
+```
+
+This removes the package from the project manifest, updates the lockfile, and removes the installed dependency.
+
+## Run project scripts
+
+```bash
+npm run dev
+npm run build
+npm run test
+```
+
+These commands run scripts defined in `package.json`.
+
+## Run a local tool directly
+
+```bash
+npm exec -- eslint .
+```
+
+Use this when the tool is already available to the project and you want to run it directly instead of through a script.
+
+## Run a tool one time without adding it to the project
+
+```bash
+npx create-vite@latest my-app
+```
+
+This is common for project scaffolding and one-off commands.
+
+## Reproduce installs in CI
+
+```bash
+npm ci
+```
+
+Use this in CI and other automated environments when the repository already has a lockfile.
+
+<Note title="npm add exists, but prefer npm install">
+  <p>The npm docs list <code>npm add</code> as an alias for <code>npm install</code>. In practice, <code>npm install</code> is still the form most people will see in tutorials, READMEs, and project documentation. It is the better default to learn first.</p>
+</Note>
+
+<Tip title="Run these in the project root">
+  <p>If a command is supposed to affect the current project, run it in the directory that contains that project’s <code>package.json</code>.</p>
+</Tip>
+
+<Warning title="Use one package manager per repository">
+  <p>If a repository uses <code>pnpm-lock.yaml</code>, do not start running npm commands casually in the same project. Pick one package manager workflow and keep it consistent.</p>
+</Warning>

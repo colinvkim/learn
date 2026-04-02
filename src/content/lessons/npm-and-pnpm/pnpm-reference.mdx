@@ -1,0 +1,97 @@
+---
+title: "pnpm reference"
+description: Use this page as a compact reference for the pnpm commands you are most likely to need first.
+course: npm-and-pnpm
+order: 8
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+This page is a quick reference for day-to-day pnpm usage.
+
+## Install the dependencies a project already declares
+
+```bash
+pnpm install
+```
+
+Run this after cloning a repository or after pulling dependency changes from someone else.
+
+## Add a new dependency
+
+```bash
+pnpm add react
+```
+
+This adds the package to the project and updates `pnpm-lock.yaml`.
+
+To add several dependencies at once:
+
+```bash
+pnpm add react react-dom
+```
+
+## Add development dependencies
+
+```bash
+pnpm add -D typescript
+```
+
+To add several development dependencies in one command:
+
+```bash
+pnpm add -D typescript eslint prettier
+```
+
+## Remove a package
+
+```bash
+pnpm remove react
+```
+
+## Run project scripts
+
+```bash
+pnpm dev
+pnpm build
+pnpm test
+```
+
+These run scripts defined in `package.json`.
+
+## Run a local tool directly
+
+```bash
+pnpm exec eslint .
+```
+
+## Run a tool one time without adding it permanently
+
+```bash
+pnpm dlx create-vite@latest my-app
+```
+
+This is the pnpm parallel to `npx`.
+
+## Reproduce installs in CI
+
+```bash
+pnpm install --frozen-lockfile
+```
+
+Use this when you want CI to fail instead of silently drifting away from the committed lockfile.
+
+<Note title="pnpm separates install from add">
+  <p>For many beginners, the most useful pnpm rule is simple: <code>pnpm install</code> installs what the project already declares, while <code>pnpm add</code> introduces something new.</p>
+</Note>
+
+<Tip title="Run these in the project root">
+  <p>If the command is supposed to affect the current project, run it in the directory that contains the project’s <code>package.json</code>.</p>
+</Tip>
+
+<Warning title="Do not mix lockfiles">
+  <p>If a repository uses <code>pnpm-lock.yaml</code>, keep using pnpm for that repository. Avoid introducing <code>package-lock.json</code> or mixing package-manager workflows in the same project.</p>
+</Warning>

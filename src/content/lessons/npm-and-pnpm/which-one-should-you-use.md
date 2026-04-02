@@ -2,7 +2,7 @@
 title: Which one should you use?
 description: Choose npm or pnpm based on the shape of your project instead of vague internet preferences.
 course: npm-and-pnpm
-order: 8
+order: 10
 status: published
 ---
 
@@ -59,3 +59,5 @@ If you are starting from zero, learn the concepts with `npm`, then evaluate `pnp
 If you are joining an existing project, use the package manager that project already uses.
 
 If you are creating a team project, decide early, document the choice, and keep the lockfile in version control from the beginning.
+
+If you need command recall after making that choice, use the dedicated reference page for the package manager you are actually using.

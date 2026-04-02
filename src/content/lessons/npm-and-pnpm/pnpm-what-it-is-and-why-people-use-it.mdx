@@ -2,9 +2,12 @@
 title: "pnpm: what it is and why people use it"
 description: Learn what pnpm is, why it exists even though npm already exists, and what makes it attractive to many teams.
 course: npm-and-pnpm
-order: 5
+order: 6
 status: published
 ---
+
+import Note from "../../../components/content/Note.astro";
+import Steps from "../../../components/content/Steps.astro";
 
 Once `npm` makes sense, `pnpm` is easier to place correctly.
 
@@ -31,7 +34,9 @@ A pnpm project still uses familiar pieces:
 
 So moving from npm to pnpm is not learning a new ecosystem. It is learning a different package manager inside the same ecosystem.
 
-That point matters for beginners: a pnpm project can still use the same frameworks, many of the same packages, and much of the same project structure you already see in npm projects.
+<Note title="pnpm does not mean a separate package ecosystem">
+  <p>Most pnpm projects still install packages from the same public npm registry many JavaScript developers already use. The main change is the package manager, not the package universe.</p>
+</Note>
 
 ## Why teams choose pnpm
 
@@ -73,24 +78,29 @@ You will also usually still see a `node_modules` directory in a pnpm project. Th
 
 ## Installing pnpm
 
-The official pnpm installation docs recommend Corepack as a modern option, with one important note: Corepack should be updated first because of outdated signature issues in older versions.
+The pnpm installation docs recommend Corepack as a modern setup path. They also note that older Corepack versions can have outdated signatures, so updating Corepack first is useful.
 
-A modern setup looks like this:
+One practical setup flow is:
 
-```bash
-npm install --global corepack@latest
-corepack enable pnpm
-corepack use pnpm@latest-10
-```
+<Steps>
+  <li>
+    Update Corepack:
+    <pre><code class="language-bash">npm install --global corepack@latest</code></pre>
+  </li>
+  <li>
+    Enable pnpm:
+    <pre><code class="language-bash">corepack enable pnpm</code></pre>
+  </li>
+  <li>
+    Pin a pnpm version in the project:
+    <pre><code class="language-bash">corepack use pnpm@latest-10</code></pre>
+  </li>
+</Steps>
 
-The last command adds a `packageManager` field to `package.json`, which helps a project declare the pnpm version it expects.
-
-That is useful for consistency across a team.
-
-pnpm can still work with the same public npm registry many JavaScript developers already use. That is another reason it is better understood as a different package manager, not as a separate package ecosystem.
+That last command adds a `packageManager` field to `package.json`, which helps the project declare which pnpm version it expects.
 
 ## A good mental model for pnpm
 
-> `pnpm` is a package manager for the same kind of projects as `npm`, but it is often chosen for efficiency, consistency, and workspace-heavy repositories.
+> `pnpm` is a package manager for the same kinds of projects as `npm`, but many teams adopt it for efficiency, consistency, and workspace-heavy repositories.
 
 That is enough context to start using its daily commands.
