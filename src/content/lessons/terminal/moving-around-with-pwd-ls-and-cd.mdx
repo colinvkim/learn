@@ -6,7 +6,6 @@ order: 4
 status: published
 ---
 
-import CommandBlock from "../../../components/content/CommandBlock.astro";
 import Tip from "../../../components/content/Tip.astro";
 
 Three commands form the basic navigation toolkit:
@@ -15,80 +14,79 @@ Three commands form the basic navigation toolkit:
 - `ls`
 - `cd`
 
-On Windows, the exact commands depend on which shell you use. PowerShell and Command Prompt do not always use the same command names as Unix-style shells.
+On Windows, the exact commands depend on which shell you use:
+
+- PowerShell commonly supports `pwd`, `ls`, and `cd`
+- Command Prompt commonly uses `cd` and `dir`
 
 ## `pwd` shows the current working directory
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "pwd", language: "bash" },
-    { label: "PowerShell", code: "Get-Location", language: "powershell" },
-    { label: "Command Prompt", code: "cd", language: "bat" },
-  ]}
-/>
+Run:
+
+```bash
+pwd
+```
 
 This prints the full path of the directory you are currently in.
+
+In Command Prompt, `cd` with no path also shows the current directory.
 
 That matters because many commands act relative to the current working directory.
 
 ## `ls` lists the contents of the current directory
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "ls", language: "bash" },
-    { label: "PowerShell", code: "Get-ChildItem", language: "powershell" },
-    { label: "Command Prompt", code: "dir", language: "bat" },
-  ]}
-/>
+Run:
+
+```bash
+ls
+```
 
 This shows the files and directories in the current location.
 
 A common variation is:
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "ls -la", language: "bash" },
-    { label: "PowerShell", code: "Get-ChildItem -Force", language: "powershell" },
-    { label: "Command Prompt", code: "dir /a", language: "bat" },
-  ]}
-/>
+```bash
+ls -la
+```
 
 That usually shows more detail, including hidden files.
+
+On Windows:
+
+- in PowerShell, `ls` often works
+- in Command Prompt, use `dir`
+
+Example:
+
+```powershell
+dir
+```
 
 ## `cd` changes the current directory
 
 To move into a directory:
 
-<CommandBlock code="cd src" language="bash" metaLabel="Terminal" />
+```bash
+cd src
+```
 
 To move up to the parent directory:
 
-<CommandBlock code="cd .." language="bash" metaLabel="Terminal" />
+```bash
+cd ..
+```
 
 To move to a specific absolute path:
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Platform"
-  options={[
-    {
-      label: "macOS or Linux",
-      code: "cd /Users/colin/Programming/learn",
-      language: "bash",
-    },
-    {
-      label: "Windows",
-      code: "cd C:\\Users\\colin\\Programming\\learn",
-      language: "powershell",
-    },
-  ]}
-/>
+```bash
+cd /Users/colin/Programming/learn
+```
+
+Windows example:
+
+```powershell
+cd C:\Users\colin\Programming\learn
+```
 
 ## Why these three commands matter together
 

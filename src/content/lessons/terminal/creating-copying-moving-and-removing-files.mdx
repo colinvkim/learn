@@ -6,7 +6,6 @@ order: 5
 status: published
 ---
 
-import CommandBlock from "../../../components/content/CommandBlock.astro";
 import Warning from "../../../components/content/Warning.astro";
 
 Once you can move around the filesystem, the next step is changing it.
@@ -15,187 +14,84 @@ Once you can move around the filesystem, the next step is changing it.
 
 To create a directory:
 
-<CommandBlock code="mkdir notes" language="bash" metaLabel="Terminal" />
+```bash
+mkdir notes
+```
 
 This command works broadly across Unix-style shells, PowerShell, and Command Prompt.
 
 To create nested directories in one step:
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    {
-      label: "Unix shell",
-      code: "mkdir -p src/content/lessons",
-      language: "bash",
-    },
-    {
-      label: "PowerShell",
-      code: "New-Item -ItemType Directory -Force -Path src/content/lessons",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "mkdir src\\content\\lessons",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+mkdir -p src/content/lessons
+```
 
 ## Creating empty files with `touch`
 
 To create an empty file or update its timestamp:
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "touch README.md", language: "bash" },
-    {
-      label: "PowerShell",
-      code: "New-Item README.md -ItemType File",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "type nul > README.md",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+touch README.md
+```
 
-`touch` is the common Unix-style command. PowerShell and Command Prompt use different forms for the same basic job.
+`touch` is common in Unix-style shells, but not in Command Prompt. On Windows, many beginners create files in an editor or use PowerShell commands instead. The important idea is that terminals can create files, even if the exact command differs by shell.
 
 ## Copying with `cp`
 
 To copy a file:
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    {
-      label: "Unix shell",
-      code: "cp README.md README.backup.md",
-      language: "bash",
-    },
-    {
-      label: "PowerShell",
-      code: "Copy-Item README.md README.backup.md",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "copy README.md README.backup.md",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+cp README.md README.backup.md
+```
 
 To copy directories recursively:
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "cp -r src src-backup", language: "bash" },
-    {
-      label: "PowerShell",
-      code: "Copy-Item src src-backup -Recurse",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "xcopy src src-backup /e /i",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+cp -r src src-backup
+```
+
+Windows equivalents vary by shell:
+
+- PowerShell commonly uses `Copy-Item`
+- Command Prompt commonly uses `copy` for files and `xcopy` or `robocopy` for larger directory operations
 
 ## Moving or renaming with `mv`
 
 To move a file:
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "mv notes.txt docs/notes.txt", language: "bash" },
-    {
-      label: "PowerShell",
-      code: "Move-Item notes.txt docs/notes.txt",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "move notes.txt docs\\notes.txt",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+mv notes.txt docs/notes.txt
+```
 
 To rename a file:
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "mv draft.txt final.txt", language: "bash" },
-    {
-      label: "PowerShell",
-      code: "Rename-Item draft.txt final.txt",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "ren draft.txt final.txt",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+mv draft.txt final.txt
+```
+
+On Windows:
+
+- PowerShell commonly uses `Move-Item`
+- Command Prompt commonly uses `move`
 
 ## Removing with `rm`
 
 To remove a file:
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "rm notes.txt", language: "bash" },
-    {
-      label: "PowerShell",
-      code: "Remove-Item notes.txt",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "del notes.txt",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+rm notes.txt
+```
 
 To remove a directory and its contents:
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "rm -r old-folder", language: "bash" },
-    {
-      label: "PowerShell",
-      code: "Remove-Item old-folder -Recurse",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "rmdir /s old-folder",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+rm -r old-folder
+```
+
+On Windows:
+
+- PowerShell commonly uses `Remove-Item`
+- Command Prompt commonly uses `del` for files and `rmdir` for directories
 
 <Warning title="rm deserves extra care">
   <p>Destructive terminal commands such as <code>rm</code>, <code>Remove-Item</code>, <code>del</code>, and <code>rmdir</code> deserve extra care. They often delete directly rather than sending content to a graphical trash folder. Read the path carefully before running them.</p>

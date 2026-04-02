@@ -8,7 +8,6 @@ status: published
 
 import Tip from "../../../components/content/Tip.astro";
 import Warning from "../../../components/content/Warning.astro";
-import CommandBlock from "../../../components/content/CommandBlock.astro";
 
 This page is a quick reference for the terminal commands taught in the earlier lessons.
 
@@ -16,166 +15,84 @@ The exact command can vary by shell. Unix-style shells, PowerShell, and Command 
 
 ## Show the current directory
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "pwd", language: "bash" },
-    { label: "PowerShell", code: "Get-Location", language: "powershell" },
-    { label: "Command Prompt", code: "cd", language: "bat" },
-  ]}
-/>
+```bash
+pwd
+```
+
+Command Prompt also shows the current directory with:
+
+```powershell
+cd
+```
 
 ## List files and directories
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "ls\nls -la", language: "bash" },
-    {
-      label: "PowerShell",
-      code: "Get-ChildItem\nGet-ChildItem -Force",
-      language: "powershell",
-    },
-    { label: "Command Prompt", code: "dir\ndir /a", language: "bat" },
-  ]}
-/>
+```bash
+ls
+ls -la
+```
+
+Command Prompt equivalent:
+
+```powershell
+dir
+```
 
 ## Change directories
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Platform"
-  options={[
-    {
-      label: "macOS or Linux",
-      code: "cd src\ncd ..\ncd /absolute/path/here",
-      language: "bash",
-    },
-    {
-      label: "Windows",
-      code: "cd src\ncd ..\ncd C:\\absolute\\path\\here",
-      language: "powershell",
-    },
-  ]}
-/>
+```bash
+cd src
+cd ..
+cd /absolute/path/here
+```
+
+Windows example:
+
+```powershell
+cd C:\absolute\path\here
+```
 
 ## Create directories
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    {
-      label: "Unix shell",
-      code: "mkdir notes\nmkdir -p src/content/lessons",
-      language: "bash",
-    },
-    {
-      label: "PowerShell",
-      code: "mkdir notes\nNew-Item -ItemType Directory -Force -Path src/content/lessons",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "mkdir notes\nmkdir src\\content\\lessons",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+mkdir notes
+mkdir -p src/content/lessons
+```
 
 ## Create an empty file
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    { label: "Unix shell", code: "touch README.md", language: "bash" },
-    {
-      label: "PowerShell",
-      code: "New-Item README.md -ItemType File",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "type nul > README.md",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+touch README.md
+```
+
+`touch` is Unix-style. PowerShell and Command Prompt use different commands for file creation.
 
 ## Copy files or directories
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    {
-      label: "Unix shell",
-      code: "cp README.md README.backup.md\ncp -r src src-backup",
-      language: "bash",
-    },
-    {
-      label: "PowerShell",
-      code: "Copy-Item README.md README.backup.md\nCopy-Item src src-backup -Recurse",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "copy README.md README.backup.md\nxcopy src src-backup /e /i",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+cp README.md README.backup.md
+cp -r src src-backup
+```
+
+Windows equivalents often include `Copy-Item`, `copy`, `xcopy`, or `robocopy`, depending on the shell and the task.
 
 ## Move or rename
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    {
-      label: "Unix shell",
-      code: "mv draft.txt final.txt\nmv notes.txt docs/notes.txt",
-      language: "bash",
-    },
-    {
-      label: "PowerShell",
-      code: "Rename-Item draft.txt final.txt\nMove-Item notes.txt docs/notes.txt",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "ren draft.txt final.txt\nmove notes.txt docs\\notes.txt",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+mv draft.txt final.txt
+mv notes.txt docs/notes.txt
+```
+
+Windows equivalents often include `Move-Item` or `move`.
 
 ## Remove files or directories
 
-<CommandBlock
-  metaLabel="Terminal"
-  selectorLabel="Shell"
-  options={[
-    {
-      label: "Unix shell",
-      code: "rm notes.txt\nrm -r old-folder",
-      language: "bash",
-    },
-    {
-      label: "PowerShell",
-      code: "Remove-Item notes.txt\nRemove-Item old-folder -Recurse",
-      language: "powershell",
-    },
-    {
-      label: "Command Prompt",
-      code: "del notes.txt\nrmdir /s old-folder",
-      language: "bat",
-    },
-  ]}
-/>
+```bash
+rm notes.txt
+rm -r old-folder
+```
+
+Windows equivalents often include `Remove-Item`, `del`, and `rmdir`.
 
 ## Read built-in help
 

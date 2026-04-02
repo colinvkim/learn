@@ -10,7 +10,6 @@ import Note from "../../components/content/Note.astro";
 import Tip from "../../components/content/Tip.astro";
 import Warning from "../../components/content/Warning.astro";
 import Steps from "../../components/content/Steps.astro";
-import CommandBlock from "../../components/content/CommandBlock.astro";
 
 <PageShell size="reading" class="py-10 sm:py-12">
   <ContentArticle>
@@ -38,26 +37,5 @@ import CommandBlock from "../../components/content/CommandBlock.astro";
       <li>Open the project directory.</li>
       <li>Run <code>pnpm install</code>.</li>
     </Steps>
-
-    <h2>Command block</h2>
-    <CommandBlock
-      metaLabel="Terminal"
-      selectorLabel="Package manager"
-      options={[
-        { label: "npm", code: "npm install tailwindcss", language: "bash" },
-        { label: "pnpm", code: "pnpm add tailwindcss", language: "bash" },
-      ]}
-    />
-
-    <CommandBlock code="git status" language="bash" metaLabel="Terminal" />
-
-    <CommandBlock
-      code={`{
-  "name": "learn",
-  "private": true
-}`}
-      language="json"
-      metaLabel="package.json"
-    />
   </ContentArticle>
 </PageShell>
