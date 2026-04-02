@@ -55,24 +55,22 @@
 
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  ::view-transition-group(root) {
-    animation-duration: 560ms;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  }
+::view-transition-group(root) {
+  animation-duration: 560ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    mix-blend-mode: normal;
-  }
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
 
-  ::view-transition-old(root) {
-    animation-name: learn-root-old;
-  }
+::view-transition-old(root) {
+  animation-name: learn-root-old;
+}
 
-  ::view-transition-new(root) {
-    animation-name: learn-root-new;
-  }
+::view-transition-new(root) {
+  animation-name: learn-root-new;
 }
 
 @keyframes learn-root-old {
