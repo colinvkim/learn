@@ -17,6 +17,16 @@ export default defineConfig({
       formats: ["woff2"],
       fallbacks: ["sans-serif"],
     },
+    {
+      name: "JetBrains Mono",
+      cssVariable: "--font-jetbrains-mono",
+      provider: fontProviders.fontsource(),
+      weights: [400, 500, 600],
+      styles: ["normal"],
+      subsets: ["latin"],
+      formats: ["woff2"],
+      fallbacks: ["monospace"],
+    },
   ],
   vite: {
     plugins: [tailwindcss()],

@@ -28,6 +28,7 @@ const canonical = Astro.site
     <link rel="canonical" href={canonical.toString()} />
     <title>{title}</title>
     <Font cssVariable="--font-inter" preload />
+    <Font cssVariable="--font-jetbrains-mono" preload />
     <ClientRouter />
     <script is:inline>
       (() => {

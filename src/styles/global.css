@@ -4,6 +4,7 @@
 
 @theme {
   --font-sans: var(--font-inter), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
   --color-canvas: oklch(0.985 0.004 84.59);
   --color-panel: oklch(0.995 0.002 84.59);
   --color-ink: oklch(0.21 0.01 260.1);
