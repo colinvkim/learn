@@ -17,11 +17,13 @@ More precisely:
 - a **terminal app** gives you the text-based window
 - a **shell** reads the commands you type and runs them
 
-Examples of shells include:
+Examples of shells and command interpreters include:
 
 - `zsh`
 - `bash`
 - `fish`
+- PowerShell
+- Command Prompt
 
 You do not need to master shell differences first. But it helps to know that the terminal window and the command interpreter are not exactly the same thing.
 

@@ -7,6 +7,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
 
 One of the most important terminal skills is not memorization. It is reading.
 
@@ -55,12 +56,26 @@ When a terminal command fails, check these first:
 3. Did I miss a flag or argument?
 4. Does the file or directory actually exist?
 
+<ShellCommandSet
+  title="Check your current directory"
+  unix={`pwd`}
+  powershell={`Get-Location`}
+  cmd={`cd`}
+/>
+
+<ShellCommandSet
+  title="Inspect what is in the current directory"
+  unix={`ls`}
+  powershell={`Get-ChildItem`}
+  cmd={`dir`}
+/>
+
 ## Help plus inspection is usually enough
 
 In beginner workflows, a good recovery loop is:
 
-1. check the current directory with `pwd`, or `cd` with no argument in Command Prompt
-2. inspect the directory with `ls` or `dir`
+1. check the current directory with the command your shell provides
+2. inspect the directory contents with the command your shell provides
 3. read the error message carefully
 4. use `--help` or `-h` if the command syntax is unclear
 

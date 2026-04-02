@@ -6,6 +6,7 @@ order: 8
 status: published
 ---
 
+import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
 import Tip from "../../../components/content/Tip.astro";
 import Warning from "../../../components/content/Warning.astro";
 
@@ -15,84 +16,88 @@ The exact command can vary by shell. Unix-style shells, PowerShell, and Command 
 
 ## Show the current directory
 
-```bash
-pwd
-```
-
-Command Prompt also shows the current directory with:
-
-```powershell
-cd
-```
+<ShellCommandSet
+  unix={`pwd`}
+  powershell={`Get-Location`}
+  cmd={`cd`}
+/>
 
 ## List files and directories
 
-```bash
-ls
-ls -la
-```
-
-Command Prompt equivalent:
-
-```powershell
-dir
-```
+<ShellCommandSet
+  unix={`ls
+ls -la`}
+  powershell={`Get-ChildItem
+Get-ChildItem -Force`}
+  cmd={`dir
+dir /a`}
+/>
 
 ## Change directories
 
-```bash
-cd src
+<ShellCommandSet
+  unix={`cd src
 cd ..
-cd /absolute/path/here
-```
-
-Windows example:
-
-```powershell
-cd C:\absolute\path\here
-```
+cd /absolute/path/here`}
+  powershell={`Set-Location src
+Set-Location ..
+Set-Location C:\\absolute\\path\\here`}
+  cmd={`cd src
+cd ..
+cd C:\\absolute\\path\\here`}
+/>
 
 ## Create directories
 
-```bash
-mkdir notes
-mkdir -p src/content/lessons
-```
+<ShellCommandSet
+  unix={`mkdir notes
+mkdir -p src/content/lessons`}
+  powershell={`New-Item -ItemType Directory notes
+New-Item -ItemType Directory src/content/lessons -Force`}
+  cmd={`mkdir notes
+mkdir src\\content\\lessons`}
+/>
 
 ## Create an empty file
 
-```bash
-touch README.md
-```
-
-`touch` is Unix-style. PowerShell and Command Prompt use different commands for file creation.
+<ShellCommandSet
+  unix={`touch README.md`}
+  powershell={`New-Item -ItemType File README.md`}
+  cmd={`type nul > README.md`}
+/>
 
 ## Copy files or directories
 
-```bash
-cp README.md README.backup.md
-cp -r src src-backup
-```
-
-Windows equivalents often include `Copy-Item`, `copy`, `xcopy`, or `robocopy`, depending on the shell and the task.
+<ShellCommandSet
+  unix={`cp README.md README.backup.md
+cp -r src src-backup`}
+  powershell={`Copy-Item README.md README.backup.md
+Copy-Item src src-backup -Recurse`}
+  cmd={`copy README.md README.backup.md
+xcopy src src-backup /E /I`}
+/>
 
 ## Move or rename
 
-```bash
-mv draft.txt final.txt
-mv notes.txt docs/notes.txt
-```
-
-Windows equivalents often include `Move-Item` or `move`.
+<ShellCommandSet
+  unix={`mv draft.txt final.txt
+mv notes.txt docs/notes.txt`}
+  powershell={`Move-Item draft.txt final.txt
+Move-Item notes.txt docs/notes.txt`}
+  cmd={`move draft.txt final.txt
+move notes.txt docs\\notes.txt`}
+/>
 
 ## Remove files or directories
 
-```bash
-rm notes.txt
-rm -r old-folder
-```
-
-Windows equivalents often include `Remove-Item`, `del`, and `rmdir`.
+<ShellCommandSet
+  unix={`rm notes.txt
+rm -r old-folder`}
+  powershell={`Remove-Item notes.txt
+Remove-Item old-folder -Recurse`}
+  cmd={`del notes.txt
+rmdir /s old-folder`}
+/>
 
 ## Read built-in help
 

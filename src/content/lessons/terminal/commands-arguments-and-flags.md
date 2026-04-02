@@ -21,6 +21,7 @@ The **command** is the program you want to run.
 Examples:
 
 - `ls`
+- `Get-ChildItem`
 - `cd`
 - `git`
 - `pnpm`
@@ -32,15 +33,15 @@ An **argument** is a value passed to the command.
 Examples:
 
 ```bash
-cd src
-rm notes.txt
+Set-Location src
+Remove-Item notes.txt
 git switch main
 ```
 
 Here:
 
-- `src` is an argument to `cd`
-- `notes.txt` is an argument to `rm`
+- `src` is an argument to `Set-Location`
+- `notes.txt` is an argument to `Remove-Item`
 - `main` is an argument to `git switch`
 
 ## Flags
@@ -50,16 +51,16 @@ A **flag** changes how the command behaves.
 Examples:
 
 ```bash
-ls -la
-mkdir -p src/content
+Get-ChildItem -Force
 git commit -m "Add README"
+pnpm install --save-dev typescript
 ```
 
 Here:
 
-- `-la` changes what `ls` shows
-- `-p` changes how `mkdir` creates directories
+- `-Force` changes what `Get-ChildItem` shows
 - `-m` changes how `git commit` receives the commit message
+- `--save-dev` changes where `pnpm install` records the dependency
 
 ## Why this distinction matters
 

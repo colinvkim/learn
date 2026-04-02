@@ -1,0 +1,180 @@
+---
+interface Props {
+  title?: string;
+  intro?: string;
+  unix?: string;
+  powershell?: string;
+  cmd?: string;
+}
+
+type Variant = {
+  key: "unix" | "powershell" | "cmd";
+  label: string;
+  language: "bash" | "powershell" | "text";
+  command: string;
+};
+
+const { title, intro, unix, powershell, cmd } = Astro.props;
+
+const variants: Variant[] = [];
+
+if (unix) {
+  variants.push({
+    key: "unix",
+    label: "Unix shells",
+    language: "bash",
+    command: unix,
+  });
+}
+
+if (powershell) {
+  variants.push({
+    key: "powershell",
+    label: "PowerShell",
+    language: "powershell",
+    command: powershell,
+  });
+}
+
+if (cmd) {
+  variants.push({
+    key: "cmd",
+    label: "Command Prompt",
+    language: "text",
+    command: cmd,
+  });
+}
+
+const groupId = `shell-set-${crypto.randomUUID()}`;
+---
+
+{
+  variants.length > 0 && (
+    <section
+      data-shell-command-set
+      data-shell-set-id={groupId}
+      class="my-7 overflow-hidden rounded-panel border border-line bg-panel/80 shadow-soft"
+    >
+      {(title || intro) && (
+        <header class="border-b border-line bg-accent-soft/55 px-4 py-3 sm:px-5">
+          {title && <h3 class="m-0 text-base font-semibold tracking-[-0.01em] text-ink">{title}</h3>}
+          {intro && <p class="mt-1 text-sm leading-6 text-muted">{intro}</p>}
+        </header>
+      )}
+
+      <div class="border-b border-line px-2 py-2 sm:px-3" role="tablist" aria-label={title ?? "Shell variants"}>
+        <div class="flex flex-wrap gap-2">
+          {variants.map((variant) => (
+            <button
+              type="button"
+              id={`${groupId}-${variant.key}-tab`}
+              role="tab"
+              aria-controls={`${groupId}-${variant.key}-panel`}
+              aria-selected="false"
+              data-shell-tab={variant.key}
+              class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25"
+            >
+              {variant.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="px-4 pb-1 sm:px-5">
+        {variants.map((variant) => (
+          <div
+            id={`${groupId}-${variant.key}-panel`}
+            role="tabpanel"
+            aria-labelledby={`${groupId}-${variant.key}-tab`}
+            data-shell-panel={variant.key}
+            hidden
+          >
+            <pre><code class={`language-${variant.language}`}>{variant.command}</code></pre>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<script is:inline>
+  (() => {
+    if (!window.__learnShellCommandController) {
+      const storageKey = "learn-shell-preference";
+
+      const getPreferredShell = (available) => {
+        try {
+          const stored = window.localStorage?.getItem(storageKey);
+          if (stored && available.includes(stored)) return stored;
+        } catch {}
+
+        const platform = navigator.userAgentData?.platform ?? navigator.userAgent ?? "";
+        const looksLikeWindows = /win(dows)?/i.test(platform);
+
+        if (looksLikeWindows) {
+          if (available.includes("powershell")) return "powershell";
+          if (available.includes("cmd")) return "cmd";
+        }
+
+        if (available.includes("unix")) return "unix";
+        return available[0];
+      };
+
+      const activateShell = (root, shell) => {
+        root.querySelectorAll("[data-shell-tab]").forEach((tab) => {
+          if (!(tab instanceof HTMLButtonElement)) return;
+          const isActive = tab.dataset.shellTab === shell;
+          tab.setAttribute("aria-selected", isActive ? "true" : "false");
+          tab.classList.toggle("border-accent/40", isActive);
+          tab.classList.toggle("bg-accent-soft", isActive);
+          tab.classList.toggle("text-ink", isActive);
+          tab.classList.toggle("border-line", !isActive);
+          tab.classList.toggle("text-muted", !isActive);
+        });
+
+        root.querySelectorAll("[data-shell-panel]").forEach((panel) => {
+          if (!(panel instanceof HTMLElement)) return;
+          panel.hidden = panel.dataset.shellPanel !== shell;
+        });
+      };
+
+      const attachShellSets = () => {
+        document.querySelectorAll("[data-shell-command-set]").forEach((root) => {
+          if (!(root instanceof HTMLElement) || root.dataset.shellBound === "true") return;
+          root.dataset.shellBound = "true";
+
+          const tabs = [...root.querySelectorAll("[data-shell-tab]")].filter(
+            (tab) => tab instanceof HTMLButtonElement,
+          );
+          const available = tabs
+            .map((tab) => (tab instanceof HTMLButtonElement ? tab.dataset.shellTab : null))
+            .filter(Boolean);
+
+          if (!available.length) return;
+
+          const initialShell = getPreferredShell(available);
+          activateShell(root, initialShell);
+
+          tabs.forEach((tab) => {
+            if (!(tab instanceof HTMLButtonElement)) return;
+
+            tab.addEventListener("click", () => {
+              const shell = tab.dataset.shellTab;
+              if (!shell) return;
+              activateShell(root, shell);
+
+              try {
+                window.localStorage?.setItem(storageKey, shell);
+              } catch {}
+            });
+          });
+        });
+      };
+
+      document.addEventListener("astro:page-load", attachShellSets);
+      window.__learnShellCommandController = { attachShellSets };
+    }
+
+    window.__learnShellCommandController.attachShellSets();
+  })();
+</script>
