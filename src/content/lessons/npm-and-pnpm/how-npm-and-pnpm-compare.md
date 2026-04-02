@@ -20,6 +20,8 @@ Both can:
 
 The important question is not which tool is more legitimate. The important question is which workflow fits the repository.
 
+One of the most useful beginner takeaways is that `pnpm` is not a different package universe. In many cases, the same kinds of packages and project structures are in play. The difference is how the package manager behaves.
+
 ## The biggest similarity
 
 The underlying concepts are the same:
@@ -69,6 +71,11 @@ Common reasons include:
 | Run a one-off package | `npx create-vite@latest my-app` | `pnpm dlx create-vite@latest my-app` |
 
 That table is the practical heart of the comparison. The concepts are shared, but some of the muscle memory is different.
+
+The biggest mindset difference is often this:
+
+- in npm, `install` commonly means both "install what the project already has" and "add a new package"
+- in pnpm, `install` and `add` are separated more explicitly
 
 ## What does not change
 

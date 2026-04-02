@@ -20,6 +20,8 @@ pnpm install
 
 This is the command to run after cloning a repository, switching branches, or pulling dependency changes from someone else.
 
+This parallels `npm install`. The difference is that in pnpm, `install` is mainly about bringing the project into the state it already declares.
+
 ## `pnpm add` adds new packages to the project
 
 To add a normal dependency:
@@ -47,6 +49,8 @@ pnpm add -D typescript eslint prettier
 ```
 
 This is one of the clearest differences from npm. In pnpm, `add` is the main verb for introducing new dependencies.
+
+For many learners, this naming is easier to reason about because it separates "install what the project already has" from "add something new to the project."
 
 ## Removing a package
 
@@ -82,6 +86,8 @@ pnpm exec eslint .
 
 This is useful when you want to invoke the tool directly instead of going through a script.
 
+It is the direct parallel to `npm exec`.
+
 ## Running a tool one time
 
 To run a package without saving it as a dependency, use:
@@ -95,6 +101,8 @@ This is useful for:
 - scaffolding a new project
 - trying a command once
 - avoiding a permanent dependency for a one-time task
+
+It is the pnpm parallel to `npx`.
 
 ## The lockfile matters in pnpm too
 

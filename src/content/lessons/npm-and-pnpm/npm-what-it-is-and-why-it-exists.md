@@ -31,6 +31,16 @@ In practical terms, that means two things:
 1. It usually comes with Node.js.
 2. It gives JavaScript projects a standard way to declare, install, and update packages.
 
+One detail is worth knowing early: people sometimes use the word `npm` to refer to more than one thing.
+
+Depending on the context, `npm` may refer to:
+
+- the CLI tool you run in the terminal
+- the public package registry at `npmjs.com`
+- the broader package ecosystem around that registry
+
+In this course, `npm` usually means the package manager CLI unless the registry is mentioned explicitly.
+
 ## What problem npm solves
 
 Without a package manager, every project would have to manage its dependencies by hand.
@@ -71,6 +81,8 @@ npm install react
 ```
 
 That command installs the `react` package and records it in the project.
+
+By default, npm installs packages from the public npm registry. That is one reason the phrases "npm package" and "JavaScript package" often overlap in day-to-day conversation.
 
 ### 3. It records the exact dependency graph that was installed
 

@@ -31,6 +31,8 @@ A pnpm project still uses familiar pieces:
 
 So moving from npm to pnpm is not learning a new ecosystem. It is learning a different package manager inside the same ecosystem.
 
+That point matters for beginners: a pnpm project can still use the same frameworks, many of the same packages, and much of the same project structure you already see in npm projects.
+
 ## Why teams choose pnpm
 
 The official pnpm site emphasizes three themes:
@@ -67,6 +69,8 @@ pnpm-lock.yaml
 
 That is one of the quickest signals that a repository uses pnpm.
 
+You will also usually still see a `node_modules` directory in a pnpm project. The tool manages dependencies differently under the hood, but the visible shape of the project still feels familiar to someone who has already seen npm.
+
 ## Installing pnpm
 
 The official pnpm installation docs recommend Corepack as a modern option, with one important note: Corepack should be updated first because of outdated signature issues in older versions.
@@ -82,6 +86,8 @@ corepack use pnpm@latest-10
 The last command adds a `packageManager` field to `package.json`, which helps a project declare the pnpm version it expects.
 
 That is useful for consistency across a team.
+
+pnpm can still work with the same public npm registry many JavaScript developers already use. That is another reason it is better understood as a different package manager, not as a separate package ecosystem.
 
 ## A good mental model for pnpm
 

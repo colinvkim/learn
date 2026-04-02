@@ -40,6 +40,8 @@ npm init -y
 
 This is a common starting point for a new project that is not being scaffolded by another tool.
 
+In many real projects, you will not create `package.json` by hand. A starter command such as `create-astro`, `create-vite`, or `create-next-app` will usually create it for you. The important point is not how the file appears. The important point is that npm uses it as the project's manifest.
+
 ## The two meanings of `npm install`
 
 This is one of the first places beginners get confused, because the same command has two common forms.
@@ -49,6 +51,8 @@ This is one of the first places beginners get confused, because the same command
 When you run `npm install` with no package name, npm installs the dependencies that are already listed in the project.
 
 This is what you usually run after cloning a repository.
+
+If the project already has a lockfile, `npm install` uses that lockfile as part of deciding what should be installed.
 
 ### `npm install <package>`
 
@@ -103,6 +107,11 @@ You can install several development dependencies at once:
 npm install -D typescript eslint prettier
 ```
 
+For a beginner, a useful shortcut is this:
+
+- if the package is needed for the app to run, it is usually a dependency
+- if the package is only helping you build, check, test, or format the project, it is usually a dev dependency
+
 ## What actually changes when you install something
 
 When you add a package with npm, three parts of the project usually change:
@@ -130,5 +139,3 @@ When dependencies change:
 3. commit both files together
 
 That keeps dependency history understandable and makes project setup more reproducible for everyone else.
-
-That habit makes dependency changes much easier to understand later.

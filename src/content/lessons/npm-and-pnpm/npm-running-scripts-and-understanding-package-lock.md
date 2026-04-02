@@ -37,6 +37,8 @@ npm run test
 
 This matters because a project can document one stable command even if the underlying tool changes later.
 
+It also means a project can hide tool details behind a simpler interface. A new contributor does not need to know exactly where a local binary lives or which flags it needs if the project already exposes a script for the task.
+
 ## Why scripts are used so heavily
 
 Scripts give a project a shared vocabulary.
@@ -70,6 +72,8 @@ Use cases include:
 
 `npm exec` is the underlying command in modern npm. `npx` is still common in tutorials and day-to-day usage.
 
+These commands matter because they let you use tooling without immediately turning every experiment into a permanent dependency decision.
+
 ## What `package-lock.json` does
 
 When npm installs packages, it writes a lockfile named `package-lock.json`.
@@ -90,6 +94,8 @@ It helps to separate them mentally:
 - `package-lock.json` says what exact versions were actually resolved
 
 According to the npm CLI docs, when you run `npm install` with no arguments, npm compares the two files. If the lockfile still satisfies the ranges in `package.json`, npm uses the locked versions. If the ranges no longer match, npm resolves new versions and updates the lockfile.
+
+This is why changing a dependency range in `package.json` can also lead to changes in `package-lock.json`, even if you only edited one file directly.
 
 ## `npm install` vs `npm ci`
 

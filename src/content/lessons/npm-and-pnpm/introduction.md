@@ -14,6 +14,14 @@ That confusion is normal. The names are specific, but the underlying job is stra
 
 `npm` and `pnpm` are package managers for the Node.js ecosystem.
 
+Before going further, it helps to separate three related terms:
+
+- a **package** is a reusable piece of code
+- a **package manager** is the tool that installs and tracks packages
+- a **registry** is the place packages are published and downloaded from
+
+This course focuses on the package manager side of that system.
+
 Their role is practical:
 
 - record what a project depends on
@@ -28,22 +36,7 @@ In other words, they help a project answer a small set of recurring questions:
 - How should those packages be installed on another machine?
 - Which commands should a developer run to work on the project?
 
-That is the problem space for this course.
-
-## What this course is trying to teach
-
-This course is not only a list of commands.
-
-The goal is to build a mental model that makes the commands understandable. Once that model is clear, the command names stop feeling arbitrary.
-
-By the end of the course, you should be able to explain:
-
-- what a package manager does
-- what a package is in this ecosystem
-- what `package.json` and a lockfile are for
-- why `npm install` and `pnpm add` are not the same command
-- why some teams stay with `npm` and others choose `pnpm`
-- which small set of commands matters most in day-to-day work
+Those are the questions package managers answer every day, even when the person using them is not thinking about the deeper mechanics.
 
 ## Why the course starts with npm
 

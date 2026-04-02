@@ -24,6 +24,8 @@ Choose `pnpm` when:
 - you care about pnpm's install model and disk efficiency
 - you want its command style and workflow conventions
 
+If you are starting a personal learning project, either choice can work. What matters most is understanding the concepts clearly and then staying consistent within that repository.
+
 ## The best path for a new learner
 
 For a person who is new to the ecosystem, `npm` is still the best first package manager to understand.
@@ -55,3 +57,5 @@ Mixing package managers makes the dependency state harder to reason about and us
 If you are starting from zero, learn the concepts with `npm`, then evaluate `pnpm` with those concepts already in place.
 
 If you are joining an existing project, use the package manager that project already uses.
+
+If you are creating a team project, decide early, document the choice, and keep the lockfile in version control from the beginning.
