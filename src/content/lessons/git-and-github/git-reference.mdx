@@ -36,6 +36,13 @@ git add .
 git commit -m "Describe the change"
 ```
 
+If the repository uses Conventional Commits, the message may look like:
+
+```bash
+git commit -m "feat: add login form"
+git commit -m "fix: correct button disabled state"
+```
+
 ## Inspect changed content
 
 ```bash
@@ -75,4 +82,8 @@ git merge feature-branch
 
 <Tip title="When in doubt, run git status">
   <p>If you are unsure what Git thinks is happening in the repository, <code>git status</code> is usually the safest first command.</p>
+</Tip>
+
+<Tip title="Keep commit messages consistent">
+  <p>If a project uses Conventional Commits, follow that format consistently. If it does not, use short clear messages that describe what changed.</p>
 </Tip>

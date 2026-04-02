@@ -135,7 +135,29 @@ docs: update setup instructions
 
 The part before the colon is a type label, and the rest describes the change.
 
-You do not need Conventional Commits to use Git well, but they are worth recognizing because many teams use them to keep commit history more consistent.
+In that structure:
+
+- `feat` usually means a new feature
+- `fix` usually means a bug fix
+- `docs` usually means a documentation change
+
+That makes commit history easier to scan because the type gives context before you even read the rest of the message.
+
+You do not need Conventional Commits to use Git well, but they are worth recognizing because many teams use them to keep commit history more consistent, generate changelogs, or support release tooling.
+
+For a beginner, the practical rule is simple:
+
+- first learn to write clear commit messages
+- then use Conventional Commits if the project or team expects them
+
+If you are working alone on a small project, either of these can be reasonable:
+
+```text
+Add login form
+feat: add login form
+```
+
+The more important part is that the message clearly describes the change.
 
 <Warning title="Do not treat git add as a formality">
   <p>If you stage the wrong files, Git will commit the wrong snapshot. Check what is staged before committing, especially in larger repositories.</p>
