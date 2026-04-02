@@ -15,12 +15,6 @@ const { topics, size = "card" } = Astro.props;
 const safeTopics = Array.isArray(topics) ? topics : [];
 const visibleTopics = safeTopics.slice(0, 3);
 
-const toneClasses = [
-  "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
-  "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
-  "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
-];
-
 const iconMap = {
   git: GitIcon,
   github: GitHubIcon,
@@ -33,7 +27,7 @@ const iconMap = {
 const renderedTopics = visibleTopics.map((topic, index) => ({
   topic,
   Icon: iconMap[topic.toLowerCase() as keyof typeof iconMap],
-  toneClass: toneClasses[index % toneClasses.length],
+  zIndex: 10 - index,
 }));
 ---
 
@@ -41,14 +35,14 @@ const renderedTopics = visibleTopics.map((topic, index) => ({
   renderedTopics.length > 0 && (
     <div class={size === "card" ? "flex items-center -space-x-3" : "flex items-center gap-2"}>
       {
-        renderedTopics.map(({ topic, Icon, toneClass }, index) => (
+        renderedTopics.map(({ topic, Icon, zIndex }) => (
           <div
             class:list={[
               "relative inline-flex items-center justify-center rounded-2xl border font-semibold uppercase tracking-[0.08em]",
+              "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
               size === "card" ? "h-14 w-14 p-2 shadow-soft ring-1 ring-white/60 dark:ring-white/6" : "h-8 w-8 p-1.5",
-              toneClass,
             ]}
-            style={size === "card" ? `z-index:${10 - index}` : undefined}
+            style={size === "card" ? `z-index:${zIndex}` : undefined}
             aria-label={topic}
             title={topic}
           >

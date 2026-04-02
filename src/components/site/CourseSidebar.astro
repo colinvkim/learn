@@ -13,8 +13,8 @@ const { course, lessons, currentLessonSlug } = Astro.props;
 const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
 ---
 
-<aside class="lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:border-r lg:border-line/80 lg:pr-0">
-  <div class="space-y-6 border-b border-line/80 pb-6 lg:min-h-full lg:border-b-0 lg:bg-panel/40 lg:px-3 lg:py-8">
+<aside class="lg:sticky lg:top-16 lg:max-h-[calc(100dvh-4rem)] lg:overflow-y-auto lg:overscroll-contain lg:border-r lg:border-line/80 lg:pr-0">
+  <div class="space-y-6 border-b border-line/80 pb-6 lg:border-b-0 lg:bg-panel/40 lg:px-3 lg:py-8">
     <div class="space-y-4 rounded-[1.35rem] border border-line/80 bg-canvas/72 p-3 shadow-soft dark:bg-canvas/34">
       {
         topics.length > 0 && (
@@ -35,7 +35,7 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
     </div>
 
     <div class="space-y-2">
-      <nav aria-label={`${course.data.title} lessons`} class="space-y-0.5">
+      <nav aria-label={`${course.data.title} lessons`} class="space-y-1">
         {
           lessons.map((lesson) => {
             const slug = getLessonSlug(lesson);
@@ -45,7 +45,7 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
               <a
                 href={getLessonHref(course.id, slug)}
                 class:list={[
-                  "relative block rounded-xl px-3 py-2 text-[0.86rem] leading-5.5 transition",
+                  "relative block rounded-xl px-3 py-2.5 text-[0.86rem] leading-5.5 transition",
                   isCurrent
                     ? "bg-canvas/88 text-ink shadow-[inset_0_0_0_1px_var(--color-line)] dark:bg-canvas/52"
                     : "text-muted hover:bg-canvas/75 hover:text-ink dark:hover:bg-canvas/40",

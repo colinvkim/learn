@@ -17,6 +17,13 @@ export type LessonContext = {
   nextLesson?: LessonEntry;
 };
 
+type PublishedContent = {
+  courses: CourseEntry[];
+  lessons: LessonEntry[];
+  courseById: Map<string, CourseEntry>;
+  lessonsByCourse: Map<string, LessonEntry[]>;
+};
+
 function compareCourses(a: CourseEntry, b: CourseEntry) {
   return a.data.sortOrder - b.data.sortOrder || a.data.title.localeCompare(b.data.title);
 }
@@ -52,6 +59,40 @@ function groupLessonsByCourse(lessons: LessonEntry[]) {
   return lessonsByCourse;
 }
 
+async function loadPublishedContent(): Promise<PublishedContent> {
+  const [courses, lessons] = await Promise.all([
+    getCollection("courses", ({ data }) => data.status === "published"),
+    getCollection("lessons", ({ data }) => data.status === "published"),
+  ]);
+
+  courses.sort(compareCourses);
+  lessons.sort(compareLessons);
+
+  for (const lesson of lessons) {
+    const { courseSlug } = parseLessonId(lesson);
+
+    if (courseSlug !== lesson.data.course.id) {
+      throw new Error(
+        `Lesson "${lesson.id}" must be stored inside a directory matching its course reference "${lesson.data.course.id}".`,
+      );
+    }
+  }
+
+  return {
+    courses,
+    lessons,
+    courseById: new Map(courses.map((course) => [course.id, course])),
+    lessonsByCourse: groupLessonsByCourse(lessons),
+  };
+}
+
+let publishedContentPromise: Promise<PublishedContent> | undefined;
+
+async function getPublishedContent() {
+  publishedContentPromise ??= loadPublishedContent();
+  return publishedContentPromise;
+}
+
 export function getCourseHref(courseId: string) {
   return `/courses/${courseId}`;
 }
@@ -65,29 +106,15 @@ export function getLessonHref(courseId: string, lessonSlug: string) {
 }
 
 export async function getPublishedCourses() {
-  const courses = await getCollection("courses", ({ data }) => data.status === "published");
-  return courses.sort(compareCourses);
+  return (await getPublishedContent()).courses;
 }
 
 export async function getPublishedLessons() {
-  const lessons = await getCollection("lessons", ({ data }) => data.status === "published");
-
-  for (const lesson of lessons) {
-    const { courseSlug } = parseLessonId(lesson);
-
-    if (courseSlug !== lesson.data.course.id) {
-      throw new Error(
-        `Lesson "${lesson.id}" must be stored inside a directory matching its course reference "${lesson.data.course.id}".`,
-      );
-    }
-  }
-
-  return lessons.sort(compareLessons);
+  return (await getPublishedContent()).lessons;
 }
 
 export async function getPublishedCourseSummaries() {
-  const [courses, lessons] = await Promise.all([getPublishedCourses(), getPublishedLessons()]);
-  const lessonsByCourse = groupLessonsByCourse(lessons);
+  const { courses, lessonsByCourse } = await getPublishedContent();
 
   return courses.map((course) => ({
     course,
@@ -97,17 +124,17 @@ export async function getPublishedCourseSummaries() {
 }
 
 export async function getPublishedCourseBySlug(courseId: string) {
-  const courses = await getPublishedCourses();
-  return courses.find((course) => course.id === courseId);
+  return (await getPublishedContent()).courseById.get(courseId);
 }
 
 export async function getPublishedLessonsForCourse(courseId: string) {
-  const lessons = await getPublishedLessons();
-  return groupLessonsByCourse(lessons).get(courseId) ?? [];
+  return (await getPublishedContent()).lessonsByCourse.get(courseId) ?? [];
 }
 
 export async function getLessonContext(courseId: string, lessonSlug: string): Promise<LessonContext | undefined> {
-  const [course, lessons] = await Promise.all([getPublishedCourseBySlug(courseId), getPublishedLessonsForCourse(courseId)]);
+  const { courseById, lessonsByCourse } = await getPublishedContent();
+  const course = courseById.get(courseId);
+  const lessons = lessonsByCourse.get(courseId) ?? [];
 
   if (!course) {
     return undefined;

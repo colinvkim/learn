@@ -34,29 +34,90 @@ const canonical = Astro.site
       (() => {
         const storageKey = "learn-theme";
         const root = document.documentElement;
-        const getResolvedTheme = () => {
-          const stored = localStorage.getItem(storageKey);
-          const prefersDark = window.matchMedia(
-            "(prefers-color-scheme: dark)",
-          ).matches;
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
-          return stored === "light" || stored === "dark"
-            ? stored
-            : prefersDark
-              ? "dark"
-              : "light";
+        const getStoredTheme = () => {
+          const stored = localStorage.getItem(storageKey);
+          return stored === "light" || stored === "dark" ? stored : null;
         };
 
-        const theme = getResolvedTheme();
-        root.classList.toggle("dark", theme === "dark");
-        root.style.colorScheme = theme;
+        const getResolvedTheme = () => getStoredTheme() ?? (prefersDark.matches ? "dark" : "light");
+        const syncToggles = () => {
+          const isDark = root.classList.contains("dark");
+          const nextTheme = isDark ? "light" : "dark";
+
+          document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+            const label = button.querySelector("[data-theme-label]");
+            const darkIcon = button.querySelector("[data-theme-icon-dark]");
+            const lightIcon = button.querySelector("[data-theme-icon-light]");
+
+            if (label) {
+              label.textContent = nextTheme === "dark" ? "Dark" : "Light";
+            }
+
+            darkIcon?.classList.toggle("hidden", nextTheme !== "dark");
+            lightIcon?.classList.toggle("hidden", nextTheme !== "light");
+          });
+        };
+
+        const applyTheme = (theme, persist = true) => {
+          root.classList.toggle("dark", theme === "dark");
+          root.style.colorScheme = theme;
+
+          if (persist) {
+            localStorage.setItem(storageKey, theme);
+          }
+
+          syncToggles();
+        };
+
+        const restoreTheme = () => {
+          applyTheme(getResolvedTheme(), false);
+        };
+
+        const toggleTheme = () => {
+          const nextTheme = root.classList.contains("dark") ? "light" : "dark";
+          const update = () => applyTheme(nextTheme);
+
+          if (typeof document.startViewTransition === "function") {
+            root.dataset.themeTransition = "true";
+            const transition = document.startViewTransition(update);
+            transition.finished.finally(() => {
+              delete root.dataset.themeTransition;
+            });
+            return;
+          }
+
+          update();
+        };
+
+        if (!window.__learnThemeController) {
+          document.addEventListener("click", (event) => {
+            if (!(event.target instanceof Element)) return;
+            if (!event.target.closest("[data-theme-toggle]")) return;
+            toggleTheme();
+          });
+
+          document.addEventListener("DOMContentLoaded", syncToggles, { once: true });
+          document.addEventListener("astro:after-swap", restoreTheme);
+          document.addEventListener("astro:page-load", syncToggles);
+
+          prefersDark.addEventListener("change", (event) => {
+            if (getStoredTheme()) return;
+            applyTheme(event.matches ? "dark" : "light", false);
+          });
+
+          window.__learnThemeController = { restoreTheme, syncToggles };
+        }
+
+        restoreTheme();
       })();
     </script>
   </head>
   <body class="min-h-screen bg-canvas text-ink">
     {
       showHeader && (
-        <header class="h-16 border-b border-line/80 bg-canvas/86 backdrop-blur-md">
+        <header class="sticky top-0 z-20 h-16 border-b border-line/80 bg-canvas/86 backdrop-blur-md">
           <div class="mx-auto flex h-full max-w-[96rem] items-center justify-between px-4 sm:px-5 lg:px-6">
             <a
               href="/"
@@ -77,105 +138,5 @@ const canonical = Astro.site
       )
     }
     <slot />
-    <script is:inline>
-      (() => {
-        const storageKey = "learn-theme";
-        const root = document.documentElement;
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-
-        const getStoredTheme = () => {
-          const stored = localStorage.getItem(storageKey);
-          return stored === "light" || stored === "dark" ? stored : null;
-        };
-
-        if (!window.__learnThemeController) {
-          const renderThemeIcon = (target, templateName) => {
-            const template = document.querySelector(templateName);
-            if (!(template instanceof HTMLTemplateElement)) return;
-            target.replaceChildren(template.content.cloneNode(true));
-          };
-
-          const getResolvedTheme = () => {
-            const stored = getStoredTheme();
-            return stored ?? (prefersDark.matches ? "dark" : "light");
-          };
-
-          const sync = () => {
-            const isDark = root.classList.contains("dark");
-            root.style.colorScheme = isDark ? "dark" : "light";
-
-            document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
-              const label = button.querySelector("[data-theme-label]");
-              const icon = button.querySelector("[data-theme-icon]");
-              const nextTheme = isDark ? "light" : "dark";
-
-              if (label) {
-                label.textContent =
-                  nextTheme === "dark" ? "Dark" : "Light";
-              }
-
-              if (icon instanceof HTMLElement) {
-                renderThemeIcon(
-                  icon,
-                  nextTheme === "dark"
-                    ? "[data-theme-icon-dark]"
-                    : "[data-theme-icon-light]",
-                );
-              }
-            });
-          };
-
-          const applyTheme = (theme, persist = true) => {
-            root.classList.toggle("dark", theme === "dark");
-
-            if (persist) {
-              localStorage.setItem(storageKey, theme);
-            }
-
-            sync();
-          };
-
-          const restoreTheme = () => {
-            applyTheme(getResolvedTheme(), false);
-          };
-
-          const toggleTheme = () => {
-            const nextTheme = root.classList.contains("dark") ? "light" : "dark";
-            const update = () => applyTheme(nextTheme);
-
-            if (typeof document.startViewTransition === "function") {
-              root.dataset.themeTransition = "true";
-              const transition = document.startViewTransition(update);
-              transition.finished.finally(() => {
-                delete root.dataset.themeTransition;
-              });
-            } else {
-              update();
-            }
-          };
-
-          document.addEventListener("click", (event) => {
-            if (!(event.target instanceof Element)) return;
-
-            const button = event.target.closest("[data-theme-toggle]");
-            if (!button) return;
-
-            toggleTheme();
-          });
-
-          document.addEventListener("astro:after-swap", restoreTheme);
-          document.addEventListener("astro:page-load", restoreTheme);
-
-          prefersDark.addEventListener("change", (event) => {
-            if (getStoredTheme()) return;
-            applyTheme(event.matches ? "dark" : "light", false);
-          });
-
-          window.__learnThemeController = { sync, restoreTheme };
-        }
-
-        window.__learnThemeController.restoreTheme();
-      })();
-    </script>
   </body>
 </html>

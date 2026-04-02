@@ -38,41 +38,39 @@ const { class: className } = Astro.props;
   <slot />
 </article>
 
-<template data-copy-icon-template>
-  <Copy class="h-4 w-4" aria-hidden="true" />
-</template>
-
-<template data-copy-check-template>
-  <CopyCheck class="h-4 w-4" aria-hidden="true" />
+<template data-copy-button-template>
+  <button
+    type="button"
+    data-copy-code
+    class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white/80 transition hover:bg-white/12 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+    aria-label="Copy code to clipboard"
+    title="Copy code"
+  >
+    <span data-copy-icon>
+      <Copy class="h-4 w-4" aria-hidden="true" />
+    </span>
+    <span data-copy-check class="hidden">
+      <CopyCheck class="h-4 w-4" aria-hidden="true" />
+    </span>
+  </button>
 </template>
 
 <script is:inline>
   (() => {
     if (!window.__learnCodeCopyController) {
-      const renderIcon = (button, templateName) => {
-        const template = document.querySelector(templateName);
-        if (!(template instanceof HTMLTemplateElement)) return;
-
-        button.replaceChildren(template.content.cloneNode(true));
+      const setCopiedState = (button, copied) => {
+        button.querySelector("[data-copy-icon]")?.classList.toggle("hidden", copied);
+        button.querySelector("[data-copy-check]")?.classList.toggle("hidden", !copied);
       };
 
       const attachButtons = () => {
+        const buttonTemplate = document.querySelector("[data-copy-button-template]");
+        if (!(buttonTemplate instanceof HTMLTemplateElement)) return;
+
         document.querySelectorAll("[data-content-article] pre").forEach((pre) => {
           if (pre.querySelector("[data-copy-code]")) return;
-
-          const code = pre.querySelector("code");
-          if (!code) return;
-
-          const button = document.createElement("button");
-          button.type = "button";
-          button.dataset.copyCode = "";
-          button.className =
-            "absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white/80 transition hover:bg-white/12 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20";
-          button.setAttribute("aria-label", "Copy code to clipboard");
-          button.setAttribute("title", "Copy code");
-          renderIcon(button, "[data-copy-icon-template]");
-
-          pre.appendChild(button);
+          if (!pre.querySelector("code")) return;
+          pre.appendChild(buttonTemplate.content.cloneNode(true));
         });
       };
 
@@ -97,13 +95,11 @@ const { class: className } = Astro.props;
           await navigator.clipboard.writeText(text);
           button.setAttribute("aria-label", "Copied");
           button.setAttribute("title", "Copied");
-          button.dataset.copied = "true";
-          renderIcon(button, "[data-copy-check-template]");
+          setCopiedState(button, true);
           window.setTimeout(() => {
             button.setAttribute("aria-label", "Copy code to clipboard");
             button.setAttribute("title", "Copy code");
-            delete button.dataset.copied;
-            renderIcon(button, "[data-copy-icon-template]");
+            setCopiedState(button, false);
           }, 1500);
         } catch {
           button.setAttribute("aria-label", "Copy failed");
@@ -111,7 +107,7 @@ const { class: className } = Astro.props;
           window.setTimeout(() => {
             button.setAttribute("aria-label", "Copy code to clipboard");
             button.setAttribute("title", "Copy code");
-            renderIcon(button, "[data-copy-icon-template]");
+            setCopiedState(button, false);
           }, 1500);
         }
       });
