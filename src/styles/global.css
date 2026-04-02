@@ -19,6 +19,7 @@
 @layer base {
   html {
     @apply bg-canvas text-ink font-sans antialiased;
+    overscroll-behavior-y: none;
   }
 
   html.dark {
@@ -33,6 +34,7 @@
 
   body {
     @apply min-h-screen bg-canvas text-ink;
+    overscroll-behavior-y: none;
     background-image:
       radial-gradient(circle at top, rgba(86, 111, 173, 0.08), transparent 34rem),
       radial-gradient(circle at 100% 0, rgba(15, 23, 42, 0.035), transparent 28rem);
