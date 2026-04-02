@@ -36,30 +36,30 @@ const Icon = config.icon;
 <aside
   aria-label={title ?? config.label}
   class:list={[
-    "my-6 rounded-[1rem] border px-4 pb-4 pt-4 shadow-soft sm:px-4.5",
+    "my-6 rounded-[1rem] border px-4 py-4 shadow-soft sm:px-4.5",
     config.shell,
   ]}
 >
-  <div class="space-y-2">
-    <div class="flex items-center gap-3">
-      <div
-        class:list={[
-          "inline-flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-full ring-1 ring-black/5 dark:ring-white/8",
-          config.badge,
-        ]}
-      >
-        <Icon class="h-4 w-4" aria-hidden="true" />
-      </div>
-
-      <p class="min-w-0 text-[0.9rem] font-semibold tracking-[-0.01em] text-ink">
-        {title ?? config.label}
-      </p>
+  <div class="flex items-start gap-3.5">
+    <div
+      class:list={[
+        "mt-0.5 inline-flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-full ring-1 ring-black/5 dark:ring-white/8",
+        config.badge,
+      ]}
+    >
+      <Icon class="h-4 w-4" aria-hidden="true" />
     </div>
 
-    <div
-      class="pl-[2.625rem] text-[0.95rem] leading-7 text-muted [&_code]:rounded-md [&_code]:bg-black/5 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.92em] [&_code]:text-ink dark:[&_code]:bg-white/7 [&_ol]:my-2.5 [&_ol]:list-decimal [&_ol]:space-y-1.5 [&_ol]:pl-5 [&_p]:my-2.5 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:text-ink [&_ul]:my-2.5 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5"
-    >
-      <slot />
+    <div class="min-w-0 flex-1 space-y-1.5">
+      <p class="text-[0.9rem] font-semibold tracking-[-0.01em] text-ink">
+        {title ?? config.label}
+      </p>
+
+      <div
+        class="text-[0.95rem] leading-7 text-muted [&_code]:rounded-md [&_code]:bg-black/5 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.92em] [&_code]:text-ink dark:[&_code]:bg-white/7 [&_ol]:my-2.5 [&_ol]:list-decimal [&_ol]:space-y-1.5 [&_ol]:pl-5 [&_p]:my-2.5 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:text-ink [&_ul]:my-2.5 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5"
+      >
+        <slot />
+      </div>
     </div>
   </div>
 </aside>
