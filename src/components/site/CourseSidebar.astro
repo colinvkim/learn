@@ -13,8 +13,8 @@ const { course, lessons, currentLessonSlug } = Astro.props;
 const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
 ---
 
-<aside class="lg:sticky lg:top-16 lg:max-h-[calc(100dvh-4rem)] lg:overflow-y-auto lg:overscroll-contain lg:border-r lg:border-line/80 lg:pr-0">
-  <div class="space-y-6 border-b border-line/80 pb-6 lg:border-b-0 lg:bg-panel/40 lg:px-3 lg:py-8">
+<aside class="lg:sticky lg:top-16 lg:h-[calc(100dvh-4rem)] lg:overflow-y-auto lg:overscroll-contain lg:border-r lg:border-line/80 lg:bg-panel/40 lg:pr-0">
+  <div class="space-y-6 border-b border-line/80 pb-6 lg:min-h-full lg:border-b-0 lg:px-3 lg:py-8">
     <div class="space-y-4 rounded-[1.35rem] border border-line/80 bg-canvas/72 p-3 shadow-soft dark:bg-canvas/34">
       {
         topics.length > 0 && (
