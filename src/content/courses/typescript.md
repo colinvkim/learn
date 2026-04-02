@@ -2,7 +2,6 @@
 title: TypeScript
 description: Learn what TypeScript adds to JavaScript and how teams use it to write more reliable code.
 status: draft
-level: intermediate
 sortOrder: 10
 topics:
   - TypeScript

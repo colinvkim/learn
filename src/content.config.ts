@@ -11,7 +11,6 @@ const courses = defineCollection({
     title: z.string(),
     description: z.string(),
     status: z.enum(["draft", "published"]),
-    level: z.enum(["beginner", "intermediate", "advanced", "all-levels"]),
     sortOrder: z.number().int().nonnegative(),
     topics: z.array(z.string()).min(1),
     tags: z.array(z.string()).default([]),

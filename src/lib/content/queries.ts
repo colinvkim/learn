@@ -40,8 +40,16 @@ function parseLessonId(entry: LessonEntry) {
   };
 }
 
-function belongsToCourse(entry: LessonEntry, courseId: string) {
-  return entry.data.course.id === courseId;
+function groupLessonsByCourse(lessons: LessonEntry[]) {
+  const lessonsByCourse = new Map<string, LessonEntry[]>();
+
+  for (const lesson of lessons) {
+    const courseLessons = lessonsByCourse.get(lesson.data.course.id) ?? [];
+    courseLessons.push(lesson);
+    lessonsByCourse.set(lesson.data.course.id, courseLessons);
+  }
+
+  return lessonsByCourse;
 }
 
 export function getCourseHref(courseId: string) {
@@ -79,16 +87,12 @@ export async function getPublishedLessons() {
 
 export async function getPublishedCourseSummaries() {
   const [courses, lessons] = await Promise.all([getPublishedCourses(), getPublishedLessons()]);
-  const lessonCounts = new Map<string, number>();
-
-  for (const lesson of lessons) {
-    lessonCounts.set(lesson.data.course.id, (lessonCounts.get(lesson.data.course.id) ?? 0) + 1);
-  }
+  const lessonsByCourse = groupLessonsByCourse(lessons);
 
   return courses.map((course) => ({
     course,
-    lessonCount: lessonCounts.get(course.id) ?? 0,
-    firstLesson: lessons.find((lesson) => lesson.data.course.id === course.id),
+    lessonCount: lessonsByCourse.get(course.id)?.length ?? 0,
+    firstLesson: lessonsByCourse.get(course.id)?.[0],
   }));
 }
 
@@ -99,14 +103,11 @@ export async function getPublishedCourseBySlug(courseId: string) {
 
 export async function getPublishedLessonsForCourse(courseId: string) {
   const lessons = await getPublishedLessons();
-  return lessons.filter((lesson) => belongsToCourse(lesson, courseId)).sort(compareLessons);
+  return groupLessonsByCourse(lessons).get(courseId) ?? [];
 }
 
 export async function getLessonContext(courseId: string, lessonSlug: string): Promise<LessonContext | undefined> {
-  const [course, lessons] = await Promise.all([
-    getPublishedCourseBySlug(courseId),
-    getPublishedLessonsForCourse(courseId),
-  ]);
+  const [course, lessons] = await Promise.all([getPublishedCourseBySlug(courseId), getPublishedLessonsForCourse(courseId)]);
 
   if (!course) {
     return undefined;

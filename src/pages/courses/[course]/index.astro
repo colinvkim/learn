@@ -18,8 +18,14 @@ export async function getStaticPaths() {
 
 const { course } = Astro.props as { course: CourseEntry };
 const lessons = await getPublishedLessonsForCourse(course.id);
+const firstLesson = lessons[0];
 
-if (lessons[0]) {
-  return Astro.redirect(getLessonHref(course.id, getLessonSlug(lessons[0])));
+if (!firstLesson) {
+  throw new Error(`Published course "${course.id}" must include at least one published lesson.`);
 }
+
+const redirectHref = getLessonHref(course.id, getLessonSlug(firstLesson));
+void redirectHref;
+
+return Astro.redirect(redirectHref);
 ---
