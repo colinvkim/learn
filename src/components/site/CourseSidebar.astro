@@ -14,8 +14,8 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
 ---
 
 <aside class="lg:h-full lg:overflow-y-auto lg:border-r lg:border-line/80 lg:pr-0">
-  <div class="space-y-5 border-b border-line/80 pb-6 lg:min-h-full lg:border-b-0 lg:bg-panel/35 lg:px-3 lg:py-8">
-    <div class="space-y-4">
+  <div class="space-y-6 border-b border-line/80 pb-6 lg:min-h-full lg:border-b-0 lg:bg-panel/40 lg:px-3 lg:py-8">
+    <div class="space-y-4 rounded-[1.35rem] border border-line/80 bg-canvas/72 p-3 shadow-soft dark:bg-canvas/34">
       {
         topics.length > 0 && (
           <div class="space-y-3">
@@ -34,7 +34,7 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
       </div>
     </div>
 
-    <div class="space-y-1.5">
+    <div class="space-y-2">
       <nav aria-label={`${course.data.title} lessons`} class="space-y-0.5">
         {
           lessons.map((lesson) => {
@@ -45,10 +45,10 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
               <a
                 href={getLessonHref(course.id, slug)}
                 class:list={[
-                  "block rounded-lg px-2.5 py-1.5 text-[0.86rem] leading-5.5 transition",
+                  "relative block rounded-xl px-3 py-2 text-[0.86rem] leading-5.5 transition",
                   isCurrent
-                    ? "bg-accent-soft text-accent"
-                    : "text-muted hover:bg-black/2 hover:text-ink",
+                    ? "bg-accent-soft/85 text-accent shadow-[inset_2px_0_0_var(--color-accent)]"
+                    : "text-muted hover:bg-canvas/75 hover:text-ink dark:hover:bg-canvas/40",
                 ]}
               >
                 <span class="font-medium">{lesson.data.title}</span>

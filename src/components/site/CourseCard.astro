@@ -18,14 +18,15 @@ const firstLessonHref =
 <a
   href={firstLessonHref}
   aria-label={course.data.title}
-  class="group flex h-full flex-col items-start gap-6 rounded-[1.35rem] border border-line bg-panel p-6 shadow-soft transition hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_20px_48px_rgba(15,23,42,0.08)]"
+  class="group relative flex h-full flex-col items-start gap-7 overflow-hidden rounded-[1.5rem] border border-line/80 bg-panel/95 p-6 shadow-soft ring-1 ring-white/55 transition hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_24px_56px_rgba(15,23,42,0.08)] dark:ring-white/6"
 >
+  <div class="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-accent/35 to-transparent opacity-70" />
   <TopicMarks topics={topics} />
-  <div class="space-y-1">
-    <h2 class="text-xl font-semibold tracking-[-0.035em] text-ink group-hover:text-accent">
+  <div class="space-y-3">
+    <h2 class="text-[1.28rem] font-semibold tracking-[-0.04em] text-ink group-hover:text-accent">
       {topicLabel}
     </h2>
-    <p class="text-sm text-muted">
+    <p class="inline-flex items-center rounded-full border border-line/80 bg-canvas/85 px-2.5 py-1 text-[0.74rem] font-medium tracking-[-0.01em] text-muted dark:bg-canvas/60">
       {lessonCount} lesson{lessonCount === 1 ? "" : "s"}
     </p>
   </div>

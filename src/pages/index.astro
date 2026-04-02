@@ -14,9 +14,10 @@ const hasCourses = summaries.length > 0;
   showHeader={false}
 >
   <PageShell class="pb-20 pt-14 sm:pb-24 sm:pt-18">
-    <section class="space-y-8">
-      <div>
-        <h1 class="max-w-3xl text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl lg:text-6xl">
+    <section class="space-y-10">
+      <div class="space-y-3">
+        <p class="text-[0.76rem] font-semibold uppercase tracking-[0.18em] text-muted">learn</p>
+        <h1 class="max-w-3xl text-4xl font-semibold tracking-[-0.055em] text-ink sm:text-5xl lg:text-[4.2rem]">
           Start learning about...
         </h1>
       </div>
@@ -25,7 +26,7 @@ const hasCourses = summaries.length > 0;
         hasCourses ? (
           <CourseGrid summaries={summaries} />
         ) : (
-          <div class="max-w-2xl rounded-[1.35rem] border border-line bg-panel px-6 py-8 shadow-soft">
+          <div class="max-w-2xl rounded-[1.5rem] border border-line/80 bg-panel/95 px-6 py-8 shadow-soft ring-1 ring-white/50 dark:ring-white/6">
             <p class="text-lg font-medium tracking-[-0.02em] text-ink">
               The first finished courses are still in progress.
             </p>

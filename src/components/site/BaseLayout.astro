@@ -56,11 +56,11 @@ const canonical = Astro.site
   <body class="min-h-screen bg-canvas text-ink">
     {
       showHeader && (
-        <header class="h-16 border-b border-line/80 bg-canvas/90 backdrop-blur-sm">
-          <div class="mx-auto flex h-full max-w-[90rem] items-center justify-between px-6 sm:px-8 lg:px-10">
+        <header class="h-16 border-b border-line/80 bg-canvas/86 backdrop-blur-md">
+          <div class="mx-auto flex h-full max-w-[96rem] items-center justify-between px-4 sm:px-5 lg:px-6">
             <a
               href="/"
-              class="text-[0.95rem] font-semibold tracking-[-0.02em] text-ink hover:text-accent focus-visible:text-accent focus-visible:outline-none"
+              class="text-[0.94rem] font-semibold tracking-[-0.02em] text-ink/90 hover:text-accent focus-visible:text-accent focus-visible:outline-none"
             >
               learn.colinkim.dev
             </a>
@@ -71,7 +71,7 @@ const canonical = Astro.site
     }
     {
       !showHeader && (
-        <div class="fixed right-5 top-5 z-20 sm:right-8">
+        <div class="fixed right-4 top-4 z-20 sm:right-5 sm:top-5 lg:right-6 lg:top-6">
           <ThemeToggle />
         </div>
       )

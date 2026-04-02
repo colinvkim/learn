@@ -33,15 +33,16 @@ const renderedTopics = visibleTopics.map((topic, index) => ({
 
 {
   renderedTopics.length > 0 && (
-    <div class={size === "card" ? "flex items-center gap-3" : "flex items-center gap-2"}>
+    <div class={size === "card" ? "flex items-center -space-x-3" : "flex items-center gap-2"}>
       {
-        renderedTopics.map(({ topic, Icon, toneClass }) => (
+        renderedTopics.map(({ topic, Icon, toneClass }, index) => (
           <div
             class:list={[
-              "inline-flex items-center justify-center rounded-2xl border font-semibold uppercase tracking-[0.08em]",
-              size === "card" ? "h-14 w-14 p-2 shadow-soft" : "h-8 w-8 p-1.5",
+              "relative inline-flex items-center justify-center rounded-2xl border font-semibold uppercase tracking-[0.08em]",
+              size === "card" ? "h-14 w-14 p-2 shadow-soft ring-1 ring-white/60 dark:ring-white/6" : "h-8 w-8 p-1.5",
               toneClass,
             ]}
+            style={size === "card" ? `z-index:${10 - index}` : undefined}
             aria-label={topic}
             title={topic}
           >

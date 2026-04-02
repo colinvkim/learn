@@ -16,11 +16,11 @@ const { courseId, previousLesson, nextLesson } = Astro.props;
     nextLesson && (
       <a
         href={getLessonHref(courseId, getLessonSlug(nextLesson))}
-        class="block rounded-panel border border-line bg-panel px-5 py-4 shadow-soft hover:border-accent/30"
+        class="group block rounded-[1.35rem] border border-line/80 bg-panel/96 px-5 py-4 shadow-soft ring-1 ring-white/55 transition hover:border-accent/30 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_40px_rgba(15,23,42,0.07)] dark:ring-white/6"
       >
-        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Next lesson</p>
+        <p class="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-muted">Next lesson</p>
         <div class="mt-2 flex items-center justify-between gap-4">
-          <p class="text-lg font-semibold tracking-[-0.025em] text-ink">{nextLesson.data.title}</p>
+          <p class="text-lg font-semibold tracking-[-0.03em] text-ink group-hover:text-accent">{nextLesson.data.title}</p>
           <span class="text-sm font-medium text-accent">Continue</span>
         </div>
       </a>

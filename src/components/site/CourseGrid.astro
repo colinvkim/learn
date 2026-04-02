@@ -9,6 +9,6 @@ interface Props {
 const { summaries } = Astro.props;
 ---
 
-<div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+<div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
   {summaries.map((summary) => <CourseCard summary={summary} />)}
 </div>

@@ -11,7 +11,7 @@ interface Props {
 const { items } = Astro.props;
 ---
 
-<nav aria-label="Breadcrumb" class="text-sm text-muted">
+<nav aria-label="Breadcrumb" class="text-[0.82rem] font-medium tracking-[-0.01em] text-muted">
   <ol class="flex flex-wrap items-center gap-2">
     {
       items.map((item, index) => (
@@ -25,7 +25,7 @@ const { items } = Astro.props;
               <span class="text-ink">{item.label}</span>
             )}
           </li>
-          {index < items.length - 1 && <li aria-hidden="true">/</li>}
+          {index < items.length - 1 && <li aria-hidden="true" class="text-muted/50">/</li>}
         </>
       ))
     }
