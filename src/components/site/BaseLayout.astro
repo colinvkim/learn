@@ -144,7 +144,11 @@ const canonical = Astro.site
             const update = () => applyTheme(nextTheme);
 
             if (typeof document.startViewTransition === "function") {
-              document.startViewTransition(update).finished.catch(() => {});
+              root.dataset.themeTransition = "true";
+              const transition = document.startViewTransition(update);
+              transition.finished.finally(() => {
+                delete root.dataset.themeTransition;
+              });
             } else {
               update();
             }

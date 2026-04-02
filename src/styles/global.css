@@ -55,21 +55,27 @@
 
 }
 
-::view-transition-group(root) {
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.18s;
+  animation-timing-function: ease;
+}
+
+html[data-theme-transition="true"]::view-transition-group(root) {
   animation-duration: 560ms;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-::view-transition-old(root),
-::view-transition-new(root) {
+html[data-theme-transition="true"]::view-transition-old(root),
+html[data-theme-transition="true"]::view-transition-new(root) {
   mix-blend-mode: normal;
 }
 
-::view-transition-old(root) {
+html[data-theme-transition="true"]::view-transition-old(root) {
   animation-name: learn-root-old;
 }
 
-::view-transition-new(root) {
+html[data-theme-transition="true"]::view-transition-new(root) {
   animation-name: learn-root-new;
 }
 
