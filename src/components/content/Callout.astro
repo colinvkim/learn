@@ -50,9 +50,11 @@ const Icon = config.icon;
       <Icon class="h-4 w-4" aria-hidden="true" />
     </div>
 
-    <p class="min-w-0 pt-0.5 text-[0.9rem] font-semibold tracking-[-0.01em] text-ink">
-      {title ?? config.label}
-    </p>
+    <div class="flex min-h-7.5 items-center">
+      <p class="min-w-0 text-[0.9rem] font-semibold tracking-[-0.01em] text-ink">
+        {title ?? config.label}
+      </p>
+    </div>
 
     <div aria-hidden="true" />
 
