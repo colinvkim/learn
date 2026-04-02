@@ -2,6 +2,8 @@
 import NpmIcon from "../icons/NpmIcon.astro";
 import PnpmIcon from "../icons/PnpmIcon.astro";
 import TypeScriptIcon from "../icons/TypeScriptIcon.astro";
+import GitIcon from "../icons/GitIcon.astro";
+import GitHubIcon from "../icons/GitHubIcon.astro";
 
 interface Props {
   topics: string[];
@@ -19,6 +21,8 @@ const toneClasses = [
 ];
 
 const iconMap = {
+  git: GitIcon,
+  github: GitHubIcon,
   npm: NpmIcon,
   pnpm: PnpmIcon,
   typescript: TypeScriptIcon,

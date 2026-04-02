@@ -1,0 +1,49 @@
+---
+title: A practical everyday workflow
+description: Learn one clean end-to-end Git and GitHub workflow that is safe, common, and useful for real projects.
+course: git-and-github
+order: 15
+status: published
+---
+
+import Steps from "../../../components/content/Steps.astro";
+
+At this point, the pieces should be familiar enough to connect into one default workflow.
+
+This is not the only valid workflow, but it is a strong beginner-safe baseline.
+
+## A clean branch-based default
+
+<Steps>
+  <li>Update your local repository with <code>git pull</code>.</li>
+  <li>Create a branch for the task with <code>git switch -c ...</code>.</li>
+  <li>Make the changes in the working tree.</li>
+  <li>Inspect them with <code>git status</code> and <code>git diff</code>.</li>
+  <li>Stage the intended files with <code>git add</code>.</li>
+  <li>Create one or more commits with <code>git commit -m "..."</code>.</li>
+  <li>Push the branch with <code>git push -u origin ...</code>.</li>
+  <li>Open a pull request on GitHub.</li>
+  <li>Respond to review by pushing follow-up commits to the same branch.</li>
+  <li>Merge the pull request when it is ready.</li>
+</Steps>
+
+## Why this workflow works well
+
+It separates concerns clearly:
+
+- local editing and commits happen in Git
+- shared review and collaboration happen on GitHub
+- integration happens after the work is visible and reviewable
+
+That structure reduces confusion, especially for beginners moving between terminal commands and the GitHub web UI.
+
+## What to keep consistent
+
+The exact branch names and review rules may vary by team.
+
+The important part is keeping the workflow internally consistent:
+
+- branch for a task
+- inspect before commit
+- push before review
+- review before merge

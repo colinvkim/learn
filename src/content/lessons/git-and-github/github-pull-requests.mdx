@@ -1,0 +1,69 @@
+---
+title: "GitHub: pull requests"
+description: Learn what pull requests are for, how they fit a branch workflow, and why they matter even in small teams.
+course: git-and-github
+order: 11
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+A pull request is one of GitHub's most important collaboration tools.
+
+## A pull request proposes a branch for integration
+
+If you push a branch to GitHub and want it reviewed or merged, you usually open a pull request.
+
+A pull request shows:
+
+- the source branch
+- the target branch
+- the changed files
+- the discussion around the proposed change
+
+In practical terms, it is the place where branch-based work becomes collaborative reviewable work.
+
+## Why pull requests exist
+
+Pull requests help teams:
+
+- inspect the proposed changes before merging
+- discuss the approach
+- request revisions
+- attach automated checks to the proposed change
+
+They are valuable even for small teams because they create a clear review point before work lands in the main branch.
+
+## The usual flow
+
+The common path is:
+
+1. create a branch locally
+2. make commits
+3. push the branch to GitHub
+4. open a pull request
+5. review the changes
+6. merge when ready
+
+## What happens if you push more commits
+
+If the pull request is already open and you push more commits to the same branch, GitHub updates that pull request.
+
+You do not usually open a new pull request for each follow-up commit.
+
+<Note title="A pull request follows the branch">
+  <p>The pull request is tied to the branch comparison. If you push more commits to that branch, the pull request updates to include them.</p>
+</Note>
+
+## Merge buttons and local merges
+
+Many teams merge pull requests through the GitHub web UI.
+
+That keeps the collaboration flow visible in one place:
+
+- discussion
+- review
+- checks
+- merge result
+
+The important beginner idea is not the exact merge button variant. It is understanding that pull requests are the shared review step before integration.

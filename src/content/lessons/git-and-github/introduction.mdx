@@ -1,0 +1,113 @@
+---
+title: Introduction
+description: "Start with the big picture: what Git and GitHub are, why version control matters, and how the pieces fit together."
+course: git-and-github
+order: 1
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+If you are new to software development, `Git` and `GitHub` can seem tightly connected and unnecessarily confusing.
+
+The names often appear together:
+
+- in tutorials
+- in contribution guides
+- in job descriptions
+- in commands such as `git clone`
+- in web pages for pull requests, code review, and issues
+
+That confusion is normal. The tools are related, but they are not the same thing.
+
+`Git` is a version control system.
+
+`GitHub` is a hosting and collaboration platform built around Git repositories.
+
+## Start with version control
+
+Version control records changes to files over time.
+
+That matters because software projects change constantly:
+
+- new files are added
+- existing files are edited
+- bugs are fixed
+- experiments are abandoned
+- multiple people work on the same codebase
+
+Without version control, it becomes difficult to answer practical questions:
+
+- What changed?
+- Who changed it?
+- Which version worked before the bug appeared?
+- How can two people work on different tasks without overwriting each other?
+
+Git exists to solve those problems.
+
+## Git and GitHub are different layers
+
+Git handles the local history of a repository.
+
+It can:
+
+- track changes in a project
+- group those changes into commits
+- create branches for separate lines of work
+- merge completed work back together
+
+GitHub adds a shared remote layer.
+
+It can:
+
+- host Git repositories online
+- let people clone and push repositories
+- show pull requests, code review, and issue tracking in a web UI
+- run automated checks through GitHub Actions
+
+<Note title="Git is not GitHub">
+  <p>You can use Git without GitHub. GitHub is one popular place to host and collaborate on Git repositories, but Git itself is a separate tool.</p>
+</Note>
+
+## The order of the material matters
+
+This material starts with Git, not GitHub.
+
+That is the right order for beginners because GitHub only makes sense once the underlying Git ideas are clear.
+
+The first part covers:
+
+- repositories
+- commits
+- staged changes
+- branches
+- merging
+
+The second part covers:
+
+- remotes
+- cloning and pushing
+- pull requests
+- code review
+- issues
+- Actions
+
+## A useful way to read the lessons
+
+Do not try to memorize commands first.
+
+Keep asking:
+
+- Is this command changing my local repository or a remote one?
+- Is this work still uncommitted, staged, or already part of history?
+- Am I working alone in my local repository, or syncing with other people now?
+
+Those questions lead to much stronger understanding than memorizing a list of Git commands.
+
+## The main idea to carry forward
+
+Git tracks and organizes project history.
+
+GitHub helps people share, review, and manage that Git-based work together.
+
+Once that distinction is clear, the rest of the material becomes much easier to follow.

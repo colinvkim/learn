@@ -1,0 +1,11 @@
+---
+import { GitPullRequest } from "@lucide/astro";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<GitPullRequest class={className} aria-hidden="true" />

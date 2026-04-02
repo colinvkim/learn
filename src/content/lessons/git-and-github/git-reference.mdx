@@ -1,0 +1,78 @@
+---
+title: "Git reference"
+description: Use this page as a compact reference for the first Git commands you are most likely to need.
+course: git-and-github
+order: 7
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+
+This page is a quick reference for the Git commands taught in the earlier lessons.
+
+## Create a repository
+
+```bash
+git init
+```
+
+## Check the repository state
+
+```bash
+git status
+```
+
+## Stage files for the next commit
+
+```bash
+git add README.md
+git add .
+```
+
+## Record a commit
+
+```bash
+git commit -m "Describe the change"
+```
+
+## Inspect changed content
+
+```bash
+git diff
+git diff --staged
+```
+
+## Inspect history
+
+```bash
+git log
+git log --oneline
+```
+
+## Switch to an existing branch
+
+```bash
+git switch main
+```
+
+## Create a branch and switch to it
+
+```bash
+git switch -c feature-branch
+```
+
+## Merge a finished branch
+
+```bash
+git switch main
+git merge feature-branch
+```
+
+<Note title="Git works locally">
+  <p>All of these commands work in a local repository. GitHub comes later, when you start sharing, syncing, and collaborating through a remote host.</p>
+</Note>
+
+<Tip title="When in doubt, run git status">
+  <p>If you are unsure what Git thinks is happening in the repository, <code>git status</code> is usually the safest first command.</p>
+</Tip>

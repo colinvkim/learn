@@ -1,0 +1,76 @@
+---
+title: "Git: merging branches"
+description: Learn what a merge does, how completed work comes back together, and how to think about merge conflicts calmly.
+course: git-and-github
+order: 6
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+
+Branches help keep work separate. A merge is how completed work comes back together.
+
+## A merge combines branch history
+
+If you finish work on a branch and want it reflected in `main`, you merge that branch into `main`.
+
+A simple example:
+
+```bash
+git switch main
+git merge fix-login-button
+```
+
+This tells Git to bring the changes from `fix-login-button` into the current branch.
+
+## Why merging matters
+
+Merging is the normal way to integrate separate lines of work.
+
+It lets a team:
+
+- work on features independently
+- keep the main branch stable while work is in progress
+- combine finished work when it is ready
+
+## Not every merge is difficult
+
+Many merges are straightforward.
+
+If Git can combine the histories cleanly, the merge succeeds without extra steps.
+
+The scary reputation of merging usually comes from merge conflicts, not from the normal case.
+
+## What a merge conflict is
+
+A merge conflict happens when Git cannot safely decide how two competing changes should be combined.
+
+That usually means two branches changed the same lines in incompatible ways.
+
+At that point Git stops and asks a person to choose the correct result.
+
+## A calm way to think about conflicts
+
+A conflict does not mean the repository is broken.
+
+It means:
+
+- Git found overlapping edits
+- Git refused to guess
+- a human now needs to choose the intended final content
+
+That is a safety behavior, not a failure of the tool.
+
+<Warning title="Do not panic when Git reports a conflict">
+  <p>A merge conflict means Git needs a decision. Read the affected file carefully, choose the intended final content, save it, stage it, and continue. The important part is understanding the competing edits, not trying random commands.</p>
+</Warning>
+
+## A safe beginner default
+
+For beginner workflows, prefer:
+
+- creating a branch for a task
+- committing work on that branch
+- merging that branch when the work is ready
+
+That is a better default than starting with history-rewriting workflows.

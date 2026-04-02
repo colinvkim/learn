@@ -1,0 +1,11 @@
+---
+import { GitBranch } from "@lucide/astro";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<GitBranch class={className} aria-hidden="true" />

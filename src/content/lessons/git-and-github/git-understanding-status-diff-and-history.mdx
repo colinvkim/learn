@@ -1,0 +1,104 @@
+---
+title: "Git: understanding status, diff, and history"
+description: Learn how to inspect what changed, what is staged, and what has already been recorded in the repository.
+course: git-and-github
+order: 4
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+After making a repository and a first commit, the next job is learning how to inspect what is happening.
+
+Three commands matter immediately:
+
+- `git status`
+- `git diff`
+- `git log`
+
+## `git status` tells you the current state of the repository
+
+Run:
+
+```bash
+git status
+```
+
+This shows:
+
+- which branch you are on
+- which files changed
+- which files are staged
+- which files are untracked
+
+For beginners, `git status` is the safest command to run when you are unsure what is happening.
+
+## `git diff` shows the actual content changes
+
+To see unstaged changes:
+
+```bash
+git diff
+```
+
+To see what is already staged for the next commit:
+
+```bash
+git diff --staged
+```
+
+This distinction matters:
+
+- `git diff` shows what changed in the working tree but is not staged yet
+- `git diff --staged` shows what Git would include if you committed now
+
+## `git log` shows commit history
+
+To inspect the history:
+
+```bash
+git log
+```
+
+A shorter common view is:
+
+```bash
+git log --oneline
+```
+
+That gives a compact list of recent commits with short identifiers and commit messages.
+
+## A practical inspection habit
+
+Before making a commit, a strong habit is:
+
+1. run `git status`
+2. run `git diff`
+3. stage the intended files
+4. run `git diff --staged`
+5. commit
+
+That helps you verify the next commit before it becomes part of history.
+
+## `.gitignore` matters here too
+
+Many repositories include a `.gitignore` file.
+
+`.gitignore` tells Git which files or directories should usually be ignored instead of showing up as untracked files.
+
+Common examples include:
+
+- build output
+- environment files
+- dependency directories
+- editor-specific files
+
+<Note title=".gitignore affects what Git notices">
+  <p>If a file is listed in <code>.gitignore</code>, Git will generally stop treating it like something you should stage and commit as ordinary project source.</p>
+</Note>
+
+## The main idea to keep
+
+Git is easier when you inspect before you act.
+
+`git status` shows the repository state, `git diff` shows the content changes, and `git log` shows the history that already exists.

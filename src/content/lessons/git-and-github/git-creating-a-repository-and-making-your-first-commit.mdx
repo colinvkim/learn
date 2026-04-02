@@ -1,0 +1,124 @@
+---
+title: "Git: creating a repository and making your first commit"
+description: Learn how a repository starts, what .git is, and how files move from working tree to staged changes to a commit.
+course: git-and-github
+order: 3
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Steps from "../../../components/content/Steps.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+This lesson covers the first important Git workflow: turning a normal folder into a repository and recording the first commit.
+
+## `git init` creates a repository
+
+To turn the current directory into a Git repository:
+
+```bash
+git init
+```
+
+According to the Git docs, this creates an empty Git repository. In practical terms, it creates a `.git` directory that stores the repository metadata and history.
+
+## What `.git` is
+
+After `git init`, the project contains a hidden directory named `.git`.
+
+That directory is where Git stores repository data such as:
+
+- objects
+- references
+- configuration
+- commit history
+
+In normal project work, you do not edit `.git` manually.
+
+Git manages it for you.
+
+## Configure your identity before making commits
+
+Git commits record author information.
+
+If Git does not know your name and email yet, set them first:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
+
+This is part of the basic first-time setup for Git on your machine.
+
+## The three states that matter first
+
+Before the first commit, keep these three states separate:
+
+- the **working tree** is what is currently in your files on disk
+- the **staging area** is what you have marked for the next commit
+- the **commit history** is what has already been recorded
+
+That distinction is the key to understanding `git add` and `git commit`.
+
+## `git add` stages changes for the next commit
+
+If you want Git to include a file in the next commit, stage it with `git add`.
+
+For example:
+
+```bash
+git add README.md
+```
+
+To stage multiple specific files:
+
+```bash
+git add README.md package.json
+```
+
+To stage all tracked and untracked changes in the current directory:
+
+```bash
+git add .
+```
+
+The Git docs describe the staging area as the index. In beginner-friendly terms, it is the list of changes Git should package into the next commit.
+
+## `git commit -m` records the staged snapshot
+
+After staging the right files, create a commit:
+
+```bash
+git commit -m "Add initial project files"
+```
+
+This records the current staged snapshot in the repository history.
+
+The commit does not automatically include every file in the project. It includes the changes that were staged.
+
+<Warning title="Do not treat git add as a formality">
+  <p>If you stage the wrong files, Git will commit the wrong snapshot. Check what is staged before committing, especially in larger repositories.</p>
+</Warning>
+
+## A clean first-commit flow
+
+<Steps>
+  <li>Create or open the project directory.</li>
+  <li>Run <code>git init</code>.</li>
+  <li>If needed, configure your Git name and email.</li>
+  <li>Create or edit the files you want in the project.</li>
+  <li>Stage the intended files with <code>git add</code>.</li>
+  <li>Create the commit with <code>git commit -m "..."</code>.</li>
+</Steps>
+
+## What changed in the project
+
+After this flow:
+
+- `.git/` exists and stores the repository metadata
+- the staged files are now part of the repository history
+- the branch has its first commit
+
+<Note title="The first commit is just the beginning">
+  <p>You are not saving the project forever in one perfect state. You are starting a history of small, meaningful checkpoints.</p>
+</Note>

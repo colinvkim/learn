@@ -1,0 +1,69 @@
+---
+title: "GitHub: connecting a local repository to GitHub"
+description: Learn how a local repository becomes connected to a GitHub repository and what the first push actually does.
+course: git-and-github
+order: 9
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Steps from "../../../components/content/Steps.astro";
+
+After creating commits locally, the next step is connecting the repository to GitHub.
+
+## Start by creating the repository on GitHub
+
+In the GitHub web UI, create a new repository.
+
+That gives GitHub a remote destination for your local repository.
+
+At this stage, you usually want:
+
+- the repository name
+- the remote URL GitHub provides
+
+## `git remote add origin` connects the local repository to the remote
+
+To add the GitHub repository as your main remote:
+
+```bash
+git remote add origin https://github.com/OWNER/REPO.git
+```
+
+This does not upload your commits yet. It only records the remote connection in the local repository configuration.
+
+## `git push -u origin <branch>` sends the local branch to GitHub
+
+A common first push looks like this:
+
+```bash
+git push -u origin main
+```
+
+This does two things:
+
+- pushes the local `main` branch to the `origin` remote
+- sets the upstream tracking relationship for that branch
+
+That upstream link is why later commands can often use shorter forms such as `git push` and `git pull`.
+
+## A clean first-push flow
+
+<Steps>
+  <li>Create the repository on GitHub.</li>
+  <li>Copy the repository URL.</li>
+  <li>In the local repository, run <code>git remote add origin ...</code>.</li>
+  <li>Push the current branch with <code>git push -u origin main</code>.</li>
+</Steps>
+
+## What changed locally and remotely
+
+After this flow:
+
+- the local repository knows about a remote named `origin`
+- the local branch has been uploaded to GitHub
+- GitHub now has the commit history that existed locally
+
+<Note title="Adding a remote is not the same as pushing">
+  <p><code>git remote add origin ...</code> only records the remote connection. The repository history is not uploaded until you run <code>git push</code>.</p>
+</Note>

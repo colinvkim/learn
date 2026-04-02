@@ -1,0 +1,75 @@
+---
+title: "GitHub: Actions"
+description: Learn what GitHub Actions are, where workflow files live, and how to read automated checks without needing deep CI knowledge first.
+course: git-and-github
+order: 14
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+GitHub Actions is GitHub's automation system.
+
+For beginners, the most important first use case is understanding automated checks on pull requests.
+
+## What Actions do
+
+GitHub Actions can run automated workflows for events such as:
+
+- a push
+- a pull request
+- a scheduled trigger
+
+Those workflows often run tasks such as:
+
+- tests
+- linting
+- builds
+
+## Where workflow files live
+
+Workflow files usually live in:
+
+```text
+.github/workflows/
+```
+
+They are written as YAML files inside that directory.
+
+## What a beginner should understand first
+
+At the start, you do not need to memorize workflow syntax.
+
+You do need to understand:
+
+- that a workflow file defines automated checks
+- that GitHub can run those checks when code changes are proposed
+- that pull requests often show whether those checks passed or failed
+
+## A small example
+
+```yaml
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pnpm install
+      - run: pnpm build
+```
+
+That example is enough to see the shape:
+
+- a workflow has a name
+- it runs on an event
+- it defines jobs
+- each job has steps
+
+<Note title="Read the result before learning the full authoring model">
+  <p>For a beginner, understanding what a failing or passing workflow means on a pull request is more important than memorizing YAML structure immediately.</p>
+</Note>
