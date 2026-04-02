@@ -1,0 +1,134 @@
+---
+title: "Git: amending, rebasing, and force pushing"
+description: Learn what history rewriting means, when it is useful, and why force-with-lease is safer than force.
+course: git-and-github
+order: 7
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+Most beginner workflows do not need history rewriting immediately.
+
+But once normal commits and branches make sense, three related ideas become worth understanding:
+
+- amending a commit
+- rebasing a branch
+- force pushing rewritten history
+
+## `git commit --amend` replaces the most recent commit
+
+If you want to change the last commit, Git provides:
+
+```bash
+git commit --amend
+```
+
+This does not edit the old commit in place. It creates a new commit that replaces the previous one.
+
+That means the commit gets a new identity in Git history.
+
+## Why someone uses `--amend`
+
+Common reasons include:
+
+- fixing the most recent commit message
+- adding a file that should have been in the last commit
+- removing or adjusting the staged snapshot before sharing it
+
+Examples:
+
+```bash
+git commit --amend -m "fix: correct button disabled state"
+git add README.md
+git commit --amend --no-edit
+```
+
+In the second example, `--no-edit` keeps the existing commit message while replacing the commit contents with the newly staged version.
+
+## Why `--amend` matters for shared history
+
+Because `--amend` replaces a commit, it rewrites history.
+
+If that commit only exists locally, this is usually straightforward.
+
+If that commit was already pushed to a remote branch, your local branch history now differs from the remote branch history.
+
+That is where force pushing enters the picture.
+
+## What rebasing is
+
+Rebasing is another way to rewrite history.
+
+At a high level, `git rebase` takes commits from one branch and reapplies them on top of a different base.
+
+A common example:
+
+```bash
+git switch feature-branch
+git rebase main
+```
+
+In practical terms, this says:
+
+> take the commits unique to `feature-branch` and replay them on top of the current `main`
+
+That can make history look cleaner, but it also means the rewritten commits get new identities.
+
+## Why rebasing changes what push will do
+
+If you rebase a branch that was already pushed, the remote branch still points to the old commits.
+
+Your local branch now points to rewritten commits.
+
+A normal push is often rejected because Git sees that the remote history would be replaced rather than simply extended.
+
+## Force pushing updates the remote branch with rewritten history
+
+After rewriting history with `--amend` or `git rebase`, you may need:
+
+```bash
+git push --force-with-lease
+```
+
+This updates the remote branch to match your rewritten local branch.
+
+## Why `--force-with-lease` is safer than `--force`
+
+There are two important force-push styles:
+
+```bash
+git push --force
+git push --force-with-lease
+```
+
+`--force` tells Git to overwrite the remote branch regardless.
+
+`--force-with-lease` is safer because it checks that the remote branch is still in the state you expect before replacing it.
+
+That reduces the risk of overwriting someone else's newer remote work by mistake.
+
+<Warning title="Prefer force-with-lease over force">
+  <p>If you have to update a remote branch after amending or rebasing, use <code>git push --force-with-lease</code> instead of <code>git push --force</code> unless you have a very specific reason not to.</p>
+</Warning>
+
+## A safe beginner rule
+
+Use normal commits and merges as the default.
+
+Use `--amend` when:
+
+- the commit is still local
+- you are cleaning up the most recent commit
+
+Use rebase when:
+
+- you understand that it rewrites commits
+- the branch is still private, or the team explicitly expects that workflow
+
+Be more cautious when the branch is already shared with others.
+
+<Note title="History rewriting is powerful, not required">
+  <p>You do not need to start with rebasing or amending to use Git well. They are useful tools, but a clean branch-and-merge workflow is still the right default for beginners.</p>
+</Note>
