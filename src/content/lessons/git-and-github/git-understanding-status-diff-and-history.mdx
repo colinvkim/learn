@@ -33,6 +33,12 @@ This shows:
 
 For beginners, `git status` is the safest command to run when you are unsure what is happening.
 
+It is also one of the best places to reinforce the three-state model:
+
+- some changes are only in the working tree
+- some changes are staged for the next commit
+- some changes are already part of commit history
+
 ## `git diff` shows the actual content changes
 
 To see unstaged changes:
@@ -51,6 +57,8 @@ This distinction matters:
 
 - `git diff` shows what changed in the working tree but is not staged yet
 - `git diff --staged` shows what Git would include if you committed now
+
+That means `git diff --staged` is one of the best commands to run right before `git commit`.
 
 ## `git log` shows commit history
 
@@ -79,6 +87,8 @@ Before making a commit, a strong habit is:
 5. commit
 
 That helps you verify the next commit before it becomes part of history.
+
+It also helps prevent a common beginner mistake: assuming Git will automatically commit everything you edited just because the file changed on disk.
 
 ## `.gitignore` matters here too
 
