@@ -1,6 +1,6 @@
 ---
 title: Introduction
-description: "Start with the big picture: what npm and pnpm are, why package managers exist, and what this course will help you understand."
+description: "Start with the big picture: what npm and pnpm are, why package managers exist, and what you should understand before using them."
 course: npm-and-pnpm
 order: 1
 status: published
@@ -20,7 +20,7 @@ Before going further, it helps to separate three related terms:
 - a **package manager** is the tool that installs and tracks packages
 - a **registry** is the place packages are published and downloaded from
 
-This course focuses on the package manager side of that system.
+The focus here is the package-manager side of that system.
 
 Their role is practical:
 
@@ -38,9 +38,9 @@ In other words, they help a project answer a small set of recurring questions:
 
 Those are the questions package managers answer every day, even when the person using them is not thinking about the deeper mechanics.
 
-## Why the course starts with npm
+## Why start with npm
 
-The course begins with `npm` for a practical reason: it is the default package manager that ships with Node.js, and it is the one most learners encounter first.
+`npm` comes first for a practical reason: it is the default package manager that ships with Node.js, and it is the one most learners encounter first.
 
 That makes it the best baseline for understanding the broader ideas:
 
@@ -63,11 +63,11 @@ The short answer is that many developers and teams want a different workflow for
 - a strong fit for workspaces and monorepos
 - command patterns some teams find clearer
 
-This means the course is not about choosing a winner. It is about understanding the role of each tool well enough to make good decisions in real projects.
+This is not about choosing a winner. It is about understanding the role of each tool well enough to make good decisions in real projects.
 
 ## What to expect from the lessons
 
-The first part of the course explains `npm` in slow, concrete terms.
+The first part explains `npm` in slow, concrete terms.
 
 That includes:
 
@@ -86,7 +86,7 @@ That includes:
 
 The final part compares them directly and ends with a practical recommendation.
 
-## A useful way to read this course
+## A useful way to read this
 
 If you are a complete beginner, move slowly and focus on meaning before memorization.
 
@@ -103,4 +103,4 @@ Those questions will do more for your understanding than memorizing a command li
 
 `npm` and `pnpm` are tools for organizing dependency management in Node.js projects.
 
-They are not separate worlds. They are two ways of handling the same kind of project setup and workflow. Once that idea is clear, the rest of the course becomes much easier to follow.
+They are not separate worlds. They are two ways of handling the same kind of project setup and workflow. Once that idea is clear, the rest of the material becomes much easier to follow.
