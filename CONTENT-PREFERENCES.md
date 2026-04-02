@@ -152,6 +152,13 @@ Example approach:
 - Do not use callouts just to decorate the page.
 - Use callouts to clarify high-value distinctions, common mistakes, or non-obvious constraints.
 
+Current component set:
+
+- `Note` for clarifications and contextual detail
+- `Tip` for shortcuts, patterns, and useful mental models
+- `Warning` for mistakes, footguns, or important constraints
+- `Steps` for short procedural sequences
+
 ## Anti-patterns
 
 - Do not start with abstract comparisons before defining the tools being compared.

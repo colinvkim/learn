@@ -1,0 +1,65 @@
+---
+import { Info, Lightbulb, TriangleAlert } from "@lucide/astro";
+
+interface Props {
+  variant?: "note" | "tip" | "warning";
+  title?: string;
+}
+
+const { variant = "note", title } = Astro.props;
+
+const variants = {
+  note: {
+    label: "Note",
+    icon: Info,
+    shell: "border-accent/14 bg-accent-soft/72 dark:border-accent/16 dark:bg-accent-soft/32",
+    badge: "bg-accent/10 text-accent dark:bg-accent/12 dark:text-accent",
+  },
+  tip: {
+    label: "Tip",
+    icon: Lightbulb,
+    shell: "border-emerald-500/14 bg-emerald-500/7 dark:border-emerald-400/16 dark:bg-emerald-400/8",
+    badge: "bg-emerald-500/11 text-emerald-700 dark:bg-emerald-400/14 dark:text-emerald-300",
+  },
+  warning: {
+    label: "Warning",
+    icon: TriangleAlert,
+    shell: "border-amber-500/18 bg-amber-500/8 dark:border-amber-400/20 dark:bg-amber-400/10",
+    badge: "bg-amber-500/11 text-amber-800 dark:bg-amber-400/14 dark:text-amber-300",
+  },
+} as const;
+
+const config = variants[variant];
+const Icon = config.icon;
+---
+
+<aside
+  aria-label={title ?? config.label}
+  class:list={[
+    "my-7 rounded-[1.15rem] border px-4 py-4 shadow-soft sm:px-5",
+    config.shell,
+  ]}
+>
+  <div class="flex gap-3.5">
+    <div
+      class:list={[
+        "mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full ring-1 ring-black/5 dark:ring-white/8",
+        config.badge,
+      ]}
+    >
+      <Icon class="h-4.5 w-4.5" aria-hidden="true" />
+    </div>
+
+    <div class="min-w-0 flex-1">
+      <p class="text-[0.92rem] font-semibold tracking-[-0.01em] text-ink">
+        {title ?? config.label}
+      </p>
+
+      <div
+        class="mt-2 text-[0.96rem] leading-6.5 text-muted [&_code]:font-mono [&_code]:text-ink [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:text-ink [&_ul]:my-3 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+      >
+        <slot />
+      </div>
+    </div>
+  </div>
+</aside>
