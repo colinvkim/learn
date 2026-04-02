@@ -1,7 +1,5 @@
 ---
 import {
-  getLessonHref,
-  getLessonSlug,
   getPublishedCourses,
   getPublishedLessonsForCourse,
   type CourseEntry,
@@ -24,8 +22,16 @@ if (!firstLesson) {
   throw new Error(`Published course "${course.id}" must include at least one published lesson.`);
 }
 
-const redirectHref = getLessonHref(course.id, getLessonSlug(firstLesson));
-void redirectHref;
+const lessonSlug = firstLesson.id.split("/")[1];
 
-return Astro.redirect(redirectHref);
+if (!lessonSlug) {
+  throw new Error(`Published lesson "${firstLesson.id}" is missing its lesson slug.`);
+}
+
+return new Response(null, {
+  status: 302,
+  headers: {
+    Location: `/courses/${course.id}/${lessonSlug}`,
+  },
+});
 ---

@@ -98,7 +98,6 @@ const canonical = Astro.site
             toggleTheme();
           });
 
-          document.addEventListener("DOMContentLoaded", syncToggles, { once: true });
           document.addEventListener("astro:after-swap", restoreTheme);
           document.addEventListener("astro:page-load", syncToggles);
 

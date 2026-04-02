@@ -59,7 +59,7 @@ function groupLessonsByCourse(lessons: LessonEntry[]) {
   return lessonsByCourse;
 }
 
-async function loadPublishedContent(): Promise<PublishedContent> {
+async function getPublishedContent(): Promise<PublishedContent> {
   const [courses, lessons] = await Promise.all([
     getCollection("courses", ({ data }) => data.status === "published"),
     getCollection("lessons", ({ data }) => data.status === "published"),
@@ -84,13 +84,6 @@ async function loadPublishedContent(): Promise<PublishedContent> {
     courseById: new Map(courses.map((course) => [course.id, course])),
     lessonsByCourse: groupLessonsByCourse(lessons),
   };
-}
-
-let publishedContentPromise: Promise<PublishedContent> | undefined;
-
-async function getPublishedContent() {
-  publishedContentPromise ??= loadPublishedContent();
-  return publishedContentPromise;
 }
 
 export function getCourseHref(courseId: string) {
