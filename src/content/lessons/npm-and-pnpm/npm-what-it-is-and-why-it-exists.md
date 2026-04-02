@@ -39,7 +39,7 @@ Depending on the context, `npm` may refer to:
 - the public package registry at `npmjs.com`
 - the broader package ecosystem around that registry
 
-Here, `npm` usually means the package manager CLI unless the registry is mentioned explicitly.
+In this course, `npm` usually means the package manager CLI unless the registry is mentioned explicitly.
 
 ## What problem npm solves
 
