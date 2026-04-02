@@ -1,0 +1,43 @@
+---
+import BaseLayout from "../../components/site/BaseLayout.astro";
+import ContentArticle from "../../components/site/ContentArticle.astro";
+import PageShell from "../../components/site/PageShell.astro";
+import Note from "../../components/content/Note.astro";
+import Tip from "../../components/content/Tip.astro";
+import Warning from "../../components/content/Warning.astro";
+import Steps from "../../components/content/Steps.astro";
+
+const title = "Component Preview | learn";
+const description = "Internal preview page for the MDX content components.";
+---
+
+<BaseLayout title={title} description={description}>
+  <PageShell size="reading" class="py-10 sm:py-12">
+    <ContentArticle>
+      <h1>Component preview</h1>
+      <p>This page is intentionally unlinked. Use it to inspect the MDX content components directly.</p>
+
+      <h2>Note</h2>
+      <Note title="npx and npm exec">
+        <p><code>npm exec</code> is the underlying modern npm command. <code>npx</code> is still common in tutorials, READMEs, and everyday usage, so it is worth recognizing both forms.</p>
+      </Note>
+
+      <h2>Tip</h2>
+      <Tip title="Install more than one package at a time">
+        <p><code>pnpm add react react-dom</code> adds both packages in one command. That is often cleaner when they belong to the same setup step.</p>
+      </Tip>
+
+      <h2>Warning</h2>
+      <Warning title="Do not mix package managers">
+        <p>If a repository uses <code>pnpm-lock.yaml</code>, keep using pnpm for that repository. Mixed lockfiles make the dependency state harder to reason about.</p>
+      </Warning>
+
+      <h2>Steps</h2>
+      <Steps>
+        <li>Install Node.js.</li>
+        <li>Open the project directory.</li>
+        <li>Run <code>pnpm install</code>.</li>
+      </Steps>
+    </ContentArticle>
+  </PageShell>
+</BaseLayout>
