@@ -142,9 +142,15 @@ const canonical = Astro.site
           const toggleTheme = () => {
             const nextTheme = root.classList.contains("dark") ? "light" : "dark";
             const update = () => applyTheme(nextTheme);
+            const prefersReducedMotion = window.matchMedia(
+              "(prefers-reduced-motion: reduce)",
+            ).matches;
 
-            if (typeof document.startViewTransition === "function") {
-              document.startViewTransition(update);
+            if (
+              typeof document.startViewTransition === "function" &&
+              !prefersReducedMotion
+            ) {
+              document.startViewTransition(update).finished.catch(() => {});
             } else {
               update();
             }

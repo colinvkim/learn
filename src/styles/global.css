@@ -53,9 +53,56 @@
     @apply transition-colors;
   }
 
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(root) {
+    animation-duration: 560ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: 0.18s;
-    animation-timing-function: ease;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(root) {
+    animation-name: learn-root-old;
+  }
+
+  ::view-transition-new(root) {
+    animation-name: learn-root-new;
+  }
+}
+
+@keyframes learn-root-old {
+  from {
+    opacity: 1;
+    filter: blur(0) saturate(1);
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    filter: blur(6px) saturate(0.98);
+    transform: scale(1.01);
+  }
+}
+
+@keyframes learn-root-new {
+  from {
+    opacity: 0;
+    filter: blur(10px) saturate(1.03) brightness(1.01);
+    transform: scale(0.985);
+  }
+
+  60% {
+    opacity: 0.92;
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0) saturate(1) brightness(1);
+    transform: scale(1);
   }
 }
