@@ -111,6 +111,30 @@ const canonical = Astro.site
         }
 
         restoreTheme();
+
+        if (!window.__learnScrollClampController) {
+          document.addEventListener(
+            "wheel",
+            (event) => {
+              if (!(event.target instanceof Element)) return;
+              if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+
+              const scroller = event.target.closest("[data-lock-overscroll]");
+              if (!(scroller instanceof HTMLElement)) return;
+
+              const atTop = scroller.scrollTop <= 0;
+              const atBottom =
+                scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+
+              if ((event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom)) {
+                event.preventDefault();
+              }
+            },
+            { passive: false },
+          );
+
+          window.__learnScrollClampController = true;
+        }
       })();
     </script>
   </head>
@@ -137,7 +161,7 @@ const canonical = Astro.site
         </div>
       )
     }
-    <div class="min-h-0 flex-1 overflow-y-auto overscroll-y-none">
+    <div data-lock-overscroll class="min-h-0 flex-1 overflow-y-auto overscroll-y-none">
       <slot />
     </div>
   </body>
