@@ -1,0 +1,79 @@
+---
+title: "Moving around with pwd, ls, and cd"
+description: Learn the three basic navigation commands that let you understand where you are and move through a project safely.
+course: terminal
+order: 4
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+Three commands form the basic navigation toolkit:
+
+- `pwd`
+- `ls`
+- `cd`
+
+## `pwd` shows the current working directory
+
+Run:
+
+```bash
+pwd
+```
+
+This prints the full path of the directory you are currently in.
+
+That matters because many commands act relative to the current working directory.
+
+## `ls` lists the contents of the current directory
+
+Run:
+
+```bash
+ls
+```
+
+This shows the files and directories in the current location.
+
+A common variation is:
+
+```bash
+ls -la
+```
+
+That usually shows more detail, including hidden files.
+
+## `cd` changes the current directory
+
+To move into a directory:
+
+```bash
+cd src
+```
+
+To move up to the parent directory:
+
+```bash
+cd ..
+```
+
+To move to a specific absolute path:
+
+```bash
+cd /Users/colin/Programming/learn
+```
+
+## Why these three commands matter together
+
+They answer three practical questions:
+
+- `pwd`: Where am I?
+- `ls`: What is here?
+- `cd`: How do I move somewhere else?
+
+That is the basic navigation loop of terminal work.
+
+<Tip title="Use pwd when context is unclear">
+  <p>If a command behaves unexpectedly, checking the current working directory with <code>pwd</code> is often the fastest way to understand why.</p>
+</Tip>

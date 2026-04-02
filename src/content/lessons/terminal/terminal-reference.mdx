@@ -1,0 +1,83 @@
+---
+title: "Terminal reference"
+description: Use this page as a compact reference for the first terminal commands and concepts you are most likely to need.
+course: terminal
+order: 8
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+This page is a quick reference for the terminal commands taught in the earlier lessons.
+
+## Show the current directory
+
+```bash
+pwd
+```
+
+## List files and directories
+
+```bash
+ls
+ls -la
+```
+
+## Change directories
+
+```bash
+cd src
+cd ..
+cd /absolute/path/here
+```
+
+## Create directories
+
+```bash
+mkdir notes
+mkdir -p src/content/lessons
+```
+
+## Create an empty file
+
+```bash
+touch README.md
+```
+
+## Copy files or directories
+
+```bash
+cp README.md README.backup.md
+cp -r src src-backup
+```
+
+## Move or rename
+
+```bash
+mv draft.txt final.txt
+mv notes.txt docs/notes.txt
+```
+
+## Remove files or directories
+
+```bash
+rm notes.txt
+rm -r old-folder
+```
+
+## Read built-in help
+
+```bash
+git --help
+git commit -h
+pnpm --help
+```
+
+<Tip title="Break commands into parts">
+  <p>When a command looks confusing, separate it into the command name, its arguments, and its flags. That usually makes the line much easier to understand.</p>
+</Tip>
+
+<Warning title="Read rm commands carefully">
+  <p>Before using <code>rm</code>, confirm the path and the flag set. Removal is the place where terminal mistakes are most likely to be expensive.</p>
+</Warning>

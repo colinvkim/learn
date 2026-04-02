@@ -1,0 +1,11 @@
+---
+import { SquareTerminal } from "@lucide/astro";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<SquareTerminal class={className} aria-hidden="true" />

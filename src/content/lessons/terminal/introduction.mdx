@@ -1,0 +1,69 @@
+---
+title: Introduction
+description: "Start with the big picture: what the terminal is, why developers use it, and which basic ideas matter before memorizing commands."
+course: terminal
+order: 1
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+For many beginners, the terminal feels more intimidating than it should.
+
+It looks different from ordinary apps:
+
+- there are no large buttons
+- commands must be typed
+- errors can appear in plain text
+- simple tasks can seem harder than they do in a graphical interface
+
+That reaction is normal. The terminal is not hard because it is magical. It is hard because it exposes more of the computer's structure directly.
+
+## What the terminal is for
+
+The terminal is a text-based way to interact with the operating system and run programs.
+
+Developers use it constantly because many tools are designed around commands rather than graphical interfaces.
+
+That includes tools such as:
+
+- Git
+- package managers like npm and pnpm
+- development servers
+- test runners
+- linters
+- build tools
+
+## What matters first
+
+Before memorizing commands, a few ideas matter more:
+
+- the computer has a current working directory
+- files live inside directories
+- commands usually run relative to the current directory
+- commands can take arguments and flags
+
+Once those ideas are clear, individual commands become easier to understand.
+
+## What this material will focus on
+
+The focus here is not every shell feature.
+
+The focus is the small set of ideas and commands that make the terminal usable in real development work:
+
+- paths
+- moving between directories
+- listing files
+- creating, copying, moving, and removing files
+- understanding commands, arguments, and flags
+- reading help text and basic error output
+
+<Note title="The examples assume a Unix-style shell">
+  <p>The examples here follow the terminal style most developers see on macOS and Linux. Some commands differ in PowerShell or Command Prompt on Windows, but the core ideas about paths, commands, and working directories still transfer.</p>
+</Note>
+
+## The main idea to carry forward
+
+The terminal is a direct interface to files, directories, and programs.
+
+It becomes much easier once you stop treating commands as isolated spells and start seeing them as actions applied to the current working directory and its contents.

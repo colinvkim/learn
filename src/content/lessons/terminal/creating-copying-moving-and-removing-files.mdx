@@ -1,0 +1,87 @@
+---
+title: Creating, copying, moving, and removing files
+description: Learn the core file-management commands and why destructive commands deserve extra attention.
+course: terminal
+order: 5
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+
+Once you can move around the filesystem, the next step is changing it.
+
+## Creating directories with `mkdir`
+
+To create a directory:
+
+```bash
+mkdir notes
+```
+
+To create nested directories in one step:
+
+```bash
+mkdir -p src/content/lessons
+```
+
+## Creating empty files with `touch`
+
+To create an empty file or update its timestamp:
+
+```bash
+touch README.md
+```
+
+## Copying with `cp`
+
+To copy a file:
+
+```bash
+cp README.md README.backup.md
+```
+
+To copy directories recursively:
+
+```bash
+cp -r src src-backup
+```
+
+## Moving or renaming with `mv`
+
+To move a file:
+
+```bash
+mv notes.txt docs/notes.txt
+```
+
+To rename a file:
+
+```bash
+mv draft.txt final.txt
+```
+
+## Removing with `rm`
+
+To remove a file:
+
+```bash
+rm notes.txt
+```
+
+To remove a directory and its contents:
+
+```bash
+rm -r old-folder
+```
+
+<Warning title="rm deserves extra care">
+  <p><code>rm</code> deletes files directly. It does not send them to a graphical trash folder in the usual way. Read the path carefully before running it, especially with recursive flags.</p>
+</Warning>
+
+## A practical rule
+
+Creation and copying are usually reversible.
+
+Removal is not always easy to undo.
+
+That is why terminal users often move more slowly around `rm` than around `mkdir`, `touch`, `cp`, or `mv`.
