@@ -58,6 +58,7 @@ const { class: className } = Astro.props;
 
       const attachButtons = () => {
         document.querySelectorAll("[data-content-article] pre").forEach((pre) => {
+          if (pre.closest("[data-command-block]")) return;
           if (pre.querySelector("[data-copy-code]")) return;
 
           const code = pre.querySelector("code");

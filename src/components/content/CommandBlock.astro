@@ -1,0 +1,229 @@
+---
+import { ChevronDown, Copy, CopyCheck } from "@lucide/astro";
+
+interface CommandOption {
+  label: string;
+  code: string;
+  language?: string;
+  metaLabel?: string;
+}
+
+interface Props {
+  code?: string;
+  language?: string;
+  options?: CommandOption[];
+  selectorLabel?: string;
+  metaLabel?: string;
+}
+
+const {
+  code,
+  language = "bash",
+  options = [],
+  selectorLabel = "Variant",
+  metaLabel,
+} = Astro.props;
+
+const normalizedOptions =
+  options.length > 0
+    ? options
+    : code
+      ? [{ label: "Command", code, language }]
+      : [];
+
+const hasAlternatives = normalizedOptions.length > 1;
+const initialOption = normalizedOptions[0] ?? null;
+const commandBlockId = `command-${Math.random().toString(36).slice(2, 10)}`;
+
+const getDefaultMetaLabel = (value?: string) => {
+  if (!value) return "Code";
+
+  const normalized = value.toLowerCase();
+
+  if (["bash", "sh", "zsh", "shell", "powershell", "ps1", "cmd", "bat"].includes(normalized)) {
+    return "Terminal";
+  }
+
+  if (normalized === "json") return "JSON";
+  if (normalized === "yaml" || normalized === "yml") return "YAML";
+  if (normalized === "ts" || normalized === "typescript") return "TypeScript";
+  if (normalized === "js" || normalized === "javascript") return "JavaScript";
+
+  return value.toUpperCase();
+};
+
+const initialMetaLabel =
+  initialOption?.metaLabel ?? metaLabel ?? getDefaultMetaLabel(initialOption?.language ?? language);
+---
+
+{
+  initialOption && (
+    <div data-command-block data-code-block data-command-block-id={commandBlockId} class="my-6">
+      <script
+        is:inline
+        type="application/json"
+        data-command-options
+        set:html={JSON.stringify(normalizedOptions)}
+      />
+
+      {
+        hasAlternatives && (
+          <div class="mb-2 flex items-center justify-between gap-3">
+            <label
+              for={`${commandBlockId}-select`}
+              class="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-muted"
+            >
+              {selectorLabel}
+            </label>
+
+            <div class="relative">
+              <select
+                id={`${commandBlockId}-select`}
+                data-command-select
+                class="h-9 appearance-none rounded-lg border border-line bg-panel px-3 pr-9 text-sm font-medium text-ink outline-none transition focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/20"
+              >
+                {
+                  normalizedOptions.map((option, index) => (
+                    <option value={index}>{option.label}</option>
+                  ))
+                }
+              </select>
+
+              <ChevronDown
+                class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+                aria-hidden="true"
+              />
+            </div>
+          </div>
+        )
+      }
+
+      <div class="relative">
+        <pre data-command-pre class="my-0">
+          <span
+            data-command-meta
+            class="absolute left-5 top-3 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-white/55"
+          >
+            {initialMetaLabel}
+          </span>
+
+          <code data-command-code class={`language-${initialOption.language ?? language}`}>{initialOption.code}</code>
+        </pre>
+
+        <button
+          type="button"
+          data-command-copy
+          class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white/80 transition hover:bg-white/12 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+          aria-label="Copy code to clipboard"
+          title="Copy code"
+        >
+          <span data-command-copy-icon>
+            <Copy class="h-4 w-4" aria-hidden="true" />
+          </span>
+          <span data-command-copy-check class="hidden">
+            <CopyCheck class="h-4 w-4" aria-hidden="true" />
+          </span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+<script is:inline>
+  (() => {
+    if (!window.__learnCommandBlockController) {
+      const setCopiedState = (button, copied) => {
+        const copyIcon = button.querySelector("[data-command-copy-icon]");
+        const copyCheck = button.querySelector("[data-command-copy-check]");
+
+        if (!(copyIcon instanceof HTMLElement) || !(copyCheck instanceof HTMLElement)) return;
+
+        copyIcon.classList.toggle("hidden", copied);
+        copyCheck.classList.toggle("hidden", !copied);
+      };
+
+      const hydrateBlock = (root) => {
+        if (!(root instanceof HTMLElement) || root.dataset.commandHydrated === "true") return;
+
+        const json = root.querySelector("[data-command-options]");
+        const code = root.querySelector("[data-command-code]");
+        const select = root.querySelector("[data-command-select]");
+        const button = root.querySelector("[data-command-copy]");
+        const meta = root.querySelector("[data-command-meta]");
+
+        if (!(json instanceof HTMLScriptElement) || !(code instanceof HTMLElement)) return;
+
+        const options = JSON.parse(json.textContent || "[]");
+        if (!Array.isArray(options) || options.length === 0) return;
+
+        const render = (index) => {
+          const option = options[index] ?? options[0];
+          root.dataset.commandIndex = String(index);
+          code.textContent = option.code;
+          code.className = option.language ? `language-${option.language}` : "";
+
+          if (meta instanceof HTMLElement) {
+            meta.textContent = option.metaLabel || root.dataset.defaultMetaLabel || "Code";
+          }
+
+          if (select instanceof HTMLSelectElement) {
+            select.value = String(index);
+          }
+        };
+
+        if (select instanceof HTMLSelectElement) {
+          select.addEventListener("change", () => {
+            render(Number(select.value));
+          });
+        }
+
+        if (button instanceof HTMLButtonElement) {
+          button.addEventListener("click", async () => {
+            const currentIndex = Number(root.dataset.commandIndex || "0");
+            const option = options[currentIndex] ?? options[0];
+
+            try {
+              if (!navigator.clipboard?.writeText) {
+                throw new Error("Clipboard API unavailable");
+              }
+
+              await navigator.clipboard.writeText(option.code);
+              button.setAttribute("aria-label", "Copied");
+              button.setAttribute("title", "Copied");
+              setCopiedState(button, true);
+
+              window.setTimeout(() => {
+                button.setAttribute("aria-label", "Copy code to clipboard");
+                button.setAttribute("title", "Copy code");
+                setCopiedState(button, false);
+              }, 1500);
+            } catch {
+              button.setAttribute("aria-label", "Copy failed");
+              button.setAttribute("title", "Copy failed");
+
+              window.setTimeout(() => {
+                button.setAttribute("aria-label", "Copy code to clipboard");
+                button.setAttribute("title", "Copy code");
+                setCopiedState(button, false);
+              }, 1500);
+            }
+          });
+        }
+
+        root.dataset.defaultMetaLabel =
+          meta instanceof HTMLElement ? meta.textContent || "Code" : "Code";
+        render(0);
+        root.dataset.commandHydrated = "true";
+      };
+
+      const hydrateAll = () => {
+        document.querySelectorAll("[data-command-block]").forEach(hydrateBlock);
+      };
+
+      document.addEventListener("astro:page-load", hydrateAll);
+      window.__learnCommandBlockController = { hydrateAll };
+    }
+
+    window.__learnCommandBlockController.hydrateAll();
+  })();
+</script>
