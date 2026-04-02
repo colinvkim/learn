@@ -1,0 +1,32 @@
+---
+import type { CourseSummary } from "../../lib/content/queries";
+import { getCourseHref, getLessonHref, getLessonSlug } from "../../lib/content/queries";
+import TopicMarks from "./TopicMarks.astro";
+
+interface Props {
+  summary: CourseSummary;
+}
+
+const { summary } = Astro.props;
+const { course, lessonCount } = summary;
+const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
+const topicLabel = topics.length > 0 ? topics.join(" + ") : course.data.title;
+const firstLessonHref =
+  summary.firstLesson ? getLessonHref(course.id, getLessonSlug(summary.firstLesson)) : getCourseHref(course.id);
+---
+
+<a
+  href={firstLessonHref}
+  aria-label={course.data.title}
+  class="group flex h-full flex-col items-start gap-6 rounded-[1.35rem] border border-line bg-panel p-6 shadow-soft transition hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_20px_48px_rgba(15,23,42,0.08)]"
+>
+  <TopicMarks topics={topics} />
+  <div class="space-y-1">
+    <h2 class="text-xl font-semibold tracking-[-0.035em] text-ink group-hover:text-accent">
+      {topicLabel}
+    </h2>
+    <p class="text-sm text-muted">
+      {lessonCount} lesson{lessonCount === 1 ? "" : "s"}
+    </p>
+  </div>
+</a>

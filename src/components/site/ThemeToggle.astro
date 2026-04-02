@@ -1,0 +1,23 @@
+---
+import { MoonStar, SunMedium } from "@lucide/astro";
+---
+
+<button
+  type="button"
+  data-theme-toggle
+  class="inline-flex h-10 items-center gap-2 rounded-full border border-line bg-panel px-3 text-sm font-medium text-muted shadow-soft transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+  aria-label="Toggle dark mode"
+>
+  <span class="inline-flex items-center justify-center" data-theme-icon>
+    <MoonStar class="h-4 w-4" aria-hidden="true" />
+  </span>
+  <span data-theme-label>Theme</span>
+</button>
+
+<template data-theme-icon-dark>
+  <MoonStar class="h-4 w-4" aria-hidden="true" />
+</template>
+
+<template data-theme-icon-light>
+  <SunMedium class="h-4 w-4" aria-hidden="true" />
+</template>

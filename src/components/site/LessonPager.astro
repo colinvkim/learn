@@ -1,0 +1,40 @@
+---
+import type { LessonEntry } from "../../lib/content/queries";
+import { getLessonHref, getLessonSlug } from "../../lib/content/queries";
+
+interface Props {
+  courseId: string;
+  previousLesson?: LessonEntry;
+  nextLesson?: LessonEntry;
+}
+
+const { courseId, previousLesson, nextLesson } = Astro.props;
+---
+
+<nav aria-label="Lesson pagination" class="space-y-4 border-t border-line pt-8">
+  {
+    nextLesson && (
+      <a
+        href={getLessonHref(courseId, getLessonSlug(nextLesson))}
+        class="block rounded-panel border border-line bg-panel px-5 py-4 shadow-soft hover:border-accent/30"
+      >
+        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Next lesson</p>
+        <div class="mt-2 flex items-center justify-between gap-4">
+          <p class="text-lg font-semibold tracking-[-0.025em] text-ink">{nextLesson.data.title}</p>
+          <span class="text-sm font-medium text-accent">Continue</span>
+        </div>
+      </a>
+    )
+  }
+  {
+    previousLesson && (
+      <a
+        href={getLessonHref(courseId, getLessonSlug(previousLesson))}
+        class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-accent"
+      >
+        <span>Previous lesson</span>
+        <span class="text-ink">{previousLesson.data.title}</span>
+      </a>
+    )
+  }
+</nav>

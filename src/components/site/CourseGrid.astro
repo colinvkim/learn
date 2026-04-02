@@ -1,0 +1,14 @@
+---
+import type { CourseSummary } from "../../lib/content/queries";
+import CourseCard from "./CourseCard.astro";
+
+interface Props {
+  summaries: CourseSummary[];
+}
+
+const { summaries } = Astro.props;
+---
+
+<div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+  {summaries.map((summary) => <CourseCard summary={summary} />)}
+</div>

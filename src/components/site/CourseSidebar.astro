@@ -1,0 +1,62 @@
+---
+import type { CourseEntry, LessonEntry } from "../../lib/content/queries";
+import { getCourseHref, getLessonHref, getLessonSlug } from "../../lib/content/queries";
+import TopicMarks from "./TopicMarks.astro";
+
+interface Props {
+  course: CourseEntry;
+  lessons: LessonEntry[];
+  currentLessonSlug?: string;
+}
+
+const { course, lessons, currentLessonSlug } = Astro.props;
+const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
+---
+
+<aside class="lg:h-full lg:overflow-y-auto lg:border-r lg:border-line/80 lg:pr-0">
+  <div class="space-y-5 border-b border-line/80 pb-6 lg:min-h-full lg:border-b-0 lg:bg-panel/35 lg:px-3 lg:py-8">
+    <div class="space-y-4">
+      {
+        topics.length > 0 && (
+          <div class="space-y-3">
+            <TopicMarks topics={topics} size="sidebar" />
+          </div>
+        )
+      }
+
+      <div class="space-y-1">
+        <a
+          href={getCourseHref(course.id)}
+          class="inline-block text-[1rem] font-semibold tracking-[-0.03em] text-ink hover:text-accent"
+        >
+          {course.data.title}
+        </a>
+      </div>
+    </div>
+
+    <div class="space-y-1.5">
+      <nav aria-label={`${course.data.title} lessons`} class="space-y-0.5">
+        {
+          lessons.map((lesson) => {
+            const slug = getLessonSlug(lesson);
+            const isCurrent = currentLessonSlug === slug;
+
+            return (
+              <a
+                href={getLessonHref(course.id, slug)}
+                class:list={[
+                  "block rounded-lg px-2.5 py-1.5 text-[0.86rem] leading-5.5 transition",
+                  isCurrent
+                    ? "bg-accent-soft text-accent"
+                    : "text-muted hover:bg-black/2 hover:text-ink",
+                ]}
+              >
+                <span class="font-medium">{lesson.data.title}</span>
+              </a>
+            );
+          })
+        }
+      </nav>
+    </div>
+  </div>
+</aside>

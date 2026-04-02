@@ -1,11 +1,40 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import BaseLayout from "../components/site/BaseLayout.astro";
+import CourseGrid from "../components/site/CourseGrid.astro";
+import PageShell from "../components/site/PageShell.astro";
+import { getPublishedCourseSummaries } from "../lib/content/queries";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const summaries = await getPublishedCourseSummaries();
+const hasCourses = summaries.length > 0;
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout
+  title="learn"
+  description="A practical learning platform for modern tools, frameworks, and best practices."
+  showHeader={false}
+>
+  <PageShell class="pb-20 pt-14 sm:pb-24 sm:pt-18">
+    <section class="space-y-8">
+      <div>
+        <h1 class="max-w-3xl text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl lg:text-6xl">
+          Start learning about...
+        </h1>
+      </div>
+
+      {
+        hasCourses ? (
+          <CourseGrid summaries={summaries} />
+        ) : (
+          <div class="max-w-2xl rounded-[1.35rem] border border-line bg-panel px-6 py-8 shadow-soft">
+            <p class="text-lg font-medium tracking-[-0.02em] text-ink">
+              The first finished courses are still in progress.
+            </p>
+            <p class="mt-3 text-base leading-7 text-muted">
+              The goal is a catalog that stays current, practical, and consistently useful.
+            </p>
+          </div>
+        )
+      }
+    </section>
+  </PageShell>
+</BaseLayout>

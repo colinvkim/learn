@@ -1,0 +1,23 @@
+---
+import {
+  getPublishedCourses,
+  getPublishedLessonsForCourse,
+  type CourseEntry,
+} from "../../../lib/content/queries";
+
+export async function getStaticPaths() {
+  const courses = await getPublishedCourses();
+
+  return courses.map((course) => ({
+    params: { course: course.id },
+    props: { course },
+  }));
+}
+
+const { course } = Astro.props as { course: CourseEntry };
+const lessons = await getPublishedLessonsForCourse(course.id);
+
+if (lessons[0]) {
+  return Astro.redirect(getLessonHref(course.id, getLessonSlug(lessons[0])));
+}
+---

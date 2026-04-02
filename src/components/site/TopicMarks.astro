@@ -1,0 +1,60 @@
+---
+import NpmIcon from "../icons/NpmIcon.astro";
+import PnpmIcon from "../icons/PnpmIcon.astro";
+import TypeScriptIcon from "../icons/TypeScriptIcon.astro";
+
+interface Props {
+  topics: string[];
+  size?: "card" | "sidebar";
+}
+
+const { topics, size = "card" } = Astro.props;
+const safeTopics = Array.isArray(topics) ? topics : [];
+const visibleTopics = safeTopics.slice(0, 3);
+
+const toneClasses = [
+  "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
+  "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
+  "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
+];
+
+const iconMap = {
+  npm: NpmIcon,
+  pnpm: PnpmIcon,
+  typescript: TypeScriptIcon,
+};
+
+const renderedTopics = visibleTopics.map((topic, index) => ({
+  topic,
+  Icon: iconMap[topic.toLowerCase() as keyof typeof iconMap],
+  toneClass: toneClasses[index % toneClasses.length],
+}));
+---
+
+{
+  renderedTopics.length > 0 && (
+    <div class={size === "card" ? "flex items-center gap-3" : "flex items-center gap-2"}>
+      {
+        renderedTopics.map(({ topic, Icon, toneClass }) => (
+          <div
+            class:list={[
+              "inline-flex items-center justify-center rounded-2xl border font-semibold uppercase tracking-[0.08em]",
+              size === "card" ? "h-14 w-14 p-2 shadow-soft" : "h-8 w-8 p-1.5",
+              toneClass,
+            ]}
+            aria-label={topic}
+            title={topic}
+          >
+            {
+              Icon ? (
+                <Icon class="h-full w-full" />
+              ) : (
+                <span class={size === "card" ? "text-sm" : "text-[0.6rem]"}>{topic.slice(0, 3)}</span>
+              )
+            }
+          </div>
+        ))
+      }
+    </div>
+  )
+}

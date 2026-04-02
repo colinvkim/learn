@@ -1,0 +1,125 @@
+---
+import { Copy, CopyCheck } from "@lucide/astro";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<article
+  data-content-article
+  class:list={[
+    "max-w-none text-[1rem] leading-7 text-muted",
+    "[&_a]:font-medium [&_a]:text-accent [&_a]:underline [&_a]:decoration-accent/30 [&_a]:underline-offset-4 hover:[&_a]:decoration-accent",
+    "[&_blockquote]:border-l-2 [&_blockquote]:border-line [&_blockquote]:pl-5 [&_blockquote]:text-ink",
+    "[&_code]:rounded-md [&_code]:bg-accent-soft [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.92em] [&_code]:font-medium [&_code]:font-sans [&_code]:text-ink",
+    "[&_h1]:mt-0 [&_h1]:text-4xl [&_h1]:font-semibold [&_h1]:tracking-[-0.04em] [&_h1]:text-ink",
+    "[&_h2]:mt-12 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-[-0.03em] [&_h2]:text-ink",
+    "[&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:tracking-[-0.02em] [&_h3]:text-ink",
+    "[&_hr]:my-8 [&_hr]:border-line",
+    "[&_img]:rounded-panel [&_img]:border [&_img]:border-line",
+    "[&_li]:pl-1 [&_li]:marker:text-muted",
+    "[&_ol]:my-5 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6",
+    "[&_p]:my-5",
+    "[&_pre]:relative [&_pre]:my-7 [&_pre]:overflow-x-auto [&_pre]:rounded-panel [&_pre]:bg-ink [&_pre]:px-5 [&_pre]:py-4 [&_pre]:pt-12 [&_pre]:text-[0.94rem] [&_pre]:leading-6.5 [&_pre]:font-sans [&_pre]:text-white",
+    "[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:font-sans [&_pre_code]:text-white",
+    "[&_strong]:font-semibold [&_strong]:text-ink",
+    "[&_table]:my-7 [&_table]:w-full [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-panel [&_table]:text-left [&_table]:text-sm",
+    "[&_tbody_tr]:border-b [&_tbody_tr]:border-line",
+    "[&_td]:px-4 [&_td]:py-3",
+    "[&_th]:border-b [&_th]:border-line [&_th]:bg-accent-soft [&_th]:px-4 [&_th]:py-3 [&_th]:font-semibold [&_th]:text-ink",
+    "[&_ul]:my-5 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6",
+    "lg:text-[1.01rem]",
+    className,
+  ]}
+>
+  <slot />
+</article>
+
+<template data-copy-icon-template>
+  <Copy class="h-4 w-4" aria-hidden="true" />
+</template>
+
+<template data-copy-check-template>
+  <CopyCheck class="h-4 w-4" aria-hidden="true" />
+</template>
+
+<script is:inline>
+  (() => {
+    if (!window.__learnCodeCopyController) {
+      const renderIcon = (button, templateName) => {
+        const template = document.querySelector(templateName);
+        if (!(template instanceof HTMLTemplateElement)) return;
+
+        button.replaceChildren(template.content.cloneNode(true));
+      };
+
+      const attachButtons = () => {
+        document.querySelectorAll("[data-content-article] pre").forEach((pre) => {
+          if (pre.querySelector("[data-copy-code]")) return;
+
+          const code = pre.querySelector("code");
+          if (!code) return;
+
+          const button = document.createElement("button");
+          button.type = "button";
+          button.dataset.copyCode = "";
+          button.className =
+            "absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white/80 transition hover:bg-white/12 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20";
+          button.setAttribute("aria-label", "Copy code to clipboard");
+          button.setAttribute("title", "Copy code");
+          renderIcon(button, "[data-copy-icon-template]");
+
+          pre.appendChild(button);
+        });
+      };
+
+      document.addEventListener("click", async (event) => {
+        if (!(event.target instanceof Element)) return;
+
+        const button = event.target.closest("[data-copy-code]");
+        if (!(button instanceof HTMLButtonElement)) return;
+
+        const pre = button.closest("pre");
+        const code = pre?.querySelector("code");
+
+        if (!(code instanceof HTMLElement)) return;
+
+        const text = code.innerText.replace(/\n$/, "");
+
+        try {
+          if (!navigator.clipboard?.writeText) {
+            throw new Error("Clipboard API unavailable");
+          }
+
+          await navigator.clipboard.writeText(text);
+          button.setAttribute("aria-label", "Copied");
+          button.setAttribute("title", "Copied");
+          button.dataset.copied = "true";
+          renderIcon(button, "[data-copy-check-template]");
+          window.setTimeout(() => {
+            button.setAttribute("aria-label", "Copy code to clipboard");
+            button.setAttribute("title", "Copy code");
+            delete button.dataset.copied;
+            renderIcon(button, "[data-copy-icon-template]");
+          }, 1500);
+        } catch {
+          button.setAttribute("aria-label", "Copy failed");
+          button.setAttribute("title", "Copy failed");
+          window.setTimeout(() => {
+            button.setAttribute("aria-label", "Copy code to clipboard");
+            button.setAttribute("title", "Copy code");
+            renderIcon(button, "[data-copy-icon-template]");
+          }, 1500);
+        }
+      });
+
+      document.addEventListener("astro:page-load", attachButtons);
+      window.__learnCodeCopyController = { attachButtons };
+    }
+
+    window.__learnCodeCopyController.attachButtons();
+  })();
+</script>
