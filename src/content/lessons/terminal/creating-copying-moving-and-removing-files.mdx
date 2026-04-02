@@ -18,6 +18,8 @@ To create a directory:
 mkdir notes
 ```
 
+This command works broadly across Unix-style shells, PowerShell, and Command Prompt.
+
 To create nested directories in one step:
 
 ```bash
@@ -31,6 +33,8 @@ To create an empty file or update its timestamp:
 ```bash
 touch README.md
 ```
+
+`touch` is common in Unix-style shells, but not in Command Prompt. On Windows, many beginners create files in an editor or use PowerShell commands instead. The important idea is that terminals can create files, even if the exact command differs by shell.
 
 ## Copying with `cp`
 
@@ -46,6 +50,11 @@ To copy directories recursively:
 cp -r src src-backup
 ```
 
+Windows equivalents vary by shell:
+
+- PowerShell commonly uses `Copy-Item`
+- Command Prompt commonly uses `copy` for files and `xcopy` or `robocopy` for larger directory operations
+
 ## Moving or renaming with `mv`
 
 To move a file:
@@ -59,6 +68,11 @@ To rename a file:
 ```bash
 mv draft.txt final.txt
 ```
+
+On Windows:
+
+- PowerShell commonly uses `Move-Item`
+- Command Prompt commonly uses `move`
 
 ## Removing with `rm`
 
@@ -74,8 +88,13 @@ To remove a directory and its contents:
 rm -r old-folder
 ```
 
+On Windows:
+
+- PowerShell commonly uses `Remove-Item`
+- Command Prompt commonly uses `del` for files and `rmdir` for directories
+
 <Warning title="rm deserves extra care">
-  <p><code>rm</code> deletes files directly. It does not send them to a graphical trash folder in the usual way. Read the path carefully before running it, especially with recursive flags.</p>
+  <p>Destructive terminal commands such as <code>rm</code>, <code>Remove-Item</code>, <code>del</code>, and <code>rmdir</code> deserve extra care. They often delete directly rather than sending content to a graphical trash folder. Read the path carefully before running them.</p>
 </Warning>
 
 ## A practical rule

@@ -11,10 +11,18 @@ import Warning from "../../../components/content/Warning.astro";
 
 This page is a quick reference for the terminal commands taught in the earlier lessons.
 
+The exact command can vary by shell. Unix-style shells, PowerShell, and Command Prompt share the same core ideas, but not always the same command names.
+
 ## Show the current directory
 
 ```bash
 pwd
+```
+
+Command Prompt also shows the current directory with:
+
+```powershell
+cd
 ```
 
 ## List files and directories
@@ -24,12 +32,24 @@ ls
 ls -la
 ```
 
+Command Prompt equivalent:
+
+```powershell
+dir
+```
+
 ## Change directories
 
 ```bash
 cd src
 cd ..
 cd /absolute/path/here
+```
+
+Windows example:
+
+```powershell
+cd C:\absolute\path\here
 ```
 
 ## Create directories
@@ -45,12 +65,16 @@ mkdir -p src/content/lessons
 touch README.md
 ```
 
+`touch` is Unix-style. PowerShell and Command Prompt use different commands for file creation.
+
 ## Copy files or directories
 
 ```bash
 cp README.md README.backup.md
 cp -r src src-backup
 ```
+
+Windows equivalents often include `Copy-Item`, `copy`, `xcopy`, or `robocopy`, depending on the shell and the task.
 
 ## Move or rename
 
@@ -59,12 +83,16 @@ mv draft.txt final.txt
 mv notes.txt docs/notes.txt
 ```
 
+Windows equivalents often include `Move-Item` or `move`.
+
 ## Remove files or directories
 
 ```bash
 rm notes.txt
 rm -r old-folder
 ```
+
+Windows equivalents often include `Remove-Item`, `del`, and `rmdir`.
 
 ## Read built-in help
 

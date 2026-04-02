@@ -27,6 +27,7 @@ Examples:
 ```text
 /Users/colin/Programming/learn
 /Users/colin/Programming/learn/package.json
+C:\Users\colin\Programming\learn
 src/content/lessons
 ```
 
@@ -36,10 +37,13 @@ An **absolute path** starts from a fixed root location.
 
 On macOS and Linux, absolute paths usually begin with `/`.
 
+On Windows, absolute paths usually begin with a drive letter such as `C:\`.
+
 Example:
 
 ```text
 /Users/colin/Programming/learn
+C:\Users\colin\Programming\learn
 ```
 
 An absolute path means the same location no matter where your current working directory is.
@@ -68,6 +72,8 @@ Examples:
 ```text
 ./README.md
 ../package.json
+.\README.md
+..\package.json
 ```
 
 ## Why this matters for commands
@@ -81,4 +87,8 @@ That is why path understanding is not optional. It is the context that makes the
 
 <Note title="Relative paths are common in project work">
   <p>In real developer workflows, many commands use relative paths because you are already inside the project directory. That is why the current working directory matters so much.</p>
+</Note>
+
+<Note title="Path syntax differs between platforms">
+  <p>Unix-style shells usually use <code>/</code> in paths. Windows tools often use <code>\</code>. The underlying idea is the same: a path identifies a location, and a relative path is interpreted from the current working directory.</p>
 </Note>

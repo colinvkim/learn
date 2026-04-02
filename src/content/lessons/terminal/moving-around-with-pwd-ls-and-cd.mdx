@@ -14,6 +14,11 @@ Three commands form the basic navigation toolkit:
 - `ls`
 - `cd`
 
+On Windows, the exact commands depend on which shell you use:
+
+- PowerShell commonly supports `pwd`, `ls`, and `cd`
+- Command Prompt commonly uses `cd` and `dir`
+
 ## `pwd` shows the current working directory
 
 Run:
@@ -23,6 +28,8 @@ pwd
 ```
 
 This prints the full path of the directory you are currently in.
+
+In Command Prompt, `cd` with no path also shows the current directory.
 
 That matters because many commands act relative to the current working directory.
 
@@ -44,6 +51,17 @@ ls -la
 
 That usually shows more detail, including hidden files.
 
+On Windows:
+
+- in PowerShell, `ls` often works
+- in Command Prompt, use `dir`
+
+Example:
+
+```powershell
+dir
+```
+
 ## `cd` changes the current directory
 
 To move into a directory:
@@ -64,6 +82,12 @@ To move to a specific absolute path:
 cd /Users/colin/Programming/learn
 ```
 
+Windows example:
+
+```powershell
+cd C:\Users\colin\Programming\learn
+```
+
 ## Why these three commands matter together
 
 They answer three practical questions:
@@ -75,5 +99,5 @@ They answer three practical questions:
 That is the basic navigation loop of terminal work.
 
 <Tip title="Use pwd when context is unclear">
-  <p>If a command behaves unexpectedly, checking the current working directory with <code>pwd</code> is often the fastest way to understand why.</p>
+  <p>If a command behaves unexpectedly, checking the current working directory is often the fastest way to understand why. That might mean <code>pwd</code>, or <code>cd</code> with no argument in Command Prompt.</p>
 </Tip>
