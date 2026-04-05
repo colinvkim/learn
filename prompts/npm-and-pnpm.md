@@ -1,5 +1,6 @@
 - partly with the help of chatgpt (april 4)
 - used to refine an already made npm and pnpm course (initially made by codex)
+- i'm giving this to kimi k2 thinking to see what it can do
 
 We are working on improving the npm and pnpm course.
 
