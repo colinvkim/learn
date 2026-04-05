@@ -18,7 +18,7 @@ const { items } = Astro.props;
         <>
           <li>
             {item.href ? (
-              <a class="hover:text-accent focus-visible:text-accent focus-visible:outline-none" href={item.href}>
+              <a class="hover:text-accent focus-visible:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 rounded" href={item.href}>
                 {item.label}
               </a>
             ) : (
