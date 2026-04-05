@@ -36,6 +36,8 @@ const hasCourses = summaries.length > 0;
             "Learn version control workflows...",
           ];
 
+          let intervalId = null;
+
           function pickRandom(exclude) {
             let topic;
             do {
@@ -44,51 +46,72 @@ const hasCourses = summaries.length > 0;
             return topic;
           }
 
-          const el = document.getElementById("rotating-text");
+          function initTextAnimation() {
+            const el = document.getElementById("rotating-text");
+            if (!el) return;
 
-          function animateIn(text) {
-            el.textContent = text;
-            el.animate(
-              [
+            // Cancel any existing animations and clear interval
+            el.getAnimations().forEach((a) => a.cancel());
+            if (intervalId) {
+              clearInterval(intervalId);
+              intervalId = null;
+            }
+
+            // Reset state
+            el.textContent = "";
+
+            function animateIn(text) {
+              el.textContent = text;
+              el.animate(
+                [
+                  {
+                    opacity: 0,
+                    transform: "translateY(20px)",
+                    filter: "blur(4px)",
+                  },
+                  { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+                ],
                 {
-                  opacity: 0,
-                  transform: "translateY(20px)",
-                  filter: "blur(4px)",
+                  duration: 800,
+                  easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+                  fill: "forwards",
                 },
-                { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
-              ],
-              {
-                duration: 800,
-                easing: "cubic-bezier(0.16, 1, 0.3, 1)",
-                fill: "forwards",
-              },
-            );
+              );
+            }
+
+            function animateOut() {
+              return el.animate(
+                [
+                  { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+                  {
+                    opacity: 0,
+                    transform: "translateY(-16px)",
+                    filter: "blur(4px)",
+                  },
+                ],
+                {
+                  duration: 300,
+                  easing: "cubic-bezier(0.7, 0, 0.84, 0)",
+                  fill: "forwards",
+                },
+              );
+            }
+
+            // Start with a random topic
+            animateIn(pickRandom(null));
+
+            // Set up rotation interval
+            intervalId = setInterval(async () => {
+              await animateOut().finished;
+              animateIn(pickRandom(el.textContent));
+            }, 3000);
           }
 
-          function animateOut() {
-            return el.animate(
-              [
-                { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
-                {
-                  opacity: 0,
-                  transform: "translateY(-16px)",
-                  filter: "blur(4px)",
-                },
-              ],
-              {
-                duration: 300,
-                easing: "cubic-bezier(0.7, 0, 0.84, 0)",
-                fill: "forwards",
-              },
-            );
-          }
+          // Run on initial page load
+          initTextAnimation();
 
-          animateIn(pickRandom(null));
-
-          setInterval(async () => {
-            await animateOut().finished;
-            animateIn(pickRandom(el.textContent));
-          }, 3000);
+          // Re-run after view transitions
+          document.addEventListener("astro:page-load", initTextAnimation);
         </script>
 
         <CourseGrid summaries={summaries} />
