@@ -1,0 +1,173 @@
+---
+title: "Git: undoing changes safely"
+description: Learn how to undo mistakes in Git using revert, reset, and restore without losing important work.
+course: git-and-github
+order: 8
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+Mistakes happen constantly in software development.
+
+Git makes it safe to experiment, and more importantly, safe to undo.
+
+Three commands handle most undo scenarios:
+
+- `git revert` undoes a commit by creating a new one
+- `git reset` moves the branch pointer backward
+- `git restore` discards uncommitted changes
+
+The right choice depends on whether the commit was shared and what you want to undo.
+
+## Undo a committed change with `git revert`
+
+If you pushed a commit to a shared branch and need to undo it:
+
+```bash
+git revert HEAD
+```
+
+This creates a new commit that reverses the changes from the most recent commit.
+
+You can also revert any commit by its hash:
+
+```bash
+git revert abc1234
+```
+
+## Why revert is safe for shared history
+
+`git revert` does not rewrite history.
+
+It adds a new commit on top of the existing history.
+
+That means:
+
+- other people's clones stay in sync
+- the remote branch accepts the new commit normally
+- no force pushing is needed
+
+The original commit remains in history, but its effects are neutralized by the revert commit.
+
+## Undo local commits with `git reset`
+
+If the commit has not been shared yet:
+
+```bash
+git reset HEAD~1
+```
+
+This moves the current branch back one commit and leaves the changes in your working tree as unstaged modifications.
+
+## The three modes of `git reset`
+
+`git reset` behaves differently depending on the flag:
+
+```bash
+git reset --soft HEAD~1
+git reset HEAD~1
+git reset --hard HEAD~1
+```
+
+`--soft` moves the branch pointer back but keeps all changes staged.
+
+No flag (the default) moves the branch pointer back and keeps changes in the working tree as unstaged.
+
+`--hard` moves the branch pointer back and discards all changes completely.
+
+<Warning title="Use --hard with caution">
+  <p><code>git reset --hard</code> permanently deletes uncommitted changes. Only use it when you are certain you do not need the discarded work.</p>
+</Warning>
+
+## When to use reset versus revert
+
+Use `git reset` when:
+
+- the commit only exists locally
+- you want to redo the work differently
+- you are preparing to push for the first time
+
+Use `git revert` when:
+
+- the commit was already pushed to a shared branch
+- other people may have pulled the branch
+- you want to keep a clear audit trail of what happened
+
+<Tip title="The shared history rule">
+  <p>If in doubt, prefer <code>git revert</code>. It is always safe for collaboration, even when <code>git reset</code> would also work.</p>
+</Tip>
+
+## Discard uncommitted changes with `git restore`
+
+Sometimes you want to throw away changes you have not committed yet:
+
+```bash
+git restore file.txt
+```
+
+This replaces the file with the last committed version.
+
+To discard all unstaged changes in the working tree:
+
+```bash
+git restore .
+```
+
+## Unstage a file without losing changes
+
+If you staged something by mistake:
+
+```bash
+git restore --staged file.txt
+```
+
+This removes the file from the staging area but keeps your changes in the working tree.
+
+Before Git 2.23, people used `git reset file.txt` to unstage. `git restore` is the newer, more explicit way to handle this.
+
+## A practical undo decision tree
+
+When you need to undo, ask:
+
+1. **Was the commit pushed to a shared branch?**
+   - Yes → use `git revert`
+   - No → continue to question 2
+
+2. **Do you want to keep the changes to edit them?**
+   - Yes → use `git reset --soft` or `git reset` (no flag)
+   - No → use `git reset --hard`
+
+3. **Are the changes uncommitted?**
+   - Yes → use `git restore` to discard them
+
+## Revert does not erase history
+
+One important mental model: `git revert` does not pretend the original commit never happened.
+
+The history will show:
+
+- the original commit that introduced the change
+- the revert commit that undid it
+
+That is usually what you want in a shared project because it keeps an honest record of what happened.
+
+If you need to pretend a commit never existed, that is a different operation and usually involves rewriting history with `reset` or `amend` on local-only commits.
+
+<Note title="Undo is part of normal Git usage">
+  <p>Making mistakes and undoing them is not a failure of Git. It is the expected workflow. Every developer reverts, resets, and restores regularly.</p>
+</Note>
+
+## The main idea to carry forward
+
+Git makes it safe to make mistakes.
+
+`git revert` undoes shared commits by adding a new commit.
+
+`git reset` rewinds local commits while optionally preserving the changes.
+
+`git restore` discards uncommitted work in the working tree or staging area.
+
+Understanding which tool to use prevents unnecessary history rewrites and keeps shared branches stable.

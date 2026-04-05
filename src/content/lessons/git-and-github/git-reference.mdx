@@ -76,6 +76,96 @@ git switch main
 git merge feature-branch
 ```
 
+## Undo a commit by creating a revert commit
+
+```bash
+git revert HEAD
+git revert abc1234
+```
+
+`git revert` creates a new commit that undoes the changes from a previous commit.
+
+This is safe for shared history because it adds to the history rather than rewriting it.
+
+## Undo recent local commits
+
+```bash
+git reset HEAD~1
+```
+
+This moves the current branch back one commit, keeping the changes in your working tree as unstaged modifications.
+
+Use `git reset --soft HEAD~1` to keep the changes staged instead.
+
+<Tip title="Prefer revert for shared history">
+  <p>Use <code>git revert</code> when the commit was already pushed to a shared branch. Use <code>git reset</code> only for local commits that have not been shared.</p>
+</Tip>
+
+## Discard uncommitted changes
+
+```bash
+git restore file.txt
+git restore .
+```
+
+`git restore` replaces the working tree files with the last committed version.
+
+Use `git restore --staged file.txt` to unstage a file without discarding the changes.
+
+## Temporarily set aside work in progress
+
+```bash
+git stash
+git stash list
+git stash pop
+git stash apply
+```
+
+`git stash` saves uncommitted changes so you can switch branches or pull updates without committing incomplete work.
+
+`git stash pop` restores and removes the most recent stash entry. `git stash apply` restores it without removing it from the stash list.
+
+## Inspect a specific commit
+
+```bash
+git show
+git show abc1234
+git show --stat abc1234
+```
+
+`git show` displays the changes introduced by a specific commit. Without an argument, it shows the most recent commit.
+
+## Apply a specific commit from another branch
+
+```bash
+git cherry-pick abc1234
+```
+
+`git cherry-pick` takes the changes from one commit and applies them as a new commit on the current branch.
+
+This is useful when you need one specific fix from another branch without merging the entire branch.
+
+## Create and manage tags
+
+```bash
+git tag v1.0.0
+git tag -a v1.0.0 -m "Version 1.0.0"
+git tag
+git push origin v1.0.0
+```
+
+Tags mark specific points in history, commonly used for releases. Lightweight tags (`git tag`) just label a commit. Annotated tags (`git tag -a`) store additional metadata including the tagger and message.
+
+## Work with remote repositories
+
+```bash
+git remote -v
+git remote add origin https://github.com/user/repo.git
+git remote remove origin
+```
+
+`git remote` manages references to remote repositories. The name `origin` is the default name for the remote you cloned from.
+
 <Note title="Git works locally">
   <p>All of these commands work in a local repository. GitHub comes later, when you start sharing, syncing, and collaborating through a remote host.</p>
 </Note>

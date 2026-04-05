@@ -2,7 +2,7 @@
 title: "GitHub: what it is and how it relates to Git"
 description: Learn what GitHub adds on top of Git and why remote hosting changes how people collaborate.
 course: git-and-github
-order: 8
+order: 9
 status: published
 ---
 
