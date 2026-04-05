@@ -54,9 +54,9 @@
   }
 }
 
-/* Code block backgrounds: stay dark in both modes */
+/* Code block backgrounds: stay dark in both modes (matches light-mode ink) */
 [data-content-article] pre {
-  background-color: #0f172a !important;
+  background-color: oklch(0.21 0.01 260.1) !important;
 }
 
 ::view-transition-old(root),
