@@ -20,6 +20,7 @@ Prioritize understanding over coverage.
 ## Audience
 
 - Default to the least experienced plausible learner unless prerequisites are explicit.
+- Assume the least experienced plausible learner, but not a general non-technical audience.
 - Define terms before depending on them.
 - Explain unfamiliar concepts when they first matter.
 - Do not assume ecosystem knowledge that has not been established.
