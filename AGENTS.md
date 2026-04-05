@@ -33,6 +33,27 @@ pnpm astro ...
 - Use Conventional Commits format for commit messages: `fix:`, `feat:`, `chore:`, `refactor:`, `docs:`, etc.
 - Commit changes immediately after they are verified to pass locally.
 
+## Lesson Ordering
+
+Lesson order is defined in **one file only**: `src/content/courses/order.ts`.
+
+Each course has an array of lesson slugs (filenames without extension) in the order they should appear.
+
+To add, remove, or reorder a lesson, **only edit `order.ts`**. Do not add or change `order` fields in lesson frontmatter — the `order` field does not exist in the schema.
+
+Example — to insert a new lesson between two existing ones:
+
+```ts
+"git-and-github": [
+  "git-merging-branches",
+  "git-undoing-changes-safely",  // new lesson inserted here
+  "github-what-it-is-and-how-it-relates-to-git",
+  ...
+],
+```
+
+Lessons not listed in `order.ts` will appear at the end, sorted alphabetically by title.
+
 ## Site Structure
 
 ```

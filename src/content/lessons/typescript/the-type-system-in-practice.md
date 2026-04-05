@@ -2,7 +2,6 @@
 title: The type system in practice
 description: Start thinking in values, shapes, unions, and narrowing instead of isolated syntax.
 course: typescript
-order: 2
 status: draft
 ---
 

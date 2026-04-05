@@ -2,7 +2,6 @@
 title: "GitHub: issues"
 description: Learn what GitHub Issues are for and how they help turn vague work into explicit, trackable tasks.
 course: git-and-github
-order: 14
 status: published
 ---
 

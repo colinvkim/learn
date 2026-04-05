@@ -2,7 +2,6 @@
 title: "Git: branches and switching work"
 description: Learn why branches exist, how to create them, and how they help keep separate tasks from colliding.
 course: git-and-github
-order: 5
 status: published
 ---
 

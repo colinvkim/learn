@@ -2,7 +2,6 @@
 title: What TypeScript is for
 description: Understand what TypeScript adds, what it does not do, and why teams adopt it.
 course: typescript
-order: 1
 status: draft
 ---
 

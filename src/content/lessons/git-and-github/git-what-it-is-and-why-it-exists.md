@@ -2,7 +2,6 @@
 title: "Git: what it is and why it exists"
 description: Learn what Git actually does, what a repository is, and why version control matters before looking at commands.
 course: git-and-github
-order: 2
 status: published
 ---
 

@@ -2,7 +2,6 @@
 title: "GitHub: cloning and syncing work"
 description: Learn how to start from an existing GitHub repository and how to keep your local work in sync with the remote.
 course: git-and-github
-order: 11
 status: published
 ---
 

@@ -2,7 +2,6 @@
 title: "npm: starting a project and installing packages"
 description: Learn what package.json is, how npm init works, and how dependencies get added to a project.
 course: npm-and-pnpm
-order: 3
 status: published
 ---
 

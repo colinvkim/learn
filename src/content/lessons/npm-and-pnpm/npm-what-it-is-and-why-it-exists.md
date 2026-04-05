@@ -2,7 +2,6 @@
 title: "npm: what it is and why it exists"
 description: Learn what npm actually does, what a package is, and why JavaScript projects need a package manager in the first place.
 course: npm-and-pnpm
-order: 2
 status: published
 ---
 

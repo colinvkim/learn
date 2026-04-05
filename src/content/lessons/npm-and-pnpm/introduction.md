@@ -2,7 +2,6 @@
 title: Introduction
 description: "Start with the big picture: what npm and pnpm are, why package managers exist, and what you should understand before using them."
 course: npm-and-pnpm
-order: 1
 status: published
 ---
 

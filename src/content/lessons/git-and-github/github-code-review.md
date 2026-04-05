@@ -2,7 +2,6 @@
 title: "GitHub: code review"
 description: Learn what review feedback looks like in practice and how to respond without losing the thread of the work.
 course: git-and-github
-order: 13
 status: published
 ---
 

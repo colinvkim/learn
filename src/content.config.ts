@@ -26,7 +26,6 @@ const lessons = defineCollection({
     title: z.string(),
     description: z.string(),
     course: reference("courses"),
-    order: z.number().int().positive(),
     status: z.enum(["draft", "published"]),
   }),
 });

@@ -2,7 +2,6 @@
 title: Which one should you use?
 description: Choose npm or pnpm based on the shape of your project instead of vague internet preferences.
 course: npm-and-pnpm
-order: 10
 status: published
 ---
 

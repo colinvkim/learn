@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from "astro:content";
+import { courseLessonOrder } from "../../content/courses/order";
 
 export type CourseEntry = CollectionEntry<"courses">;
 export type LessonEntry = CollectionEntry<"lessons">;
@@ -28,8 +29,27 @@ function compareCourses(a: CourseEntry, b: CourseEntry) {
   return a.data.sortOrder - b.data.sortOrder || a.data.title.localeCompare(b.data.title);
 }
 
+function getLessonOrderIndex(entry: LessonEntry) {
+  const { courseSlug, lessonSlug } = parseLessonId(entry);
+  const courseOrder = courseLessonOrder[courseSlug];
+
+  if (!courseOrder) {
+    return Infinity;
+  }
+
+  const index = courseOrder.indexOf(lessonSlug);
+  return index === -1 ? Infinity : index;
+}
+
 function compareLessons(a: LessonEntry, b: LessonEntry) {
-  return a.data.order - b.data.order || a.data.title.localeCompare(b.data.title);
+  const aIndex = getLessonOrderIndex(a);
+  const bIndex = getLessonOrderIndex(b);
+
+  if (aIndex !== bIndex) {
+    return aIndex - bIndex;
+  }
+
+  return a.data.title.localeCompare(b.data.title);
 }
 
 function parseLessonId(entry: LessonEntry) {
