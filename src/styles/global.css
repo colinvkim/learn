@@ -62,7 +62,7 @@
 }
 
 html[data-theme-transition="true"]::view-transition-group(root) {
-  animation-duration: 560ms;
+  animation-duration: 700ms;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -83,30 +83,39 @@ html[data-theme-transition="true"]::view-transition-new(root) {
   from {
     opacity: 1;
     filter: blur(0) saturate(1);
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
   }
 
   to {
     opacity: 0;
-    filter: blur(6px) saturate(0.98);
-    transform: scale(1.01);
+    filter: blur(8px) saturate(1.1);
+    transform: scale(0.96) rotate(-1deg);
   }
 }
 
 @keyframes learn-root-new {
-  from {
+  0% {
     opacity: 0;
-    filter: blur(10px) saturate(1.03) brightness(1.01);
-    transform: scale(0.985);
+    filter: blur(12px) saturate(1.2) brightness(1.08);
+    transform: scale(1.04) rotate(1.5deg);
+    clip-path: circle(0% at var(--theme-transition-x, 50%) var(--theme-transition-y, 50%));
   }
 
-  60% {
-    opacity: 0.92;
+  15% {
+    opacity: 1;
+    filter: blur(6px) saturate(1.15) brightness(1.05);
+  }
+
+  50% {
+    opacity: 1;
+    filter: blur(2px) saturate(1.05) brightness(1.02);
+    clip-path: circle(75% at var(--theme-transition-x, 50%) var(--theme-transition-y, 50%));
   }
 
   to {
     opacity: 1;
     filter: blur(0) saturate(1) brightness(1);
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
+    clip-path: circle(150% at var(--theme-transition-x, 50%) var(--theme-transition-y, 50%));
   }
 }

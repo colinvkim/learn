@@ -75,15 +75,24 @@ const canonical = Astro.site
           applyTheme(getResolvedTheme(), false);
         };
 
-        const toggleTheme = () => {
+        const toggleTheme = (event) => {
           const nextTheme = root.classList.contains("dark") ? "light" : "dark";
           const update = () => applyTheme(nextTheme);
 
           if (typeof document.startViewTransition === "function") {
+            // Capture click position for circular reveal origin
+            const x = event?.clientX ?? window.innerWidth / 2;
+            const y = event?.clientY ?? window.innerHeight / 2;
+            
             root.dataset.themeTransition = "true";
+            root.style.setProperty("--theme-transition-x", `${x}px`);
+            root.style.setProperty("--theme-transition-y", `${y}px`);
+            
             const transition = document.startViewTransition(update);
             transition.finished.finally(() => {
               delete root.dataset.themeTransition;
+              root.style.removeProperty("--theme-transition-x");
+              root.style.removeProperty("--theme-transition-y");
             });
             return;
           }
@@ -95,7 +104,7 @@ const canonical = Astro.site
           document.addEventListener("click", (event) => {
             if (!(event.target instanceof Element)) return;
             if (!event.target.closest("[data-theme-toggle]")) return;
-            toggleTheme();
+            toggleTheme(event);
           });
 
           document.addEventListener("astro:after-swap", restoreTheme);

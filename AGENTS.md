@@ -27,6 +27,12 @@ pnpm astro ...
 
 **Content authoring guidelines:** Read [CONTENT-PREFERENCES.md](./CONTENT-PREFERENCES.md) before writing or editing content.
 
+## Workflow
+
+- Always run `pnpm build` after making changes to verify the build passes before committing.
+- Use Conventional Commits format for commit messages: `fix:`, `feat:`, `chore:`, `refactor:`, `docs:`, etc.
+- Commit changes immediately after they are verified to pass locally.
+
 ## Site Structure
 
 ```
