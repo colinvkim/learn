@@ -1,25 +1,21 @@
-interface Window {
-  __learnThemeController?: { restoreTheme: () => void; syncToggles: () => void };
-}
-
 (() => {
   const storageKey = "learn-theme";
   const root = document.documentElement;
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
-  const getStoredTheme = (): "light" | "dark" | null => {
+  const getStoredTheme = () => {
     const stored = localStorage.getItem(storageKey);
     if (stored === "light" || stored === "dark") return stored;
     return null;
   };
 
-  const getResolvedTheme = (): "light" | "dark" => {
+  const getResolvedTheme = () => {
     const stored = getStoredTheme();
     if (stored) return stored;
     return prefersDark.matches ? "dark" : "light";
   };
 
-  const syncToggles = (): void => {
+  const syncToggles = () => {
     const isDark = root.classList.contains("dark");
     const nextTheme = isDark ? "light" : "dark";
 
@@ -37,7 +33,7 @@ interface Window {
     });
   };
 
-  const applyTheme = (theme: "light" | "dark", persist = true): void => {
+  const applyTheme = (theme, persist = true) => {
     root.classList.toggle("dark", theme === "dark");
     root.style.colorScheme = theme;
 
@@ -48,11 +44,11 @@ interface Window {
     syncToggles();
   };
 
-  const restoreTheme = (): void => {
+  const restoreTheme = () => {
     applyTheme(getResolvedTheme(), false);
   };
 
-  const toggleTheme = (event: MouseEvent | undefined): void => {
+  const toggleTheme = (event) => {
     const nextTheme = root.classList.contains("dark") ? "light" : "dark";
     const update = () => applyTheme(nextTheme);
 
