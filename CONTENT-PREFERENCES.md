@@ -92,3 +92,4 @@ Avoid
 - assumed background knowledge
 - repetitive course-management language
 - content written to sound impressive rather than teach clearly
+- emoji checkmarks (✅), decorations, or other decorative symbols in lists or content
