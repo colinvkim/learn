@@ -52,11 +52,11 @@
   a {
     @apply transition-colors;
   }
+}
 
-  /* Code block backgrounds: stay dark in both modes */
-  [data-content-article] pre {
-    @apply bg-slate-900 dark:bg-slate-900;
-  }
+/* Code block backgrounds: stay dark in both modes */
+[data-content-article] pre {
+  background-color: #0f172a !important;
 }
 
 ::view-transition-old(root),
