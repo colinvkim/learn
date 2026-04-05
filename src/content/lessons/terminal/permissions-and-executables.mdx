@@ -1,0 +1,167 @@
+---
+title: Permissions, ownership, and executables
+description: "Understand read, write, and execute permissions, ownership, chmod, chown, shebangs, PATH lookup, and why ./script is sometimes needed."
+course: terminal
+order: 7
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Callout from "../../../components/content/Callout.astro";
+
+This is essential for real-world terminal use. Permission issues are a common source of confusion — "why can't I run this file?" or "why am I getting 'permission denied'?"
+
+## Read, write, execute
+
+Every file and directory has three basic permissions:
+
+- **read** (`r`) — view the contents
+- **write** (`w`) — modify or delete
+- **execute** (`x`) — run as a program (for directories: enter the directory)
+
+These permissions are assigned to three categories:
+
+- **user** (`u`) — the file's owner
+- **group** (`g`) — a group of users
+- **other** (`o`) — everyone else
+
+## Reading permissions with `ls -l`
+
+```bash
+ls -l script.sh
+```
+
+Output:
+
+```text
+-rwxr-xr--  1 colin  staff  1234  Jan 15 10:30  script.sh
+```
+
+Break this down:
+
+```
+-  rwx  r-x  r--
+^  ^^^  ^^^  ^^^
+|  |    |    |
+|  |    |    other: read only
+|  |    group: read + execute
+|  user: read + write + execute
+file type: - = regular file, d = directory
+```
+
+The number `1` is the link count. `colin` is the owner. `staff` is the group. `1234` is the file size. The rest is the date and name.
+
+## Changing permissions — `chmod`
+
+```bash
+chmod +x script.sh           # add execute for everyone
+chmod u+x script.sh          # add execute for the owner only
+chmod 755 script.sh          # set permissions numerically
+chmod 644 file.txt           # rw for owner, r for group and other
+```
+
+### Numeric mode
+
+Each permission has a value: `r=4`, `w=2`, `x=1`. Add them up per category:
+
+- `7` = `rwx` (4+2+1)
+- `6` = `rw-` (4+2)
+- `5` = `r-x` (4+1)
+- `4` = `r--` (4)
+
+So `chmod 755` means: owner gets `rwx`, group gets `r-x`, other gets `r-x`.
+
+`chmod 644` is common for regular files: owner can read/write, everyone else can only read.
+
+## Changing ownership — `chown`
+
+```bash
+sudo chown root:wheel file.txt    # change owner to root, group to wheel
+sudo chown colin file.txt         # change owner to colin
+```
+
+`chown` usually requires `sudo` because only the superuser can change file ownership.
+
+## Executable files and the shebang
+
+When a script file starts with a **shebang** line, it tells the system which interpreter to use:
+
+```bash
+#!/usr/bin/env bash
+echo "Hello"
+```
+
+The `#!` at the top of the file is the shebang. `/usr/bin/env bash` locates the `bash` executable in your `PATH`.
+
+Common shebangs:
+
+```bash
+#!/usr/bin/env bash        # bash script
+#!/usr/bin/env python3     # Python 3 script
+#!/usr/bin/env zsh         # zsh script
+#!/usr/bin/env node        # Node.js script
+```
+
+## Why `./script` is needed sometimes
+
+If you create an executable script in the current directory, you cannot run it by typing just its name:
+
+```bash
+script.sh                  # fails: command not found
+./script.sh                # works: run script.sh from the current directory
+```
+
+This happens because the shell searches for commands in your `PATH` — a list of directories. The current directory (`.`) is usually not in `PATH` for security reasons. `./script.sh` explicitly says "run the file called `script.sh` right here."
+
+## PATH lookup
+
+When you type a command like `ls` or `python`, the shell searches through each directory in your `PATH` until it finds a matching executable.
+
+```bash
+echo $PATH
+```
+
+Output:
+
+```text
+/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+```
+
+Each directory is separated by `:`. The shell checks them in order. The first match wins.
+
+<Callout title="PowerShell equivalent">
+  PowerShell uses `$env:PATH` (semicolon-separated on Windows). Use `Get-Command` to find executables. Permission models differ significantly — Windows uses ACLs rather than Unix-style rwx. For most everyday work, PowerShell scripts require an execution policy change: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `echo %PATH%` to see the search path. Windows does not use Unix permissions. File permissions are managed through the Properties > Security dialog or `icacls` command.
+</Callout>
+
+## `sudo` — run as the superuser
+
+```bash
+sudo apt install python3       # install a package (requires admin)
+sudo rm /protected/file.txt    # delete a protected file
+```
+
+`sudo` runs a command with elevated (administrator) privileges. You will be prompted for your password.
+
+Use `sudo` only when necessary. Running everyday commands with `sudo` is risky.
+
+<Callout title="Windows note">
+  Windows does not have `sudo` in Command Prompt or PowerShell in the same way. To run as administrator, open the terminal "as Administrator." PowerShell 7+ includes `sudo` on recent Windows builds when enabled.
+</Callout>
+
+## Directories and permissions
+
+Directory permissions work slightly differently:
+
+- **read** on a directory — list its contents
+- **write** on a directory — create, rename, or delete files inside it
+- **execute** on a directory — enter it (needed for `cd`)
+
+If you cannot `cd` into a directory, it may be missing the execute permission for your user.
+
+## The main idea to carry forward
+
+Permissions control who can read, write, and execute each file. `ls -l` shows them. `chmod` changes them. `chown` changes ownership. Shebangs tell the system which interpreter to use for scripts. The current directory is usually not in `PATH`, which is why `./script` is required. `sudo` elevates privileges for admin tasks. Understanding these concepts prevents most "permission denied" confusion.

@@ -1,0 +1,154 @@
+---
+title: Viewing and inspecting file contents
+description: "Learn to quickly read and inspect files in the terminal using cat, less, head, tail, wc, file, and stat — including how to follow live log files."
+course: terminal
+order: 5
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Callout from "../../../components/content/Callout.astro";
+import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
+
+A terminal user should be able to look inside any file without leaving the command line.
+
+## Print a file — `cat`
+
+```bash
+cat README.md
+```
+
+`cat` reads a file and prints it to the terminal. It is fast and simple.
+
+```bash
+cat file1.txt file2.txt    # concatenate and print multiple files
+cat -n file.txt            # show line numbers
+```
+
+For large files, `cat` scrolls too fast to read. Use `less` instead.
+
+<Callout title="PowerShell equivalent">
+  Use `Get-Content README.md` or the alias `cat README.md` (PowerShell maps `cat` to `Get-Content`). For line numbers it is more involved — or just use `less` if available.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `type README.md`.
+</Callout>
+
+## Page through a file — `less`
+
+```bash
+less large-file.txt
+```
+
+`less` opens a file in a scrollable viewer. This is the right tool for anything bigger than a screenful.
+
+Navigation:
+
+- `j` / `k` or arrow keys — scroll down / up
+- `Space` — page down
+- `b` — page up
+- `g` — go to the top
+- `G` — go to the bottom
+- `/pattern` — search forward
+- `q` — quit
+
+<Callout title="PowerShell equivalent">
+  Use `Get-Content large-file.txt | more`. The `more` command provides basic paging but lacks search. If you have WSL or Git Bash, `less` is often available.
+</Callout>
+
+## View the beginning or end — `head` and `tail`
+
+```bash
+head file.txt          # first 10 lines
+head -n 20 file.txt    # first 20 lines
+
+tail file.txt          # last 10 lines
+tail -n 5 file.txt     # last 5 lines
+```
+
+### Following live logs with `tail -f`
+
+```bash
+tail -f server.log
+```
+
+`tail -f` keeps the file open and prints new lines as they are appended. This is how you watch a log file in real time.
+
+Stop with `Ctrl-C`.
+
+<Callout title="PowerShell equivalent">
+  Use `Get-Content file.txt -Tail 10` for the last lines. For live following: `Get-Content file.txt -Wait -Tail 10`.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Command Prompt has no built-in `head` or `tail`. Use `more` for paging, or install GNU tools via Git Bash or WSL.
+</Callout>
+
+## Count lines, words, characters — `wc`
+
+```bash
+wc file.txt            # lines, words, bytes
+wc -l file.txt         # just lines
+wc -w file.txt         # just words
+wc -c file.txt         # just bytes
+```
+
+Useful for quick checks:
+
+```bash
+wc -l access.log       # how many log entries?
+```
+
+## What kind of file is this? — `file`
+
+```bash
+file image.png
+file script.sh
+file data.bin
+```
+
+`file` inspects a file's contents (not just the extension) and reports what type it is.
+
+```text
+image.png:  PNG image data, 800 x 600, 8-bit/color RGBA
+script.sh:  POSIX shell script, ASCII text executable
+data.bin:   data
+```
+
+This is useful when an extension is missing or misleading.
+
+## File metadata — `stat`
+
+```bash
+stat file.txt
+```
+
+`stat` shows metadata: file size, permissions, owner, creation time, modification time.
+
+```text
+  File: file.txt
+  Size: 1234        Blocks: 8          IO Block: 4096   regular file
+  Access: 2025-01-15 10:30:00.000000000 +0000
+  Modify: 2025-01-14 09:00:00.000000000 +0000
+  Change: 2025-01-14 09:00:00.000000000 +0000
+```
+
+<Callout title="PowerShell equivalent">
+  Use `Get-Item file.txt` or `Get-ItemProperty file.txt`. For detailed info: `(Get-Item file.txt).LastWriteTime`, `(Get-Item file.txt).Length`, etc.
+</Callout>
+
+## Line endings: plain text vs binary
+
+Text files use invisible characters to mark line endings:
+
+- Unix (macOS, Linux): `LF` (`\n`)
+- Windows: `CRLF` (`\r\n`)
+
+This usually does not matter, but it can cause issues when scripts written on one platform run on another. If a script fails with "bad interpreter" or strange `^M` characters appear in output, line endings are likely the cause.
+
+Binary files (images, compiled programs, archives) should not be printed with `cat` — they will produce garbled output. Use `file` to identify them first.
+
+## The main idea to carry forward
+
+Use the right viewer for the job: `cat` for small files, `less` for anything larger, `head`/`tail` for the edges, `tail -f` for live logs, `wc` for counts, `file` for type identification, and `stat` for metadata. These tools give you complete visibility into any file.

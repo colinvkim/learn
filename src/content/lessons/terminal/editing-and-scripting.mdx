@@ -1,0 +1,291 @@
+---
+title: Editing files and writing scripts
+description: "Learn to edit config files with nano and vim, write basic shell scripts, and develop safe scripting habits that make your automation reusable."
+course: terminal
+order: 10
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Callout from "../../../components/content/Callout.astro";
+
+The terminal becomes much more useful once you can edit files in it and automate repetitive work.
+
+## Editing files in the terminal
+
+You will sometimes need to edit config files or write scripts without leaving the terminal. Two editors are worth knowing about.
+
+## nano — for accessibility
+
+`nano` is a simple terminal text editor. It shows its keyboard shortcuts at the bottom of the screen, making it beginner-friendly.
+
+```bash
+nano ~/.zshrc          # open your zsh config
+nano notes.txt         # create or edit a file
+```
+
+Basic usage:
+
+- Type normally to edit
+- `Ctrl-O` then `Enter` — save (Write Out)
+- `Ctrl-X` — exit
+- `Ctrl-W` — search
+- `Ctrl-K` — cut current line
+- `Ctrl-U` — paste (uncut)
+
+`nano` is usually preinstalled on macOS and Linux. It is a safe choice when you just need to change a config file.
+
+<Callout title="PowerShell and Command Prompt">
+  Neither PowerShell nor Command Prompt includes `nano` by default. On Windows, use `notepad filename` to open Notepad, or install `nano` via a package manager like Winget, Scoop, or Git Bash.
+</Callout>
+
+## vim — for literacy
+
+`vim` is a powerful modal editor. It has a steep learning curve, but knowing the basics makes you comfortable anywhere, since `vim` or `vi` is installed on virtually every Unix system.
+
+Open a file:
+
+```bash
+vim file.txt
+```
+
+Essential survival commands:
+
+- `i` — enter Insert mode (type normally)
+- `Esc` — return to Normal mode
+- `:w` — save
+- `:q` — quit
+- `:wq` — save and quit
+- `:q!` — quit without saving
+- `dd` — delete current line (in Normal mode)
+- `u` — undo
+- `/pattern` — search
+- `n` — next search result
+- `gg` — go to top
+- `G` — go to bottom
+
+### The mental model
+
+`vim` has modes. In **Normal mode**, keys are commands (navigate, delete, copy). In **Insert mode**, keys type text. You switch between them with `i` (insert) and `Esc` (normal).
+
+Start by learning only: `i`, `Esc`, `:wq`, `:q!`, `dd`, and arrow keys. That is enough to edit config files. Expand from there as you need.
+
+<Callout title="PowerShell equivalent">
+  `vim` works in PowerShell if installed. PowerShell also has `ise` (Integrated Scripting Environment) on Windows, and `code` launches VS Code if installed.
+</Callout>
+
+## Basic shell scripts
+
+A shell script is a text file containing commands you would otherwise type one by one.
+
+Create a file called `greet.sh`:
+
+```bash
+#!/usr/bin/env bash
+echo "Hello, $1"
+```
+
+Make it executable:
+
+```bash
+chmod +x greet.sh
+```
+
+Run it:
+
+```bash
+./greet.sh World
+```
+
+Output:
+
+```text
+Hello, World
+```
+
+- `$1` is the first argument passed to the script
+- `$2` is the second, and so on
+- `$@` is all arguments
+- `$0` is the script name
+
+## Variables in scripts
+
+```bash
+#!/usr/bin/env bash
+
+name=$1
+greeting="Hello, $name"
+echo "$greeting"
+```
+
+Always quote variable expansions (`"$name"` not `$name`) to handle values containing spaces.
+
+## Conditionals
+
+```bash
+#!/usr/bin/env bash
+
+if [ -z "$1" ]; then
+  echo "Usage: greet.sh <name>"
+  exit 1
+fi
+
+echo "Hello, $1"
+```
+
+- `-z` tests if a string is empty
+- `exit 1` exits with an error code (non-zero means failure)
+- `exit 0` is implicit on success
+
+## Loops
+
+```bash
+#!/usr/bin/env bash
+
+# Process each argument
+for arg in "$@"; do
+  echo "Processing: $arg"
+done
+```
+
+```bash
+#!/usr/bin/env bash
+
+# Process each line of a file
+while read -r line; do
+  echo "Line: $line"
+done < input.txt
+```
+
+## Safe scripting habits
+
+### Use `set -euo pipefail`
+
+Add this near the top of your scripts:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+```
+
+- `set -e` — exit immediately if any command fails
+- `set -u` — treat unset variables as errors
+- `set -o pipefail` — a pipe fails if any command in it fails
+
+These flags catch common mistakes early.
+
+### Always quote variables
+
+```bash
+echo "$filename"       # safe, handles spaces correctly
+echo $filename         # unsafe, word-splitting on spaces
+```
+
+### Use `"$@"` not `$*`
+
+```bash
+for arg in "$@"; do    # each argument preserved as-is
+```
+
+`"$@"` keeps arguments with spaces intact. `$*` joins them all into one string.
+
+### Test before running destructively
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Preview what would be deleted
+echo "Would delete:"
+find . -name "*.tmp" -print
+
+# Confirm before proceeding
+read -rp "Proceed? (y/N) " confirm
+if [[ "$confirm" == [yY] ]]; then
+  find . -name "*.tmp" -delete
+  echo "Done."
+else
+  echo "Aborted."
+fi
+```
+
+## Making scripts reusable
+
+### Put scripts in your PATH
+
+Create a directory for personal scripts:
+
+```bash
+mkdir -p ~/.local/bin
+```
+
+Add it to your PATH in `~/.zshrc` or `~/.bashrc`:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Now any executable script in `~/.local/bin` can be run by name from anywhere.
+
+### Name scripts clearly
+
+- `backup.sh` — what it does
+- `deploy.sh` — what it does
+- Avoid generic names like `script.sh` or `test.sh`
+
+### Document usage
+
+Print a usage message when arguments are missing:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  echo "Usage: $(basename "$0") <input_dir> <output_file>"
+  echo ""
+  echo "  <input_dir>   Directory containing files to process"
+  echo "  <output_file> Path to write results"
+  exit 1
+}
+
+if [ $# -lt 2 ]; then
+  usage
+fi
+
+input_dir="$1"
+output_file="$2"
+
+echo "Processing $input_dir -> $output_file"
+```
+
+## A practical example: a project setup script
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Usage: setup-project.sh <project-name>
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $(basename "$0") <project-name>"
+  exit 1
+fi
+
+name="$1"
+
+mkdir -p "$name"/{src,tests,docs}
+cd "$name"
+touch README.md src/main.js tests/main.test.js
+git init
+git add .
+git commit -m "Initial commit"
+
+echo "Project '$name' created."
+```
+
+This script creates a basic project structure with Git in one command.
+
+## The main idea to carry forward
+
+Use `nano` for quick, approachable editing. Learn enough `vim` to be comfortable on any system. Shell scripts are text files of commands — make them executable with `chmod +x` and run with `./script`. Use `set -euo pipefail`, quote your variables, validate arguments, and put reusable scripts in a directory on your `PATH`.

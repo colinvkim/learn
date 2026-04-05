@@ -1,0 +1,231 @@
+---
+title: Pipes, redirection, and shell features
+description: "Learn to chain commands together with pipes, redirect output to files, use quoting and expansion effectively, and navigate command history."
+course: terminal
+order: 9
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Callout from "../../../components/content/Callout.astro";
+
+This lesson covers the shell features that turn individual commands into powerful workflows.
+
+## Pipes: connecting commands
+
+A **pipe** (`|`) takes the output of one command and feeds it as input to the next:
+
+```bash
+cat server.log | grep "error" | wc -l
+```
+
+This counts how many lines in `server.log` contain "error". Three commands, one pipeline.
+
+More examples:
+
+```bash
+ls -la | grep "Jan"              # only January entries
+ps aux | grep node               # find node processes
+history | grep "git commit"      # find past git commit commands
+cat data.csv | head -n 20 | cut -d, -f1    # first field of first 20 lines
+```
+
+Pipes are the core shell feature for chaining tools together. Any command that produces text output can feed into any command that reads text input.
+
+## Redirection: saving output to files
+
+### Write to a file — `>`
+
+```bash
+echo "hello" > greeting.txt      # writes to file (overwrites if it exists)
+ls -la > listing.txt             # saves directory listing to a file
+```
+
+`>` creates the file if it does not exist, or overwrites it if it does.
+
+### Append to a file — `>>`
+
+```bash
+echo "line 1" >> log.txt
+echo "line 2" >> log.txt         # appends, does not overwrite
+```
+
+### Read from a file — `<`
+
+```bash
+sort < names.txt                 # sort reads from names.txt instead of stdin
+grep "error" < server.log        # same as: grep "error" server.log
+```
+
+### Redirect errors — `2>`
+
+Commands have two output streams: **stdout** (normal output) and **stderr** (errors).
+
+```bash
+command > output.txt 2> errors.txt    # separate stdout and stderr
+command > output.txt 2>&1             # send both to the same file
+command &> output.txt                 # bash/zsh shorthand for both
+```
+
+## Quoting
+
+Quoting controls how the shell interprets special characters.
+
+### Double quotes `"..."`
+
+Double quotes preserve most literal characters but allow variable expansion:
+
+```bash
+name="World"
+echo "Hello $name"       # Hello World
+```
+
+### Single quotes `'...'`
+
+Single quotes preserve everything literally — no variable expansion:
+
+```bash
+name="World"
+echo 'Hello $name'       # Hello $name
+```
+
+Use single quotes when you need the literal text, not the variable's value.
+
+### Why quotes matter for spaces
+
+Spaces separate arguments. If a filename contains spaces, you must quote it:
+
+```bash
+cd "My Documents"        # correct
+cd My Documents          # tries to cd to "My", then runs "Documents" as a command
+```
+
+The same applies to any command:
+
+```bash
+cat "my file.txt"        # reads one file with a space in the name
+cat my file.txt          # tries to read two files: "my" and "file.txt"
+```
+
+## Expansion
+
+The shell expands special patterns before running commands.
+
+### Brace expansion
+
+```bash
+mkdir -p project/{src,tests,docs}      # creates three directories
+touch file.{js,css,html}               # creates file.js, file.css, file.html
+```
+
+### Variable expansion
+
+```bash
+echo $HOME             # expands to your home directory path
+echo $PATH             # expands to your PATH
+echo "${HOME}/src"     # explicit form, useful when followed by text
+```
+
+### Command substitution
+
+```bash
+current_dir=$(pwd)
+echo "You are in: $current_dir"
+
+find . -name "$(cat filename.txt)"     # use a file's content as a search term
+```
+
+`$(...)` runs a command and substitutes its output into the command line.
+
+## Command history
+
+The shell keeps a record of every command you have run.
+
+### Navigating history
+
+- `Up` arrow — previous command
+- `Down` arrow — next command
+- `Ctrl-R` — search backward through history (type to find past commands)
+- `Ctrl-R` again — continue searching backward
+- `Esc` then `Ctrl-R` — search forward (zsh)
+
+### History commands
+
+```bash
+history              # show all past commands with numbers
+history | grep git   # search past commands
+!!                   # repeat the last command
+!50                  # repeat command number 50 from history
+!git                 # repeat the most recent git command
+!$                   # the last argument of the previous command
+```
+
+<Callout title="PowerShell equivalent">
+  Use `Get-History` or the alias `h`. `Up` arrow works the same. `Ctrl-R` works in Windows Terminal. `!!` and `!` expansion are not available by default — use `Invoke-History` instead.
+</Callout>
+
+## Chaining commands
+
+### Sequential execution — `;`
+
+```bash
+cd project; ls -la; git status
+```
+
+Each command runs in order, regardless of success or failure.
+
+### Run on success — `&&`
+
+```bash
+mkdir build && cd build && touch index.html
+```
+
+Each command runs only if the previous one succeeded. This is the safest chaining method.
+
+### Run on failure — `||`
+
+```bash
+command_that_might_fail || echo "It failed"
+```
+
+The second command runs only if the first one failed.
+
+## Background processes — `&`
+
+```bash
+python -m http.server &
+```
+
+The `&` runs the command in the background, returning you to the prompt immediately.
+
+<Callout title="Windows note">
+  Pipes (`|`), redirection (`>`, `>>`), and chaining (`&&`, `||`, `;`) work the same way in PowerShell and Command Prompt for basic usage. Quote syntax differs: PowerShell uses single and double quotes similarly but has more complex parsing rules. Brace expansion (`{a,b,c}`) is not available in PowerShell or Command Prompt.
+</Callout>
+
+## Useful workflow patterns
+
+### Process a set of files
+
+```bash
+for f in *.txt; do
+  echo "Processing $f"
+  wc -l "$f"
+done
+```
+
+### Create a backup before editing
+
+```bash
+cp config.txt config.txt.bak && nano config.txt
+```
+
+### Search and act
+
+```bash
+find . -name "*.tmp" -print -delete     # show and remove temp files
+grep -rl "TODO" src/ | head -n 5        # find first 5 files with TODO
+```
+
+## The main idea to carry forward
+
+Pipes connect commands into pipelines. Redirection saves output to files or separates errors. Quoting prevents word splitting and controls variable expansion. Expansion (braces, variables, command substitution) saves typing. History lets you reuse and search past commands. `&&`, `||`, and `;` chain commands with different safety levels. These features turn a sequence of individual commands into serious workflows.

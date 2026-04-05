@@ -1,0 +1,207 @@
+---
+title: Navigating the filesystem
+description: "Learn to move around the filesystem with confidence: pwd, ls, cd, absolute and relative paths, shortcuts like ~ and .., tab completion, and common gotchas."
+course: terminal
+order: 3
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Callout from "../../../components/content/Callout.astro";
+import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
+
+This is the single most important terminal skill. Everything else builds on it.
+
+The filesystem is a tree of directories. At any moment, your shell has a **current working directory** — the place it considers "here." Most commands operate relative to that location.
+
+## Where am I? — `pwd`
+
+```bash
+pwd
+```
+
+`pwd` prints the **present working directory** — the full path to where you currently are.
+
+```bash
+/Users/colin/Programming/learn
+```
+
+<Callout title="PowerShell equivalent">
+  Use `Get-Location` or the alias `pwd` (which PowerShell maps to `Get-Location`). The output looks the same.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `cd` with no arguments, or `echo %cd%`.
+</Callout>
+
+## What is here? — `ls`
+
+```bash
+ls
+```
+
+`ls` lists the files and directories in the current directory.
+
+```bash
+ls /tmp          # list a specific directory
+ls -la           # long format, include hidden files
+ls src/*.ts      # list only .ts files in src/
+```
+
+Common flags:
+
+- `-l` — long format (shows permissions, owner, size, date)
+- `-a` — show hidden files (those starting with `.`)
+- `-h` — human-readable file sizes (used with `-l`)
+
+<Callout title="PowerShell equivalent">
+  Use `Get-ChildItem` or the alias `ls` (PowerShell maps `ls` to `Get-ChildItem`). Flags differ: `Get-ChildItem -Force` shows hidden items.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `dir`. `dir /a` shows hidden (system and hidden) files.
+</Callout>
+
+## Move to a directory — `cd`
+
+```bash
+cd src/content
+```
+
+`cd` changes the current working directory.
+
+```bash
+cd ..            # go up one level
+cd               # go to your home directory
+cd ~             # same, go to your home directory
+cd /tmp          # go to an absolute path
+cd -             # go back to the previous directory
+```
+
+<Callout title="PowerShell and Command Prompt equivalents">
+  Both PowerShell and Command Prompt also use `cd`. The behavior is the same. `cd ..` goes up one level. `cd` alone prints the current directory in Command Prompt but does nothing in PowerShell (use `Get-Location` instead).
+</Callout>
+
+## The root directory
+
+On macOS and Linux, the top of the filesystem is `/`, called the **root directory**. Every absolute path starts here.
+
+```text
+/
+/Users/
+/Users/colin/
+/Users/colin/Programming/
+```
+
+On Windows, each drive has its own root. The root of the C drive is `C:\`.
+
+## The home directory
+
+Your **home directory** is where your user session starts. On macOS and Linux it is typically `/Users/yourname` or `/home/yourname`.
+
+The tilde character `~` is a shortcut for your home directory:
+
+```bash
+cd ~             # go home
+cd ~/Desktop     # go to Desktop
+```
+
+## Absolute vs relative paths
+
+An **absolute path** starts from the root. It begins with `/` on Unix or a drive letter on Windows. It means the same thing no matter where you are.
+
+```text
+/Users/colin/Programming/learn/src
+C:\Users\colin\Programming\learn\src
+```
+
+A **relative path** is interpreted from your current directory. It does not start with `/` or a drive letter.
+
+```text
+src/content/lessons
+```
+
+If you are in `/Users/colin/Programming/learn`, then `src/content/lessons` resolves to `/Users/colin/Programming/learn/src/content/lessons`.
+
+## `.` and `..`
+
+Two special directory references:
+
+- `.` — the current directory
+- `..` — the parent directory (one level up)
+
+```bash
+./README.md      # README.md in the current directory
+../package.json  # package.json in the parent directory
+```
+
+You rarely need `./` for simple commands, but it becomes important when running scripts (covered later).
+
+## Hidden files
+
+Files whose names start with a dot `.` are **hidden** by convention. They do not appear in a plain `ls` output.
+
+```bash
+ls -a            # show hidden files
+```
+
+Common hidden files: `.gitignore`, `.zshrc`, `.env`, `.bashrc`.
+
+Hidden files are not secret — just conventionally out of the way.
+
+## Tab completion
+
+Press `Tab` while typing a path or command and the shell will attempt to complete it.
+
+```bash
+cd src/con<Tab>  # completes to src/content/ if unambiguous
+```
+
+If there are multiple matches, pressing `Tab` twice shows them. Tab completion prevents typos and saves time. Use it constantly.
+
+## Case sensitivity
+
+On macOS and Linux, `File.txt` and `file.txt` are different files. On Windows, they are usually treated as the same.
+
+This matters when you move between systems. A script that works on your Mac might fail on a Linux server if the case does not match exactly.
+
+## Trailing slashes
+
+A trailing slash on a directory path is often optional, but it can change behavior:
+
+```bash
+ls src           # lists the directory entry itself in some contexts
+ls src/          # lists the contents — more explicit that it is a directory
+```
+
+When copying, a trailing slash on the source can mean "copy the contents of" rather than "copy the directory":
+
+```bash
+cp -r src/ dest/    # copies contents of src/ into dest/
+cp -r src dest/     # copies src/ as a subdirectory inside dest/
+```
+
+The behavior varies slightly between systems. When in doubt, check the result with `ls` after running the command.
+
+## Practice exercise
+
+Try this sequence in your terminal:
+
+```bash
+pwd              # where are you?
+cd ~             # go home
+pwd              # confirm
+ls -a            # see hidden files
+cd Desktop
+pwd
+cd ..
+pwd
+cd /tmp
+pwd
+cd -             # go back to where you were
+pwd
+```
+
+## The main idea to carry forward
+
+The filesystem is a tree. You are always at one node in that tree. Paths are addresses that tell the shell where to look, and they can be absolute (from the root) or relative (from where you are). Tab completion, `.`, `..`, and `~` are navigation shortcuts. Once you internalize this model, moving around becomes automatic.

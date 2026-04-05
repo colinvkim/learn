@@ -1,0 +1,164 @@
+---
+title: Searching and discovering files and content
+description: "Learn to find files by name, search inside files with grep, locate commands, and use regular expressions to filter results effectively."
+course: terminal
+order: 6
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Callout from "../../../components/content/Callout.astro";
+import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
+
+This is where the terminal starts to feel powerful. Instead of clicking through folders and using a graphical search bar, you can describe exactly what you want and get an answer in seconds.
+
+## Find files by name — `find`
+
+```bash
+find . -name "config.json"          # search from current directory
+find /home -name "*.log"            # all .log files under /home
+find . -type d -name "build"        # directories named "build"
+```
+
+`find` walks a directory tree and tests each entry against your criteria.
+
+- `.` — start from the current directory (recurses downward)
+- `-name` — match by filename (case-sensitive)
+- `-iname` — match by filename (case-insensitive)
+- `-type f` — regular files only
+- `-type d` — directories only
+- `-mtime -7` — modified in the last 7 days
+- `-size +1M` — larger than 1 megabyte
+
+```bash
+find . -iname "*.md" -type f        # all markdown files, case-insensitive
+find . -name "*.tmp" -delete        # find and remove all .tmp files
+```
+
+The `-delete` action is destructive. Preview first:
+
+```bash
+find . -name "*.tmp"                # see what would be deleted
+find . -name "*.tmp" -delete        # then delete
+```
+
+<Callout title="PowerShell equivalent">
+  Use `Get-ChildItem -Recurse -Filter "*.log"` or the alias `gci -Recurse -Filter "*.log"`. For name matching: `Get-ChildItem -Recurse -Include "config.json"`.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `dir /s /b config.json` to search recursively. `/s` searches subdirectories, `/b` gives bare paths.
+</Callout>
+
+## Search inside files — `grep`
+
+```bash
+grep "error" server.log             # lines containing "error"
+grep -i "error" server.log          # case-insensitive
+grep -r "TODO" src/                 # recursive search through a directory
+grep -n "error" server.log          # show line numbers
+grep -l "error" *.log               # show only filenames that match
+grep -v "debug" server.log          # lines that do NOT contain "debug"
+```
+
+Common flags:
+
+- `-i` — case-insensitive
+- `-r` — recursive (search all files in a directory tree)
+- `-n` — show line numbers
+- `-l` — print only filenames that match
+- `-v` — invert (show non-matching lines)
+- `-c` — count matching lines
+- `-E` — use extended regular expressions
+
+## Regular expression basics
+
+`grep -E` (or `egrep`) supports regular expressions for flexible matching:
+
+```bash
+grep -E "err(or|s)" file.txt        # match "error" or "errs"
+grep -E "^[A-Z]" file.txt           # lines starting with a capital letter
+grep -E "[0-9]{3}" file.txt         # lines containing a 3-digit number
+grep -E "email@.*\.com" file.txt    # rough email pattern
+```
+
+Basic regex metacharacters:
+
+- `.` — any single character
+- `*` — zero or more of the previous
+- `+` — one or more of the previous (with `-E`)
+- `?` — zero or one of the previous (with `-E`)
+- `^` — start of line
+- `$` — end of line
+- `[]` — character class (e.g. `[a-z]`, `[0-9]`)
+- `()` — grouping (with `-E`)
+- `|` — alternation/or (with `-E`)
+
+Regular expressions are a deep topic. You do not need to master them immediately. The patterns above cover most day-to-day searching.
+
+## Find a command's location — `which`
+
+```bash
+which node
+which python
+```
+
+`which` tells you which executable will run when you type a command. It searches your `PATH` and prints the first match.
+
+```bash
+which node
+/usr/local/bin/node
+```
+
+<Callout title="PowerShell equivalent">
+  Use `Get-Command node` or the alias `gcm node`. It returns the full path plus metadata.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `where node`.
+</Callout>
+
+## Find all locations — `whereis`
+
+```bash
+whereis python
+```
+
+`whereis` reports the binary, source, and manual page locations for a command. It is less commonly used than `which` but can be helpful for deeper investigation.
+
+<Callout title="PowerShell and Command Prompt">
+  No direct equivalent. `where` in Command Prompt and `Get-Command -All` in PowerShell show all matching executables in the PATH.
+</Callout>
+
+## The locate database — `locate`
+
+```bash
+locate filename.txt
+```
+
+`locate` searches a pre-built database of all files on the system. It is much faster than `find` because it does not walk the filesystem in real time.
+
+The database is usually updated daily by a background job (`updatedb`). Newly created files may not appear until the next update.
+
+```bash
+sudo updatedb        # update the database manually
+locate "*.conf"      # fast search
+```
+
+`locate` may not be installed by default on all systems. It is common on Linux but not on macOS.
+
+## Filtering output with grep
+
+A common pattern is to run a command and pipe its output through `grep`:
+
+```bash
+ls -la | grep "Jan"          # only entries from January
+ps aux | grep node           # find running node processes
+history | grep "git"         # past commands containing "git"
+```
+
+This pattern — command | grep — is one of the most frequently used terminal idioms. It turns any command's output into a search target.
+
+## The main idea to carry forward
+
+Use `find` to locate files by name or metadata. Use `grep` to search inside files for text patterns. Use `which` to find where a command lives. Use `locate` for fast system-wide searches when available. And remember: `command | grep pattern` lets you search the output of anything.

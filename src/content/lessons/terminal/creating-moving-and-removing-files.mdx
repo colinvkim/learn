@@ -1,0 +1,191 @@
+---
+title: Creating, moving, and removing files
+description: "Learn to create, copy, move, and delete files and directories safely — including recursive operations, glob patterns, and how to preview before doing something destructive."
+course: terminal
+order: 4
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Callout from "../../../components/content/Callout.astro";
+import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
+
+Once you can navigate, the next step is changing things: creating files, organizing directories, and removing what you no longer need.
+
+## Create an empty file — `touch`
+
+```bash
+touch notes.txt
+```
+
+`touch` updates the timestamps on a file. If the file does not exist, it creates an empty one.
+
+```bash
+touch a.txt b.txt c.txt    # create multiple files at once
+```
+
+<Callout title="PowerShell equivalent">
+  Use `New-Item notes.txt` or the alias `ni notes.txt`. To update timestamps without creating: `Set-ItemProperty` is more involved — most people just use `New-Item`.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `type nul > notes.txt` or `copy nul notes.txt`.
+</Callout>
+
+## Create a directory — `mkdir`
+
+```bash
+mkdir my-folder
+mkdir -p a/b/c             # create nested directories at once
+```
+
+The `-p` flag creates parent directories as needed. Without it, `mkdir a/b/c` fails if `a/b` does not already exist.
+
+<Callout title="PowerShell equivalent">
+  Use `New-Item -ItemType Directory -Name my-folder` or `mkdir my-folder` (PowerShell provides `mkdir` as a function). For nested dirs: `New-Item -ItemType Directory -Path a/b/c -Force`.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `mkdir my-folder` or `md my-folder`. `mkdir a\b\c` creates nested directories automatically.
+</Callout>
+
+## Copy files — `cp`
+
+```bash
+cp notes.txt notes-backup.txt
+cp -r my-folder/ my-folder-backup/    # copy a directory recursively
+```
+
+- `-r` (or `-R`) copies directories recursively. Required for directories.
+- `-i` prompts before overwriting an existing file.
+
+```bash
+cp -i source.txt dest.txt    # asks for confirmation if dest.txt exists
+```
+
+<Callout title="PowerShell equivalent">
+  Use `Copy-Item notes.txt notes-backup.txt` or `cp notes.txt notes-backup.txt` (alias). For directories: `Copy-Item -Recurse my-folder my-folder-backup`.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `copy notes.txt notes-backup.txt` for files. Use `xcopy /E /I my-folder my-folder-backup` or `robocopy my-folder my-folder-backup /E` for directories.
+</Callout>
+
+## Move and rename — `mv`
+
+```bash
+mv notes.txt documents/notes.txt    # move
+mv old-name.txt new-name.txt        # rename
+```
+
+`mv` both moves and renames. They are the same operation — the filesystem sees a path change.
+
+Like `cp`, use `-i` to prompt before overwriting.
+
+<Callout title="PowerShell equivalent">
+  Use `Move-Item notes.txt documents/notes.txt` or `mv notes.txt documents/notes.txt` (alias).
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `move notes.txt documents\notes.txt`.
+</Callout>
+
+## Remove files — `rm`
+
+```bash
+rm notes.txt
+rm -r my-folder/          # remove a directory and everything inside it
+rm -i important.txt       # prompt before removing
+```
+
+- `-r` removes directories recursively.
+- `-f` forces removal without prompting, even if the file does not exist.
+- `-i` prompts before each removal.
+
+<Callout title="Warning: rm -rf is destructive">
+  `rm -rf` removes a directory and everything inside it without asking. Double-check the path before running it. A common safety habit is to run `ls` on the target first, then replace `ls` with `rm -r`.
+</Callout>
+
+<Callout title="PowerShell equivalent">
+  Use `Remove-Item notes.txt` or `rm notes.txt` (alias). For directories: `Remove-Item -Recurse -Force my-folder`.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `del notes.txt` for files. Use `rmdir /s my-folder` for directories (`/s` removes all contents; `/q` suppresses confirmation).
+</Callout>
+
+## Remove an empty directory — `rmdir`
+
+```bash
+rmdir empty-folder
+```
+
+`rmdir` only removes empty directories. If the directory has contents, it fails. Use `rm -r` instead for non-empty directories.
+
+<Callout title="PowerShell equivalent">
+  Use `Remove-Item empty-folder`. PowerShell does not have a direct `rmdir` that only works on empty dirs — it removes regardless of contents. The alias `rmdir` maps to `Remove-Item`.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `rmdir my-folder` for empty directories, or `rmdir /s my-folder` to remove with contents.
+</Callout>
+
+## Glob patterns
+
+Glob patterns let you match multiple files at once:
+
+```bash
+rm *.txt                 # remove all .txt files in the current directory
+cp *.md backup/          # copy all markdown files
+ls src/**/*.ts           # all .ts files in src/ and subdirectories (with globstar)
+```
+
+Common patterns:
+
+- `*` — matches any characters (except `/`)
+- `*.txt` — all files ending in `.txt`
+- `*.*` — all files with an extension
+- `?.txt` — any single character followed by `.txt` (e.g. `a.txt`)
+
+In bash/zsh, `**` matches across directories when `globstar` is enabled:
+
+```bash
+shopt -s globstar        # bash: enable **
+# zsh supports ** by default
+```
+
+## Previewing before destructive actions
+
+Before running a command that deletes or overwrites, preview what it would affect:
+
+```bash
+# Instead of this:
+rm *.log
+
+# Run this first:
+ls *.log                 # see what would be removed
+rm -i *.log              # then remove with confirmation prompts
+```
+
+Or use `echo` to preview a command:
+
+```bash
+echo rm *.log            # prints the expanded command without running it
+```
+
+## A safe workflow example
+
+```bash
+mkdir project
+cd project
+touch README.txt
+mkdir src
+cp README.txt src/README-backup.txt
+ls -la                   # verify everything looks right
+mv src/README-backup.txt src/README.txt
+rm README.txt            # remove the original
+```
+
+## The main idea to carry forward
+
+`touch`, `mkdir`, `cp`, `mv`, and `rm` are the basic file manipulation toolkit. Use `-i` when you want safety, `-r` when working with directories, and always preview with `ls` before running destructive commands. Glob patterns let you operate on many files at once.

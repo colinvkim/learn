@@ -1,0 +1,207 @@
+---
+title: Environment variables and shell configuration
+description: "Learn how environment variables shape command behavior, how shell startup files work, and how to customize your shell with aliases, functions, and prompt changes."
+course: terminal
+order: 8
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Callout from "../../../components/content/Callout.astro";
+
+This is how someone moves from terminal user to terminal power user.
+
+Environment variables and shell configuration control how commands behave and how your terminal looks and feels.
+
+## Environment variables
+
+An **environment variable** is a named value stored in your shell's environment. Commands read these values to change their behavior.
+
+```bash
+echo $HOME           # your home directory
+echo $USER           # your username
+echo $SHELL          # your default shell
+echo $LANG           # your locale
+```
+
+<Callout title="PowerShell equivalent">
+  Use `$env:HOME`, `$env:USER`, etc. PowerShell accesses environment variables through the `$env:` drive.
+</Callout>
+
+<Callout title="Command Prompt equivalent">
+  Use `echo %HOME%`, `echo %USERNAME%`.
+</Callout>
+
+## Setting variables
+
+To set a variable for the current session:
+
+```bash
+MY_VAR="hello"
+echo $MY_VAR         # hello
+```
+
+To make it available to child processes (commands you run), use `export`:
+
+```bash
+export MY_VAR="hello"
+python -c "import os; print(os.environ.get('MY_VAR'))"    # hello
+```
+
+Without `export`, the variable exists only in the shell itself, not in programs the shell launches.
+
+## The PATH variable
+
+`PATH` is the most important environment variable. It is a colon-separated list of directories where the shell looks for commands.
+
+```bash
+echo $PATH
+```
+
+```text
+/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+```
+
+When you add a tool to your system (like Node.js or a custom script), its bin directory needs to be in `PATH` for you to run it by name.
+
+To add a directory temporarily:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+This prepends `$HOME/.local/bin` to the front of `PATH`. The change lasts only for the current session.
+
+## Shell startup files
+
+When a shell starts, it reads configuration files. These files control your environment, aliases, prompt, and more.
+
+The file that gets read depends on the shell and how it was started:
+
+### For zsh (macOS default):
+
+- `~/.zshrc` — read every time an interactive shell starts
+- `~/.zprofile` — read for login shells
+
+### For bash:
+
+- `~/.bashrc` — read for interactive non-login shells
+- `~/.bash_profile` or `~/.profile` — read for login shells
+
+### The difference matters
+
+On macOS, Terminal.app starts a **login shell**, so `~/.bash_profile` or `~/.zprofile` is read. If you put config in `~/.bashrc` but open a login shell, it may not be loaded.
+
+The simplest approach: for bash, source `~/.bashrc` from `~/.bash_profile`:
+
+```bash
+# in ~/.bash_profile
+if [ -f ~/.bashrc ]; then
+  source ~/.bashrc
+fi
+```
+
+For zsh, `~/.zshrc` is usually sufficient.
+
+<Callout title="PowerShell equivalent">
+  PowerShell uses profile scripts at `$PROFILE`. Run `$PROFILE` to see the path, then create the file if it does not exist. Settings placed there load every session.
+</Callout>
+
+## Aliases
+
+An **alias** is a shortcut for a longer command:
+
+```bash
+alias ll="ls -la"
+alias gs="git status"
+alias ..="cd .."
+```
+
+After defining these, typing `ll` runs `ls -la`.
+
+Aliases are convenience, not magic. They expand before the command runs:
+
+```bash
+alias ll
+# ll='ls -la'
+```
+
+To remove an alias:
+
+```bash
+unalias ll
+```
+
+## Shell functions
+
+For more complex shortcuts, use functions:
+
+```bash
+mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+```
+
+Now `mkcd new-project` creates a directory and enters it in one step.
+
+Functions can accept arguments (`$1`, `$2`, etc.) and run multiple commands.
+
+## Making configuration persistent
+
+Aliases and functions defined at the prompt last only for the current session. To make them permanent, add them to your startup file:
+
+```bash
+# in ~/.zshrc or ~/.bashrc
+alias ll="ls -la"
+alias gs="git status"
+
+mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+After editing the file, reload your shell:
+
+```bash
+source ~/.zshrc    # or source ~/.bashrc
+```
+
+## Prompt customization
+
+Your shell prompt is controlled by a variable — `PS1` in bash, `PROMPT` in zsh.
+
+```bash
+# bash: simple prompt
+export PS1="$ "
+
+# bash: show current directory
+export PS1="[\w]$ "
+
+# zsh: show current directory
+PROMPT="%~$ "
+```
+
+Most people use a framework like [Starship](https://starship.rs/) or Oh My Zsh for prompt customization rather than writing prompt strings by hand.
+
+## Viewing all environment variables
+
+```bash
+env                # print all environment variables
+printenv           # same
+printenv PATH      # print just one variable
+```
+
+## Must understand
+
+These concepts are foundational:
+
+- **Environment variables shape command behavior.** Tools read them to know your home directory, language, preferred editor, and more.
+- **Startup files control shell behavior.** Your aliases, functions, PATH modifications, and prompt settings live here.
+- **Aliases are convenience, not magic.** They are simple text substitutions defined in your current session or startup file.
+- **PATH changes what programs are found.** If a command says "not found," it is either not installed or not in your PATH.
+
+## The main idea to carry forward
+
+Environment variables and startup files are the mechanism by which your shell remembers preferences. `export` makes variables available to child processes. Startup files (`~/.zshrc`, `~/.bashrc`, etc.) are where persistent configuration lives. Aliases and functions are shortcuts you define once and use forever.

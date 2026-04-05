@@ -1,0 +1,138 @@
+---
+title: Reading and understanding commands
+description: "Learn the general shape of terminal commands, how to read flags and arguments, and how to look up help text so you are never stuck guessing."
+course: terminal
+order: 2
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Callout from "../../../components/content/Callout.astro";
+import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
+
+A lot of terminal anxiety comes from not knowing how to visually parse commands.
+
+Commands are not random strings. They follow a consistent shape. Once you can read that shape, unfamiliar commands become readable instead of intimidating.
+
+## The general shape of a command
+
+Most commands follow this pattern:
+
+```text
+command [subcommand] [options] [arguments]
+```
+
+- **command** — the program to run (e.g. `ls`, `git`, `python`)
+- **subcommand** — a secondary command that modifies the main command (e.g. `git commit`, `docker build`)
+- **options** (also called flags) — settings that change behavior, usually starting with `-` or `--`
+- **arguments** — the things the command operates on, such as file paths or text
+
+### Examples
+
+```bash
+ls -la /tmp
+```
+
+- `ls` is the command
+- `-la` are two short flags combined: `-l` (long format) and `-a` (show hidden files)
+- `/tmp` is the argument — the directory to list
+
+```bash
+git commit -m "initial commit"
+```
+
+- `git` is the command
+- `commit` is the subcommand
+- `-m` is a short flag that accepts a value
+- `"initial commit"` is the value for the `-m` flag
+
+```bash
+python script.py input.txt
+```
+
+- `python` is the command
+- `script.py` is the first argument — the file Python should run
+- `input.txt` is the second argument — passed to the script itself
+
+## Short flags vs long flags
+
+Options come in two visual styles:
+
+- **Short flags**: single letter, single dash (`-l`, `-a`, `-m`)
+- **Long flags**: full word, double dash (`--long`, `--all`, `--message`)
+
+Short flags can often be combined. `-la` is the same as `-l -a`.
+
+Long flags are more readable and sometimes accept values with `=`:
+
+```bash
+git commit --message="initial commit"
+```
+
+Both forms do the same thing. Use whichever you find easier to read.
+
+## Positional arguments
+
+Arguments that are not tied to a flag are **positional** — their meaning depends on where they appear.
+
+```bash
+cp source.txt destination.txt
+```
+
+`source.txt` is the first positional argument — the file to copy. `destination.txt` is the second — where to copy it. The order matters.
+
+## Ordering conventions
+
+- Flags can usually appear in any position relative to arguments.
+- Positional arguments must appear in the correct order.
+- Some commands require flags before arguments. When in doubt, check the help text.
+
+## How to read help text
+
+Every command has built-in documentation.
+
+<ShellCommandSet
+  title="View help for a command"
+  unix="man ls"
+  powershell="Get-Help Get-ChildItem"
+  cmd="ls /?"
+/>
+
+- On Unix shells, `man` opens the manual page. Navigate with arrow keys or `j`/`k`, search with `/`, and quit with `q`.
+- In PowerShell, `Get-Help` provides similar documentation.
+- In Command Prompt, appending `/?` to a command shows brief usage.
+
+You can also often get quick help by passing `--help`:
+
+```bash
+ls --help
+```
+
+This works for many modern commands on all platforms.
+
+## Common help text patterns
+
+Manual pages follow a convention:
+
+- **NAME** — what the command does
+- **SYNOPSIS** — the command shape, showing required and optional parts
+- **DESCRIPTION** — what each flag does
+- **EXAMPLES** — common usage patterns
+
+The synopsis uses brackets `[...]` for optional parts and angle brackets `<...>` or ALL CAPS for required placeholders.
+
+```text
+ls [-ABCFGHLOPRSTUW@abcdefghiklmnopqrstuwx1] [file ...]
+```
+
+This tells you that `ls` accepts many optional flags and then one or more file paths.
+
+## The main idea to carry forward
+
+Commands are not indecipherable spells. They follow a consistent pattern:
+
+```
+command [subcommand] [flags] [arguments]
+```
+
+Once you can read that pattern and know how to look up help text, you can figure out unfamiliar commands on your own. That skill — reading and looking up — matters more than memorizing every flag.

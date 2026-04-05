@@ -1,69 +1,118 @@
 ---
 title: Introduction
-description: "Start with the big picture: what the terminal is, why developers use it, and which basic ideas matter before memorizing commands."
+description: "Understand what the terminal actually is, what a shell does, how your operating system fits in, and what happens each time you type a command."
 course: terminal
 order: 1
 status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Callout from "../../../components/content/Callout.astro";
 
 For many beginners, the terminal feels more intimidating than it should.
 
 It looks different from ordinary apps:
 
 - there are no large buttons
-- commands must be typed
-- errors can appear in plain text
+- commands must be typed exactly
+- errors appear as plain text
 - simple tasks can seem harder than they do in a graphical interface
 
-That reaction is normal. The terminal is not hard because it is magical. It is hard because it exposes more of the computer's structure directly.
+That reaction is normal. The terminal is not hard because it is magical. It is hard because it exposes more of the computer's structure directly. Once that structure makes sense, the terminal becomes predictable.
 
-## What the terminal is for
+## The operating system
 
-The terminal is a text-based way to interact with the operating system and run programs.
+Your computer runs an **operating system** (OS). The operating system manages hardware, runs programs, and provides the interfaces you use every day. macOS, Linux, and Windows are all operating systems.
 
-Developers use it constantly because many tools are designed around commands rather than graphical interfaces.
+The operating system is what actually stores files on disk, opens applications, and runs programs. Everything else — browsers, editors, terminals — runs on top of it.
 
-That includes tools such as:
+## The terminal emulator
 
-- Git
-- package managers like npm and pnpm
+A **terminal emulator** is an application that gives you a text-based window to type commands into. It does not interpret your commands. It simply provides the window where text appears.
+
+Common terminal emulators include:
+
+- Terminal.app (macOS)
+- iTerm2 (macOS)
+- GNOME Terminal, Konsole, Alacritty, Kitty (Linux)
+- Windows Terminal (Windows)
+
+The terminal emulator is just a window. The program that reads what you type inside it is different.
+
+## The shell
+
+A **shell** is the program that reads the commands you type, interprets them, and runs the corresponding programs.
+
+When you open a terminal emulator, it usually starts a shell session automatically. That is why the two are often confused.
+
+Common shells include:
+
+- **zsh** — the default shell on modern macOS
+- **bash** — the default shell on most Linux distributions
+- **fish** — a user-friendly shell with helpful defaults
+- **PowerShell** — Microsoft's shell, built into Windows
+- **Command Prompt (cmd)** — the older Windows command interpreter
+
+<Callout title="This course focuses on zsh and bash">
+  <p>The primary commands in this course target zsh and bash, which behave almost identically for the basics. When a command or syntax differs in PowerShell or Command Prompt, a callout will show the equivalent. The mental model — where you are, what files are here, what command to run — is the same across all shells.</p>
+</Callout>
+
+## What happens when you type a command
+
+Understanding this sequence removes a lot of the mystery:
+
+1. You type text into the terminal emulator window.
+2. The shell reads the text and parses it into a command name and arguments.
+3. The shell looks up the command in your `PATH` (a list of directories where executable programs live).
+4. The shell runs the program.
+5. The program produces output (or makes changes) and exits.
+6. The shell prints a new prompt, ready for the next command.
+
+If the shell cannot find the command, it prints an error. That usually means the program is not installed, not in your `PATH`, or the name was typed incorrectly.
+
+## Commands are programs
+
+Every command you type is just a program on your computer. Commands are not magic built into the shell — they are executable files.
+
+Commands typically have:
+
+- **inputs** — files or data they read
+- **options** — flags that change their behavior
+- **outputs** — text they print or files they create
+
+For example, `ls` is a program that lists directory contents. `cat` is a program that reads a file and prints it to the terminal. `grep` is a program that searches text.
+
+Knowing that commands are programs helps demystify the terminal. You are not typing spells — you are running small, focused tools.
+
+## Why developers use the terminal
+
+Many developer tools are designed to be run as commands:
+
+- Git for version control
+- npm or pnpm for package management
 - development servers
 - test runners
-- linters
+- linters and formatters
 - build tools
 
-## What matters first
+That has practical advantages:
 
-Before memorizing commands, a few ideas matter more:
+- commands are fast to repeat
+- commands can be written in documentation exactly
+- commands work well in automation
+- commands can be combined into workflows
 
-- the computer has a current working directory
-- files live inside directories
-- commands usually run relative to the current directory
-- commands can take arguments and flags
+That is why the terminal keeps showing up even when a tool also has a graphical interface.
 
-Once those ideas are clear, individual commands become easier to understand.
+## A useful beginner mindset
 
-## What this material will focus on
+The terminal is not mainly about memorizing commands.
 
-The focus here is not every shell feature.
+It is about understanding a small model:
 
-The focus is the small set of ideas and commands that make the terminal usable in real development work:
+- where you are in the filesystem
+- what files are here
+- what command you want to run
+- what arguments should be passed to it
 
-- paths
-- moving between directories
-- listing files
-- creating, copying, moving, and removing files
-- understanding commands, arguments, and flags
-- reading help text and basic error output
-
-<Note title="The course is organized by task, not by one shell">
-  <p>The mental model in this material works on macOS, Linux, and Windows. When a task uses different commands in Unix-style shells, PowerShell, and Command Prompt, the lesson will show those variants directly instead of treating one shell as the default.</p>
-</Note>
-
-## The main idea to carry forward
-
-The terminal is a direct interface to files, directories, and programs.
-
-It becomes much easier once you stop treating commands as isolated spells and start seeing them as actions applied to the current working directory and its contents.
+That model is more important than any single command. The rest of this course builds that model step by step.
