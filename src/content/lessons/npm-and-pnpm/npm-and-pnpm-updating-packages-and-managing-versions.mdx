@@ -71,9 +71,10 @@ After updating, always test your application. Updates can introduce changes that
 
 These prefixes control how updates work:
 
-- `^1.2.3` — compatible versions (1.2.3 to 2.0.0, but not 2.0.0)
-- `~1.2.3` — patch-level changes (1.2.3 to 1.3.0, but not 1.3.0)
+- `^1.2.3` — compatible versions (`>=1.2.3` and `<2.0.0`) — allows minor and patch updates
+- `~1.2.3` — patch-level changes only (`>=1.2.3` and `<1.3.0`) — more conservative than `^`
 - `1.2.3` — exact version only
+- `>=1.2.0 <2.0.0` — explicit range
 - `latest` — always use the newest version
 
 When you run `npm install react`, npm defaults to prefixing the version with `^`. This is usually what you want — you get updates that should not break compatibility.

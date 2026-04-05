@@ -111,6 +111,16 @@ For a beginner, a useful shortcut is this:
 - if the package is needed for the app to run, it is usually a dependency
 - if the package is only helping you build, check, test, or format the project, it is usually a dev dependency
 
+### Peer dependencies
+
+Some packages declare peer dependencies — packages they expect your project to provide. If a peer dependency is missing, npm may warn but will still install the package. To install peer dependencies automatically:
+
+```bash
+npm install react --save-peer
+```
+
+Or when installing a package with peer dependencies, npm 7+ installs them automatically by default.
+
 ## `optionalDependencies`
 
 Some packages improve a project but are not critical if they fail to install. These can be listed as optional dependencies.

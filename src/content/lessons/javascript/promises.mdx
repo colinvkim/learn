@@ -169,6 +169,31 @@ Promise.any([
 .catch((error) => console.error("All servers failed"));
 ```
 
+## `Promise.withResolvers()` (ES2024)
+
+Sometimes you need to create a promise and control its resolution from outside the executor. `Promise.withResolvers()` gives you a promise along with its `resolve` and `reject` functions:
+
+```javascript
+const { promise, resolve, reject } = Promise.withResolvers();
+
+// Later, from anywhere:
+resolve("done");
+// or: reject(new Error("failed"));
+```
+
+This replaces the older pattern of wrapping `new Promise` in an object to expose resolve/reject:
+
+```javascript
+// Old pattern — verbose
+let resolve, reject;
+const promise = new Promise((res, rej) => {
+  resolve = res;
+  reject = rej;
+});
+```
+
+`Promise.withResolvers()` is useful for converting callback-based APIs to promises or building deferred patterns.
+
 ## Common promise mistakes
 
 ### Forgetting to return from `.then()`
@@ -215,6 +240,8 @@ Always attach a `.catch()` or use `async/await` with `try/catch`.
 - `Promise.all` waits for all promises — fails fast if any rejects
 - `Promise.allSettled` waits for all and returns every result
 - `Promise.race` settles with the first settled promise
+- `Promise.any` fulfills with the first fulfilled promise
+- `Promise.withResolvers()` creates a promise with externally accessible `resolve` and `reject` (ES2024)
 - always return promises from `.then()` callbacks to chain them
 - always handle rejections with `.catch()`
 

@@ -111,6 +111,21 @@ git restore .
 
 Use `git restore --staged file.txt` to unstage a file without discarding the changes.
 
+## View commit history with branches
+
+```bash
+git log --oneline --graph --all
+```
+
+This shows a compact, visual representation of all branches and how they relate:
+
+```
+* abc1234 (HEAD -> feature) Add new feature
+| * def5678 (main) Fix bug in login
+|/
+* ghi9012 Initial commit
+```
+
 ## Apply a specific commit from another branch
 
 ```bash

@@ -64,6 +64,14 @@ git stash
 
 This saves your uncommitted changes temporarily and gives you a clean working tree.
 
+To also stash untracked files (new files that have not been staged yet):
+
+```bash
+git stash -u
+```
+
+This is useful when you have created new files that you want to set aside but are not ready to commit.
+
 After stashing, you can:
 
 - switch branches safely

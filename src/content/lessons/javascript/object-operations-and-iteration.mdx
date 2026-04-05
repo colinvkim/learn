@@ -140,6 +140,26 @@ const stringSettings = Object.fromEntries(
 // { theme: "dark" }
 ```
 
+## `Object.groupBy` groups array items by key (ES2024)
+
+`Object.groupBy` takes an array and a callback that returns the group key for each element:
+
+```javascript
+const products = [
+  { name: "Laptop", category: "electronics" },
+  { name: "Phone", category: "electronics" },
+  { name: "Book", category: "education" },
+];
+
+const byCategory = Object.groupBy(products, (product) => product.category);
+// {
+//   electronics: [{ name: "Laptop", ... }, { name: "Phone", ... }],
+//   education: [{ name: "Book", ... }],
+// }
+```
+
+This replaces a common `reduce` pattern with a single, readable call.
+
 ## `Object.freeze` and `Object.seal`
 
 JavaScript provides two ways to restrict object mutation:
@@ -174,8 +194,9 @@ Both are shallow — nested objects can still be modified.
 - use `for...of` with `Object.entries()` to iterate over key-value pairs
 - spread (`{ ...a, ...b }`) merges objects and is the modern default over `Object.assign`
 - both spread and `Object.assign` are shallow — nested objects are shared
-- `Object.hasOwn(obj, key)` checks for own properties
+- `Object.hasOwn(obj, key)` checks for own properties — preferred over `hasOwnProperty`
 - `Object.fromEntries()` builds an object from key-value pairs
+- `Object.groupBy()` groups array items by a key function (ES2024)
 - `Object.freeze()` and `Object.seal()` restrict mutation but are shallow and rarely needed
 
 Object operations complement array methods. The next lesson covers destructuring and spread/rest in more depth — the patterns that make extracting and combining data concise.

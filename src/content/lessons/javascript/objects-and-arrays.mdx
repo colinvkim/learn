@@ -166,6 +166,20 @@ items.indexOf(2);    // 1
 items.indexOf(99);   // -1 (not found)
 ```
 
+### Accessing elements with `.at()` (ES2022)
+
+The `.at()` method provides a cleaner way to access elements by index, especially for negative indices:
+
+```javascript
+const fruits = ["apple", "banana", "cherry"];
+
+fruits.at(0);    // "apple" — same as fruits[0]
+fruits.at(-1);   // "cherry" — last element
+fruits.at(-2);   // "banana" — second to last
+```
+
+Before `.at()`, accessing the last element required `fruits[fruits.length - 1]`. With `.at()`, you use `fruits.at(-1)`.
+
 ## Arrays can hold mixed types
 
 JavaScript arrays are not homogeneous. They can hold any mix of values:

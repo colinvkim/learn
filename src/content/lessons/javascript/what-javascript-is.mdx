@@ -84,10 +84,14 @@ Dynamic typing is why practices like writing tests, being careful with data shap
 
 JavaScript evolves through a standards process called **ECMAScript**. Each year, a new edition of the specification adds features that engines implement. Recent additions include:
 
-- optional chaining (`?.`)
-- nullish coalescing (`??`)
+- optional chaining (`?.`) and nullish coalescing (`??`)
 - top-level `await` in modules
-- array grouping methods
+- `Array.prototype.at()` for negative indexing
+- `Object.hasOwn()` as a safer replacement for `hasOwnProperty`
+- non-mutating array methods: `toSorted()`, `toReversed()`, `toSpliced()`, `with()`
+- `Array.fromAsync()` for creating arrays from async iterables (ES2025)
+- `Promise.withResolvers()` for creating promises with externally accessible resolve/reject functions
+- pattern matching and pipeline operator proposals (future)
 
 Features are added gradually and conservatively. Code written to current standards runs in modern environments without change.
 

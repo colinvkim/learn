@@ -72,3 +72,26 @@ That means:
 - the next commits will belong to the branch you switched to
 
 This is why branches are more than labels. They change which line of history you are actively extending.
+
+## Deleting branches when work is done
+
+After a branch has been merged, you can delete it to keep your repository clean:
+
+```bash
+git branch -d fix-login-button
+```
+
+This only deletes the branch if it has been fully merged. If Git refuses because the branch contains unmerged commits, use:
+
+```bash
+git branch -D fix-login-button
+```
+
+`-D` force-deletes the branch regardless of merge status. Use it only when you are certain the work is no longer needed.
+
+You can only delete a branch you are not currently on. Switch to `main` first:
+
+```bash
+git switch main
+git branch -d fix-login-button
+```

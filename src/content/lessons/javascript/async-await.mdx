@@ -172,6 +172,22 @@ export default config;
 
 Any module that imports from `config.js` will wait for the promise to resolve before its code runs. Top-level await is available in all modern browsers and Node.js.
 
+## Iterating over async iterables with `for await...of`
+
+When working with async iterables or async generators, use `for await...of`:
+
+```javascript
+async function* readChunks(stream) {
+  // yields chunks of data as they arrive
+}
+
+for await (const chunk of readChunks(stream)) {
+  process(chunk);
+}
+```
+
+This processes each yielded value as it becomes available, rather than waiting for all results. Use this when you need to stream results incrementally rather than collect them all at once.
+
 ## `await` with non-promise values
 
 `await` works on any value. Non-promise values are wrapped in a resolved promise automatically:
@@ -185,6 +201,22 @@ async function example() {
 
 This is rarely useful directly but means you can `await` a function that might return a promise or a plain value without needing to check.
 
+## `Array.fromAsync()` for async iterables (ES2025)
+
+When working with async iterables or async generators, `Array.fromAsync()` collects the results into an array:
+
+```javascript
+async function* fetchIds(ids) {
+  for (const id of ids) {
+    yield fetch(`/api/users/${id}`).then((r) => r.json());
+  }
+}
+
+const users = await Array.fromAsync(fetchIds([1, 2, 3]));
+```
+
+This is the async equivalent of `Array.from()`. It handles async iterables, async generators, and even regular iterables of promises.
+
 ## What to carry forward
 
 - `async` functions always return promises
@@ -194,5 +226,6 @@ This is rarely useful directly but means you can `await` a function that might r
 - use `Promise.all` with `await` for independent parallel operations
 - avoid awaiting in a loop for independent items — use `Promise.all` instead
 - top-level await lets modules wait for async initialization before exporting
+- `Array.fromAsync()` collects async iterables or generators into arrays (ES2025)
 
 `async/await` is the dominant pattern for asynchronous JavaScript. Combined with the event loop understanding from the first lesson, it explains how async code behaves. The next lesson covers fetching data from APIs in practice.

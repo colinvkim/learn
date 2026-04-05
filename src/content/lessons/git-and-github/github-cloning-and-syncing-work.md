@@ -21,6 +21,16 @@ This gives you:
 - the Git history
 - a configured remote named `origin`
 
+### Cloning with SSH
+
+If you use SSH authentication, clone with the SSH URL:
+
+```bash
+git clone git@github.com:OWNER/REPO.git
+```
+
+This sets up the remote to use SSH for all future pushes and pulls, avoiding credential prompts.
+
 ## `git fetch` downloads remote updates without changing your current branch
 
 To bring down remote information without integrating it into your current work yet:
@@ -45,6 +55,22 @@ In broad terms:
 
 - `git fetch` gets the new remote information
 - `git pull` fetches and then updates the current branch
+
+### `git pull --rebase` keeps history linear
+
+By default, `git pull` merges remote changes, which can create extra merge commits. Using `--rebase` replays your local commits on top of the fetched changes instead:
+
+```bash
+git pull --rebase
+```
+
+This produces a cleaner, linear history. You can configure Git to use rebase by default for all pulls:
+
+```bash
+git config --global pull.rebase true
+```
+
+Rebasing during a pull is safe as long as your local commits have not been pushed yet.
 
 ## When to use clone, fetch, and pull
 

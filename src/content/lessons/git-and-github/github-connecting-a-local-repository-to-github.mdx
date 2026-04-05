@@ -31,6 +31,25 @@ git remote add origin https://github.com/OWNER/REPO.git
 
 This does not upload your commits yet. It only records the remote connection in the local repository configuration.
 
+### SSH vs HTTPS URLs
+
+GitHub supports two authentication methods:
+
+- **HTTPS** (`https://github.com/OWNER/REPO.git`) — works everywhere but may require entering credentials each time unless you use a credential helper
+- **SSH** (`git@github.com:OWNER/REPO.git`) — uses SSH keys for authentication, recommended for regular contributors
+
+To set up SSH authentication:
+
+1. Generate an SSH key if you do not have one: `ssh-keygen -t ed25519 -C "you@example.com"`
+2. Add the public key to your GitHub account under Settings > SSH and GPG keys
+3. Use the SSH URL when connecting:
+
+```bash
+git remote add origin git@github.com:OWNER/REPO.git
+```
+
+SSH is the recommended method for regular use because it avoids repeated credential prompts.
+
 ## `git push -u origin <branch>` sends the local branch to GitHub
 
 A common first push looks like this:

@@ -140,6 +140,43 @@ const sorted = numbers.toSorted((a, b) => a - b);
 
 `toSorted` is available in modern environments. Check your target platforms before relying on it.
 
+## `toReversed` is a non-mutating alternative to `reverse` (ES2023)
+
+```javascript
+const numbers = [1, 2, 3];
+const reversed = numbers.toReversed();
+// reversed: [3, 2, 1]
+// numbers: [1, 2, 3] — unchanged
+```
+
+## `toSpliced` is a non-mutating alternative to `splice` (ES2023)
+
+```javascript
+const fruits = ["apple", "banana", "cherry", "date"];
+
+// Remove 1 item at index 1
+const withoutBanana = fruits.toSpliced(1, 1);
+// ["apple", "cherry", "date"]
+// fruits: unchanged
+
+// Replace 1 item at index 1
+const swapped = fruits.toSpliced(1, 1, "blueberry");
+// ["apple", "blueberry", "cherry", "date"]
+// fruits: unchanged
+```
+
+## `with` replaces an element immutably (ES2023)
+
+```javascript
+const colors = ["red", "green", "blue"];
+
+const updated = colors.with(1, "yellow");
+// ["red", "yellow", "blue"]
+// colors: ["red", "green", "blue"] — unchanged
+```
+
+This is equivalent to `[...colors]; updated[1] = "yellow"` but in a single expression. It throws if the index is out of range, making it safer than direct assignment.
+
 ## When to use each method
 
 | Question | Method |
@@ -158,6 +195,7 @@ const sorted = numbers.toSorted((a, b) => a - b);
 - `sort` mutates the original array and sorts as strings by default
 - always provide a comparison function to `sort` for numbers
 - use `[...array].sort(...)` to sort without mutating the original
-- `toSorted` is a non-mutating alternative in modern JavaScript
+- `toSorted`, `toReversed`, `toSpliced`, and `with` are non-mutating alternatives introduced in ES2023
+- prefer the `to*` methods when your environment supports them for cleaner immutable code
 
 These methods complete the array toolkit. Combined with `map`, `filter`, and `reduce`, they cover essentially every array operation you will encounter.

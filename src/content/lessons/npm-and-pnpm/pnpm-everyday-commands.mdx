@@ -58,6 +58,14 @@ pnpm add -O fsevents
 
 Optional dependencies are packages that improve a project but are not critical. If they fail to install, pnpm continues instead of stopping.
 
+To add a peer dependency:
+
+```bash
+pnpm add --save-peer react
+```
+
+Peer dependencies signal that your package expects another package to be provided by the consuming project.
+
 This is one of the clearest differences from npm. In pnpm, `add` is the main verb for introducing new dependencies.
 
 <Tip title="Use pnpm add for one package or many">
