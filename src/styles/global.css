@@ -57,17 +57,6 @@
   a {
     @apply transition-colors;
   }
-
-  /* pnpm icon: use dark secondary fill in light mode so white elements are visible */
-  .theme-aware-pnpm {
-    --pnpm-fill-gold: #f9ad00;
-    --pnpm-fill-secondary: #1b1f23;
-  }
-
-  html.dark .theme-aware-pnpm {
-    --pnpm-fill-gold: #f9ad00;
-    --pnpm-fill-secondary: #ffffff;
-  }
 }
 
 /* Code block backgrounds: stay dark in both modes (matches light-mode ink) */
