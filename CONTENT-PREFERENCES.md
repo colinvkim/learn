@@ -1,183 +1,94 @@
-# Content Preferences
+# Course Writing Preferences for learn
 
-This file captures the current standard for writing courses on `learn`.
+Use these preferences when designing or writing courses.
 
-It exists to keep future courses consistent in structure, tone, and teaching quality.
+## Goal
 
-## Core standard
+Write courses that help learners build correct mental models, complete real tasks, and transfer their knowledge to new situations.
 
-- Write for real understanding, not just topic coverage.
-- Assume the reader may have no prior technical knowledge unless the course explicitly requires prerequisites.
-- Prefer clarity and progression over completeness on a single page.
-- Prefer modern, production-quality guidance over generic tutorial material.
-- Do not add filler, fluff, marketing language, or broad motivational claims.
-- Do not write like a blog post. Write like a careful technical guide.
+Prioritize understanding over coverage.
 
-## Audience assumptions
+## General principles
 
-- Default to the least experienced plausible reader.
+- Teach concepts before syntax.
+- Teach tasks and workflows, not just features or commands.
+- Make important distinctions explicit.
+- Separate foundational ideas from tool-specific details.
+- Prefer realistic usage over abstract explanation.
+- Keep the course as short as it can be while still teaching the topic well.
+
+## Audience
+
+- Default to the least experienced plausible learner unless prerequisites are explicit.
 - Define terms before depending on them.
-- If a concept is likely to be unfamiliar, explain it at the point where it first matters.
-- If a tool or command changes a file, say which file it changes.
-- If a distinction matters, make it explicit.
+- Explain unfamiliar concepts when they first matter.
+- Do not assume ecosystem knowledge that has not been established.
 
-Examples:
+## Sequencing
 
-- Explain the difference between a package, a package manager, and a registry before teaching package-manager commands.
-- Explain the difference between "install what the project already declares" and "add a new dependency to the project" before expecting the reader to internalize command differences.
+Move from: 1. problem or purpose 2. core concept 3. key terminology 4. smallest useful usage 5. important files, outputs, or artifacts 6. day-to-day workflow 7. distinctions, tradeoffs, and caveats 8. comparisons and recommendations
 
-## Course structure
-
-- Every course should have a clear progression.
-- Small courses should stay small. Do not manufacture extra sections just to make a course feel larger.
-- Do not add a separate "Overview" page.
-- Use `Introduction` as a real lesson when an introduction is needed.
-- For small courses, skip meta sections such as "The order of the course."
-- Do not duplicate the lesson list inside the page body when the sidebar already provides navigation.
-- Visible lesson numbering is not required. Internal ordering can exist in frontmatter without being emphasized in the UI.
-
-## Sequencing rules
-
-- Introduce one tool or concept at a time.
-- Do not compare two tools before the reader understands each one independently.
-- Move from foundations to commands, then to tradeoffs, then to recommendations.
-- Put comparisons after the reader has enough context for the comparison to mean something.
-- End with practical decision guidance when the topic naturally leads to a choice.
-
-Recommended progression for tool-based courses:
-
-1. Introduce the problem the tool solves.
-2. Define the key terminology.
-3. Explain the tool in plain terms.
-4. Show the smallest useful commands.
-5. Explain the important files the tool creates or changes.
-6. Cover day-to-day usage.
-7. Compare against adjacent tools only after the fundamentals are clear.
-8. Close with practical guidance on when to use what.
+Do not begin with comparisons if the learner does not yet understand the tools being compared.
 
 ## Lesson design
 
-- Each lesson should have one clear job.
-- Start by orienting the reader to the problem the lesson solves.
-- Do not front-load long command lists without context.
-- Prefer a few important commands with explanation over large cheat sheets.
-- Use examples that map to real project work.
-- Show the command, then explain what it does, when to use it, and what it changes.
-- If a command has a commonly confused variant, teach the distinction explicitly.
-
-Examples:
-
-- `npm install` and `npm install <package>` should not be treated as the same action.
-- `pnpm install` and `pnpm add <package>` should not be treated as the same action.
-- If a command can take multiple packages, include that example when it is useful, for example `pnpm add react react-dom`.
-
-## Writing style
-
-- Keep the prose fluid, direct, and technically precise.
-- Prefer calm explanatory prose over conversational phrasing.
-- Avoid rhetorical chatter such as "you might be wondering" unless it materially improves clarity.
-- Avoid repeatedly referring to "this course," especially in small guides where that framing feels artificial.
-- Use short paragraphs.
-- Use headings to separate real conceptual steps, not to pad the page.
-- Prefer plain statements over hype or personality.
-
-Preferred tone:
-
-- "npm is the default package manager for Node.js."
-- "This command installs the dependencies already declared by the project."
-
-Avoid:
-
-- "This course will walk you through..."
-- "You might be wondering why this matters..."
-- "Now let's dive into..."
+- Give each lesson one clear job.
+- Start by explaining the problem the lesson solves.
+- Use a small number of meaningful examples.
+- Explain what each example does, when to use it, and what it changes.
+- Prefer explanation over long command lists or reference-style dumps.
 
 ## Commands and examples
 
-- Commands must be accurate and current.
-- Examples should reflect normal usage, not toy syntax with no explanation.
-- When a command is commonly run in a project directory, say that.
-- When a command is safe to run once versus repeatedly, clarify that.
-- Distinguish clearly between:
-  - creating a project
-  - installing existing dependencies
-  - adding a new dependency
-  - adding a development dependency
-  - running project scripts
-  - running a tool one time without saving it
-- If a command has an npm form and a pnpm form, show the parallel when the comparison helps.
+- Keep commands accurate, current, and realistic.
+- Say where a command is run when that matters.
+- Say what files or state it changes when that matters.
+- Distinguish clearly between similar actions, such as installing existing dependencies vs adding a new one.
+- Use examples that resemble real project work.
 
-## Explaining files
+## Files and artifacts
 
 - Name important files explicitly when they first appear.
-- Explain why the file exists before going into implementation detail.
+- Explain why each file exists before going deep into details.
 - Prefer practical meaning over formal definitions.
-
-Examples:
-
-- `package.json` records project metadata, dependencies, and scripts.
-- `package-lock.json` or `pnpm-lock.yaml` records the exact dependency resolution needed for reproducible installs.
 
 ## Comparisons and recommendations
 
-- Comparisons should follow understanding, not replace it.
-- Compare tools through concrete differences in workflow, naming, performance, ecosystem fit, and team usage.
-- Do not force false neutrality if one recommendation is stronger for most readers.
-- Recommendations should be practical and scoped.
+- Compare tools only after each tool is understandable on its own.
+- Focus comparisons on concrete workflow differences.
+- Recommendations should be practical, scoped, and useful for the likely learner.
 
-Example approach:
+## Writing style
 
-- Explain npm first because it is the default and is what most readers will encounter first.
-- Explain pnpm second as an alternative within the same ecosystem.
-- Compare them after both are understood.
-- End with a direct recommendation based on the likely reader.
+- Be direct, calm, and precise.
+- Use short paragraphs.
+- Use headings only when they separate real conceptual steps.
+- Avoid filler, hype, blog-style framing, and unnecessary motivational language.
 
-## Use of lists
+## Structure and UI
 
-- Use bullet points when the content is genuinely list-shaped.
-- Bullet points must render correctly and should not replace explanation.
-- Do not turn entire lessons into lists.
-- If a list introduces important concepts, explain each item immediately after or around the list.
+- Do not add extra overview pages unless they are genuinely useful.
+- Do not duplicate sidebar navigation inside the lesson body.
+- Keep introductions useful and brief.
+- Let the UI handle navigation; let the content handle teaching.
 
-## UI-aware content rules
-
-- The sidebar already provides navigation. Do not recreate a table of contents inside the introduction page for small courses.
-- The lesson header and lesson body should feel distinct. Write short, useful descriptions that support the title rather than repeating it.
-- Assume commands are copyable in code blocks, so examples should be clean and worth copying.
-
-## When to use MDX components
-
-- Default to Markdown for straightforward lessons.
-- Use MDX only when the lesson benefits from structured components such as notes, warnings, steps, or richer examples.
-- Do not use callouts just to decorate the page.
-- Use callouts to clarify high-value distinctions, common mistakes, or non-obvious constraints.
-
-Current component set:
-
-- `Note` for clarifications and contextual detail
-- `Tip` for shortcuts, patterns, and useful mental models
-- `Warning` for mistakes, footguns, or important constraints
-- `Steps` for short procedural sequences
-
-## Anti-patterns
-
-- Do not start with abstract comparisons before defining the tools being compared.
-- Do not assume background knowledge that has not been established.
-- Do not add overview pages that duplicate the sidebar.
-- Do not write course-management text instead of teaching the subject.
-- Do not pad short courses with unnecessary meta structure.
-- Do not use overly conversational transitions when a direct explanation is clearer.
-- Do not bury critical distinctions inside dense paragraphs.
-
-## Definition of done for a new course
+## Good outcomes
 
 A course is in good shape when:
 
-- the first lesson makes the topic legible to a beginner
-- the sequence builds logically from lesson to lesson
-- terminology is introduced before use
-- commands are accurate and contextualized
-- important files are explained clearly
-- comparisons happen after foundations
-- the writing is direct, fluid, and not overly conversational
-- the UI is not fighting the content with duplicate navigation or redundant sections
+- the topic becomes understandable early
+- the sequence feels natural
+- terminology appears before use
+- examples are contextualized
+- key distinctions are explicit
+- the learner is prepared for real usage, not just ideal demos
+
+Avoid
+
+- syntax before concepts
+- comparisons before understanding
+- long unexplained command lists
+- unnecessary meta structure
+- assumed background knowledge
+- repetitive course-management language
+- content written to sound impressive rather than teach clearly
