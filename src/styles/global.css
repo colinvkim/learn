@@ -53,6 +53,10 @@
     @apply transition-colors;
   }
 
+  /* Code block backgrounds: stay dark in both modes */
+  [data-content-article] pre {
+    @apply bg-slate-900 dark:bg-slate-900;
+  }
 }
 
 ::view-transition-old(root),
