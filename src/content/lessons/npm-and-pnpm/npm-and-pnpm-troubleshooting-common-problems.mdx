@@ -28,6 +28,7 @@ This gives you keywords to search and a starting point for fixing the issue.
 **What they are:** A package lists another package as a "peer dependency" — meaning it expects that package to be provided by the consuming project, not installed as a direct dependency.
 
 **The error looks like:**
+
 ```
 npm ERR! peer dep missing: react@^16.8.0, required by some-package@1.0.0
 ```
@@ -37,16 +38,19 @@ npm ERR! peer dep missing: react@^16.8.0, required by some-package@1.0.0
 **How to fix:**
 
 1. Install the required peer dependency:
+
 ```bash
 npm install react@^16.8.0
 ```
 
 2. If you need a different version, you might need to upgrade the package that has the peer dependency:
+
 ```bash
 npm install some-package@latest
 ```
 
 3. For pnpm, you might need to explicitly install peer dependencies:
+
 ```bash
 pnpm add react@^16.8.0
 ```
@@ -54,7 +58,11 @@ pnpm add react@^16.8.0
 **When it's okay:** Some peer dependency warnings are expected. If a package says it works with React 16, 17, and 18, and you have React 18, the warning might be overly broad. Test your application — if it works, the warning might be cosmetic.
 
 <note title="Peer dependencies are a contract">
-<p>When a package declares peer dependencies, it's saying "I need this package to be provided by the project using me." It's the project's responsibility to install compatible versions.</p>
+  <p>
+    When a package declares peer dependencies, it's saying "I need this package
+    to be provided by the project using me." It's the project's responsibility
+    to install compatible versions.
+  </p>
 </note>
 
 ## Lockfile conflicts
@@ -62,6 +70,7 @@ pnpm add react@^16.8.0
 **What they are:** Two branches updated dependencies independently, creating different lockfiles. When you merge, git can't automatically reconcile them.
 
 **The error looks like:**
+
 ```
 CONFLICT (content): Merge conflict in package-lock.json
 ```
@@ -71,6 +80,7 @@ CONFLICT (content): Merge conflict in package-lock.json
 **How to fix:**
 
 1. **Accept the lockfile from the branch you're merging into:**
+
 ```bash
 git checkout --theirs package-lock.json
 git add package-lock.json
@@ -78,6 +88,7 @@ git commit
 ```
 
 2. **Then reinstall:**
+
 ```bash
 npm install
 ```
@@ -87,11 +98,13 @@ npm install
 Alternative approach:
 
 1. **Delete the lockfile:**
+
 ```bash
 rm package-lock.json
 ```
 
 2. **Reinstall:**
+
 ```bash
 npm install
 ```
@@ -99,7 +112,11 @@ npm install
 3. **Commit the new lockfile** — it's now based on both sets of changes
 
 <warning title="Don't casually delete lockfiles">
-<p>Deleting and regenerating a lockfile can cause unexpected version changes. Do this only when necessary, and review the diff carefully to ensure it makes sense.</p>
+  <p>
+    Deleting and regenerating a lockfile can cause unexpected version changes.
+    Do this only when necessary, and review the diff carefully to ensure it
+    makes sense.
+  </p>
 </warning>
 
 ## Package version conflicts
@@ -107,6 +124,7 @@ npm install
 **What they are:** Two packages need different versions of the same dependency, and they can't be reconciled.
 
 **The error looks like:**
+
 ```
 npm ERR! Could not resolve dependency:
 npm ERR! peer react@"^16.0.0" from old-library@2.0.0
@@ -119,6 +137,7 @@ npm ERR!   peer react@"^18.0.0" from new-library@1.0.0
 **How to fix:**
 
 1. **Upgrade the old package** if possible:
+
 ```bash
 npm install old-library@latest
 ```
@@ -126,6 +145,7 @@ npm install old-library@latest
 2. **Use a version that both packages can share** by finding a compatible version range
 
 3. **Use overrides** (last resort):
+
 ```json
 {
   "overrides": {
@@ -139,32 +159,38 @@ npm install old-library@latest
 ## Installation failures
 
 **Network errors:**
+
 ```
 npm ERR! network timeout at: https://registry.npmjs.org/some-package
 ```
 
 **Fixes:**
+
 - Retry the installation
 - Check your internet connection
 - Check if npm registry is down (rare but possible)
 - Configure a different registry
 
 **Permission errors:**
+
 ```
 npm ERR! EACCES: permission denied
 ```
 
 **Fixes:**
+
 - Don't use `sudo` with npm (can cause permission issues)
 - Fix npm permissions: `npm config set prefix ~/.npm-global`
 - Reinstall Node.js using a version manager (nvm, n)
 
 **Disk space errors:**
+
 ```
 npm ERR! ENOSPC: no space left on device
 ```
 
 **Fixes:**
+
 - Free up disk space
 - Clear npm cache: `npm cache clean --force`
 - Check where packages are installed
@@ -174,11 +200,13 @@ npm ERR! ENOSPC: no space left on device
 **What they are:** A package expected to find a module but couldn't.
 
 **The error looks like:**
+
 ```
 Error: Cannot find module 'some-package'
 ```
 
 **Causes:**
+
 1. Package not installed: `npm install some-package`
 2. Lockfile out of sync: `rm package-lock.json && npm install`
 3. Incorrect import path: Check your import statement
@@ -194,6 +222,7 @@ npm install
 ```
 
 **When it's reasonable:**
+
 - After switching branches with different dependencies
 - When builds fail mysteriously
 - When installations seemed to complete but had errors
@@ -201,17 +230,18 @@ npm install
 - When nothing else works
 
 **When it's overkill:**
+
 - Most errors have specific, less destructive fixes
 - It downloads all dependencies again (time consuming)
 - You lose the locked versions in package-lock.json
 
 <tip title="Try faster fixes first">
-<p>Before deleting everything:</p>
-<ul>
-<li>Read the actual error (peer dep, version conflict, etc.)</li>
-<li>Try the specific fix for that error type</li>
-<li>Only use the nuclear option when other fixes fail</li>
-</ul>
+  <p>Before deleting everything:</p>
+  <ul>
+    <li>Read the actual error (peer dep, version conflict, etc.)</li>
+    <li>Try the specific fix for that error type</li>
+    <li>Only use the nuclear option when other fixes fail</li>
+  </ul>
 </tip>
 
 ## pnpm-specific issues
@@ -240,6 +270,7 @@ node-linker=hoisted
 ## Git issues
 
 **package.json in gitignore:**
+
 ```bash
 # Don't do this!
 echo "package.json" >> .gitignore
@@ -248,6 +279,7 @@ echo "package.json" >> .gitignore
 This prevents collaborators from getting your dependencies. Never gitignore `package.json` or lockfiles.
 
 **node_modules in git:**
+
 ```bash
 # This is already done automatically, don't override it
 echo "node_modules" >> .gitignore
@@ -284,11 +316,11 @@ When stuck, follow this order:
 
 Best practices that reduce troubleshooting:
 
-- ✅ Keep dependencies moderately current (old deps have more issues)
-- ✅ Use exact versions for critical production dependencies
-- ✅ Review lockfile changes in PRs
-- ✅ Test installations in CI
-- ✅ Pin package manager versions (npm or pnpm)
-- ✅ Document known issues and workarounds
+- Keep dependencies moderately current (old deps have more issues)
+- Use exact versions for critical production dependencies
+- Review lockfile changes in PRs
+- Test installations in CI
+- Pin package manager versions (npm or pnpm)
+- Document known issues and workarounds
 
 Troubleshooting is part of development. When package managers fail, the errors are usually fixable. Most issues fall into a few categories: peer dependencies, version conflicts, lockfiles, or corrupted installs. Learn to recognize the patterns, and you'll fix most issues quickly.
