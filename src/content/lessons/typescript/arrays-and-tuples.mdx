@@ -1,0 +1,130 @@
+---
+title: Arrays and tuples
+description: Learn how to type lists in TypeScript — both flexible arrays and fixed-length tuples.
+course: typescript
+status: draft
+---
+
+TypeScript provides two ways to type lists: **arrays** for variable-length collections of the same type, and **tuples** for fixed-length lists with known positions.
+
+## Arrays
+
+Arrays are typed with the element type followed by `[]`, or with the generic `Array<T>` syntax:
+
+```typescript
+// Syntax 1: shorthand
+const numbers: number[] = [1, 2, 3];
+
+// Syntax 2: generic (identical result)
+const numbers: Array<number> = [1, 2, 3];
+```
+
+Both forms are equivalent. The `number[]` shorthand is more common and preferred for simple element types. Use `Array<T>` when the element type itself is complex or generic.
+
+### Arrays of objects
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+}
+
+const users: User[] = [
+  { id: 1, name: "Colin" },
+  { id: 2, name: "Sarah" },
+];
+```
+
+### Empty arrays
+
+An empty array without annotation becomes `any[]`:
+
+```typescript
+const items = [];  // any[] — not useful
+```
+
+Always annotate empty arrays:
+
+```typescript
+const items: string[] = [];
+const items: Array<User> = [];
+```
+
+### Array methods are typed
+
+Once an array has an element type, its methods carry that type through:
+
+```typescript
+const names: string[] = ["a", "b", "c"];
+
+const upper = names.map((n) => n.toUpperCase());
+// `n` is inferred as `string`, `upper` is `string[]`
+
+const found = names.find((n) => n.startsWith("b"));
+// `found` is `string | undefined` — find may not find anything
+```
+
+## Tuples
+
+Tuples are arrays with a **fixed length and known types at each position**:
+
+```typescript
+const point: [number, number] = [10, 20];
+
+const entry: [string, number] = ["age", 30];
+```
+
+Accessing tuple elements gives you the exact type for that position:
+
+```typescript
+const x: number = point[0];  // number
+const y: number = point[1];  // number
+```
+
+### Tuples with rest elements
+
+Tuples can have optional or rest elements, useful for variable-length argument lists:
+
+```typescript
+// At least a string, followed by any number of numbers
+type Command = [string, ...number[]];
+
+const cmd: Command = ["move", 1, 2, 3];
+```
+
+### When to use tuples vs arrays
+
+Use a **tuple** when each position has a distinct meaning:
+
+```typescript
+type Coordinate = [number, number];
+type Result<T> = [error: Error | null, data: T | null];
+```
+
+Use an **array** when all elements are the same kind of thing:
+
+```typescript
+const users: User[] = [...];
+const ids: number[] = [...];
+```
+
+## Readonly arrays and tuples
+
+When a list should not be mutated, use `readonly`:
+
+```typescript
+const numbers: readonly number[] = [1, 2, 3];
+numbers.push(4);  // Error — push does not exist on ReadonlyArray
+
+const point: readonly [number, number] = [10, 20];
+```
+
+## What to carry forward
+
+- `T[]` and `Array<T>` are equivalent — prefer `T[]` for simple types
+- always annotate empty arrays, or they become `any[]`
+- tuples have fixed length and known types at each position
+- use tuples when positions have distinct meanings, arrays when elements are uniform
+- `readonly` prevents mutation on arrays and tuples
+
+The next lesson covers object types, the most common type you will write.

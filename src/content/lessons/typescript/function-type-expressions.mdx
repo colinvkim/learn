@@ -1,0 +1,83 @@
+---
+title: Function type expressions
+description: Learn how to type functions as values — callbacks, handlers, and parameters.
+course: typescript
+status: draft
+---
+
+Functions in TypeScript are values with types. A function type expression describes what parameters a function takes and what it returns.
+
+## Function type syntax
+
+Function types use arrow-style syntax without a body:
+
+```typescript
+type Callback = () => void;
+type Transformer = (input: string) => string;
+type Predicate<T> = (value: T) => boolean;
+type BinaryOp = (a: number, b: number) => number;
+```
+
+The syntax looks like an arrow function without the body. The parameter names are documentation only — they do not need to match the actual function's parameter names.
+
+## Using function types
+
+Function types appear as parameters, return types, and variable annotations:
+
+```typescript
+type EventHandler = (event: { type: string; payload: unknown }) => void;
+
+function subscribe(handler: EventHandler) {
+  // handler can be called with the right argument shape
+}
+
+subscribe((event) => {
+  console.log(event.type);  // event is typed as the object above
+});
+```
+
+## Optional parameters in function types
+
+Function types can mark parameters as optional:
+
+```typescript
+type Search = (query: string, limit?: number) => Result[];
+```
+
+The caller may omit `limit`. The implementer sees `limit` as `number | undefined`.
+
+## Rest parameters in function types
+
+Rest parameters use array syntax:
+
+```typescript
+type Logger = (message: string, ...args: unknown[]) => void;
+
+const log: Logger = (msg, ...args) => {
+  console.log(msg, ...args);
+};
+```
+
+## Method shorthand in object types
+
+Inside object types and interfaces, methods use a shorthand syntax:
+
+```typescript
+interface ApiService {
+  get(url: string): Promise<unknown>;
+  post(url: string, body: unknown): Promise<unknown>;
+  delete(url: string): Promise<void>;
+}
+```
+
+This is equivalent to property-style function types but reads more naturally for object methods.
+
+## What to carry forward
+
+- function types use arrow-style syntax: `(arg: T) => R`
+- parameter names in function types are documentation only
+- function types appear as parameters, return types, and variable annotations
+- optional and rest parameters work the same way as in actual functions
+- method shorthand is preferred for functions inside object types
+
+The next lesson covers contextual typing — how TypeScript infers function parameter types from the surrounding context.

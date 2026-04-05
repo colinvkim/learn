@@ -1,0 +1,154 @@
+---
+title: Library design and public API types
+description: Learn how to design TypeScript libraries with clean public APIs, ergonomic generics, and exported types.
+course: typescript
+status: draft
+---
+
+Writing a TypeScript library is different from writing an application. The types you export become part of your public API. Changing them is a breaking change.
+
+## Designing the public API
+
+The public API is everything a consumer imports from your library. It should be:
+
+- **small** — as few exports as possible
+- **stable** — unlikely to change between versions
+- **ergonomic** — easy to use correctly, hard to use incorrectly
+
+```typescript
+// Good: small, focused API
+export { createClient, type Client, type ClientConfig } from "./client";
+export { type Result, type ApiError } from "./types";
+
+// Bad: exporting everything
+export * from "./internal/utils";
+export * from "./internal/constants";
+export * from "./internal/helpers";
+```
+
+## Exporting types alongside values
+
+Export both the implementation and the types consumers need:
+
+```typescript
+// client.ts
+export interface ClientConfig {
+  baseUrl: string;
+  timeout?: number;
+  retries?: number;
+}
+
+export interface Client {
+  get<T>(url: string): Promise<T>;
+  post<T>(url: string, body: unknown): Promise<T>;
+  delete(url: string): Promise<void>;
+}
+
+export function createClient(config: ClientConfig): Client {
+  // implementation
+}
+```
+
+Consumers can use `Client` and `ClientConfig` types for their own code:
+
+```typescript
+import { type Client, type ClientConfig, createClient } from "my-lib";
+
+const config: ClientConfig = {
+  baseUrl: "https://api.example.com",
+  retries: 3,
+};
+
+const client = createClient(config);
+
+// They can type their own variables with your types
+function setupClient(c: Client) {
+  // ...
+}
+```
+
+## Ergonomic generics
+
+Good generics make the library flexible while preserving type safety. The key insight: let the consumer's data flow through.
+
+```typescript
+// The generic T flows through every method
+interface Repository<T extends { id: string }> {
+  find(id: string): Promise<T | null>;
+  findAll(filter?: Partial<T>): Promise<T[]>;
+  create(data: Omit<T, "id">): Promise<T>;
+  update(id: string, data: Partial<T>): Promise<T>;
+  delete(id: string): Promise<void>;
+}
+```
+
+The constraint `T extends { id: string }` ensures every entity has an `id`. The methods work with any type that satisfies this.
+
+## Function overloads in public APIs
+
+Overloads provide precise types for specific usage patterns:
+
+```typescript
+// Overload signatures
+function createClient(): Client;
+function createClient(config: Partial<ClientConfig>): Client;
+function createClient(baseUrl: string, config?: Partial<ClientConfig>): Client;
+
+// Implementation
+function createClient(
+  configOrUrl?: string | Partial<ClientConfig>,
+  maybeConfig?: Partial<ClientConfig>,
+): Client {
+  // normalize arguments and create client
+}
+```
+
+Consumers get the right types for each calling pattern:
+
+```typescript
+createClient();                              // uses defaults
+createClient({ retries: 3 });                // partial config
+createClient("https://api.example.com");     // just the URL
+createClient("https://api.example.com", { timeout: 10000 });  // URL + config
+```
+
+## Declaration file design
+
+The `.d.ts` files that ship with your library are what consumers see. Generate them with `tsc`:
+
+```json
+{
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false
+  }
+}
+```
+
+Good declaration files:
+- expose only public types (internal types should not leak)
+- use clear, descriptive names
+- avoid complex conditional types that are hard to understand
+
+## Versioning and breaking changes
+
+Changing exported types is a breaking change. Be careful with:
+
+- removing or renaming an exported type
+- making a required property optional (or vice versa)
+- changing a generic constraint to be stricter
+- changing a return type
+
+Use semver and document type changes in the changelog.
+
+## What to carry forward
+
+- the public API should be small, stable, and ergonomic
+- export types alongside values — consumers need them
+- good generics let consumer data flow through the library
+- overloads provide precise types for different calling patterns
+- declaration files (`.d.ts`) are part of the public API
+- changing exported types is a breaking change — version carefully
+
+This is the last lesson in the core TypeScript curriculum. The application tracks (React, Node.js, library design) show how to apply the type system in real projects.

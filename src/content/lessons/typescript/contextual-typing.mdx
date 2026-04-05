@@ -1,0 +1,88 @@
+---
+title: Contextual typing
+description: Learn how TypeScript infers function parameter types from the expected type.
+course: typescript
+status: draft
+---
+
+Contextual typing is when TypeScript infers the type of a function's parameters from the type that is expected at the call site or assignment location.
+
+## How it works
+
+When you pass a function to a typed API, TypeScript uses the expected type to infer your parameter types:
+
+```typescript
+const names = ["alice", "bob", "charlie"];
+
+names.map((name) => name.toUpperCase());
+// `name` is inferred as `string` — no annotation needed
+```
+
+TypeScript looks at the type of `names.map`, sees that its callback expects a `string` as the first parameter, and applies that type to the `name` parameter in your arrow function.
+
+## Where contextual typing applies
+
+Contextual typing works in several situations:
+
+```typescript
+// Event handlers
+element.addEventListener("click", (event) => {
+  // event is MouseEvent — inferred from addEventListener's type
+});
+
+// Array methods
+const numbers = [1, 2, 3];
+const doubled = numbers.map((n) => n * 2);
+// n is number
+
+const even = numbers.filter((n) => n % 2 === 0);
+// n is number
+
+// Object method assignment
+const handler: { onClick: (e: { x: number; y: number }) => void } = {
+  onClick(event) {
+    // event is { x: number; y: number }
+  },
+};
+```
+
+## When contextual typing does NOT apply
+
+Contextual typing requires TypeScript to know the expected type. It does not apply when:
+
+```typescript
+// Storing a function in an untyped variable
+const fn = (x) => x + 1;
+// Error: x has implicit any — no context to infer from
+
+// Fix: annotate explicitly
+const fn = (x: number) => x + 1;
+// Or: give the variable a function type
+const fn: (x: number) => number = (x) => x + 1;
+```
+
+## Generic contextual typing
+
+Contextual typing works with generics through the surrounding API:
+
+```typescript
+function wrap<T>(items: T[], transform: (item: T) => T): T[] {
+  return items.map(transform);
+}
+
+wrap([1, 2, 3], (n) => n * 2);
+// n is inferred as number from the T = number
+
+wrap(["a", "b"], (s) => s.toUpperCase());
+// s is inferred as string from the T = string
+```
+
+## What to carry forward
+
+- contextual typing infers parameter types from the expected function type
+- it works with callbacks, event handlers, array methods, and method assignments
+- it does NOT apply when the variable has no expected type
+- when contextual typing is absent, annotate parameters explicitly
+- generic APIs pass their type through to contextual typing
+
+The next lesson covers typed array method callbacks in depth.

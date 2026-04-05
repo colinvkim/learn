@@ -1,0 +1,116 @@
+---
+title: Function types
+description: Learn how to type function parameters, return types, and function signatures in TypeScript.
+course: typescript
+status: draft
+---
+
+Functions are central to TypeScript (and JavaScript). Typing them correctly is the foundation of most type-safe code.
+
+## Parameter types
+
+Function parameters always need type annotations (unless contextual typing provides them):
+
+```typescript
+function add(a: number, b: number): number {
+  return a + b;
+}
+```
+
+## Return types
+
+Return types are optional — TypeScript infers them from the function body. Annotating them explicitly is still recommended for public APIs:
+
+```typescript
+// Return type inferred as number
+function add(a: number, b: number) {
+  return a + b;
+}
+
+// Explicit return type — documents intent
+function add(a: number, b: number): number {
+  return a + b;
+}
+```
+
+Explicit return types help readers and catch accidental changes to what a function returns.
+
+## Void functions
+
+Functions that do not return a value have the return type `void`:
+
+```typescript
+function log(message: string): void {
+  console.log(message);
+}
+```
+
+`void` is not the same as `undefined`. A `void` function may still return a value, but the type system discards it:
+
+```typescript
+function logAndReturn(message: string): void {
+  console.log(message);
+  return "ignored";  // No error — the return is discarded by the type system
+}
+```
+
+## Optional and default parameters
+
+Optional parameters use `?`:
+
+```typescript
+function greet(name: string, greeting?: string) {
+  if (greeting) {
+    return `${greeting}, ${name}`;
+  }
+  return `Hello, ${name}`;
+}
+```
+
+Default parameters are preferred when there is a sensible fallback. TypeScript infers the type from the default value:
+
+```typescript
+function greet(name: string, greeting: string = "Hello") {
+  return `${greeting}, ${name}`;
+}
+```
+
+With default parameters, the type is inferred and the parameter is not required at the call site.
+
+## Rest parameters
+
+Rest parameters are typed as arrays:
+
+```typescript
+function sum(...numbers: number[]): number {
+  return numbers.reduce((total, n) => total + n, 0);
+}
+
+sum(1, 2, 3, 4);  // OK
+```
+
+## Function type expressions
+
+Functions can be typed as values using arrow-style type syntax:
+
+```typescript
+type Callback = (result: string) => void;
+type Comparator<T> = (a: T, b: T) => number;
+
+function process(callback: Callback) {
+  callback("done");
+}
+```
+
+This is essential for typing higher-order functions, callbacks, and event handlers.
+
+## What to carry forward
+
+- parameters always need type annotations
+- return types are inferred but worth annotating on public APIs
+- `void` means the return value is discarded, not that nothing is returned
+- default parameters are preferred over optional parameters when there is a sensible fallback
+- rest parameters are typed as arrays
+- function type expressions (`(arg: T) => R`) type functions as values
+
+The next lesson covers type aliases and interfaces — the two ways to name and reuse types.

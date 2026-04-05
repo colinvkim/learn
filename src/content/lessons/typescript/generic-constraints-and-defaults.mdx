@@ -1,0 +1,132 @@
+---
+title: Generic constraints and defaults
+description: Learn how to limit which types generics accept, and how to provide sensible fallbacks.
+course: typescript
+status: draft
+---
+
+Generics are most useful when they are flexible. But sometimes flexibility goes too far — you need to limit what types a generic accepts or provide a default when the caller does not specify one.
+
+## Constraints with `extends`
+
+Constraints limit which types a generic parameter can be:
+
+```typescript
+function mergeObjects<T extends object, U extends object>(a: T, b: U): T & U {
+  return { ...a, ...b };
+}
+
+mergeObjects({ a: 1 }, { b: 2 });  // OK
+mergeObjects("hello", "world");     // Error — strings are not object
+```
+
+The constraint `extends object` means `T` must be an object type. Primitives are rejected.
+
+### Constraining to a specific shape
+
+Constraints often reflect what the function body does with the value:
+
+```typescript
+function getProperty<T extends { name: string }, K extends keyof T>(
+  obj: T,
+  key: K,
+): T[K] {
+  return obj[key];
+}
+
+getProperty({ name: "Colin", age: 30 }, "name");  // OK, returns string
+getProperty({ name: "Colin", age: 30 }, "email"); // Error — email does not exist
+```
+
+The constraint `extends { name: string }` guarantees that `name` exists on every allowed type.
+
+### Constraining to another generic parameter
+
+A generic can be constrained by another generic in the same declaration:
+
+```typescript
+function assign<T extends U, U>(target: T, source: U): T {
+  return Object.assign(target, source);
+}
+```
+
+Here `T` must be assignable to `U`. This ensures `source` does not have properties that `target` cannot accept.
+
+## Default type parameters
+
+Generics can have default types, just like function parameters have default values:
+
+```typescript
+interface PaginatedResponse<T = unknown> {
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+// Using the default
+const response: PaginatedResponse = {
+  data: [1, 2, 3],
+  total: 100,
+  page: 1,
+  pageSize: 10,
+};
+
+// Specifying the type
+const users: PaginatedResponse<User> = {
+  data: users,
+  total: 100,
+  page: 1,
+  pageSize: 10,
+};
+```
+
+Defaults make generics ergonomic for common cases while remaining flexible for specific ones.
+
+### Default constraints
+
+Defaults and constraints can be combined:
+
+```typescript
+type ApiResponse<T extends Record<string, unknown> = Record<string, unknown>> = {
+  status: number;
+  data: T;
+};
+```
+
+## Practical constraint patterns
+
+### Requiring specific properties
+
+```typescript
+function sortBy<T extends { createdAt: Date }>(items: T[]): T[] {
+  return [...items].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+}
+```
+
+### Requiring a base type
+
+```typescript
+function clone<T extends object>(obj: T): T {
+  return { ...obj };
+}
+```
+
+### Requiring indexable types
+
+```typescript
+function getValue<T extends Record<string, unknown>>(obj: T, key: string): unknown {
+  return obj[key];
+}
+```
+
+## What to carry forward
+
+- `extends` constrains which types a generic accepts
+- constraints reflect what the function body actually does with the value
+- generics can be constrained by other generics in the same declaration
+- default type parameters (`T = DefaultType`) make generics ergonomic for common cases
+- defaults and constraints can be combined
+- good constraints limit just enough to enable operations without over-constraining
+
+The next lesson covers good generic design — when to use generics and when not to.

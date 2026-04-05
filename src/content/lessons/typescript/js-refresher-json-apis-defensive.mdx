@@ -1,0 +1,124 @@
+---
+title: "JS refresher: JSON, APIs, and defensive programming"
+description: A quick review of JSON parsing, API response handling, object transformation, and defensive JavaScript patterns.
+course: typescript
+status: draft
+---
+
+This lesson is optional. It reviews JavaScript patterns for working with external data — the data that TypeScript cannot type at compile time.
+
+## JSON parsing and serializing
+
+`JSON.parse()` takes a string and returns a JavaScript value. The return type is `unknown` — JSON could be anything:
+
+```javascript
+const raw = '{"name": "Colin", "age": 30}';
+const data = JSON.parse(raw);
+// data could be any valid JSON value
+```
+
+`JSON.stringify()` takes a value and returns a JSON string:
+
+```javascript
+const user = { name: "Colin", age: 30 };
+const raw = JSON.stringify(user);
+// '{"name":"Colin","age":30}'
+```
+
+Important: `JSON.stringify()` drops `undefined` values, converts `Date` objects to strings, and cannot represent `Map`, `Set`, or functions.
+
+## Working with API responses
+
+The `fetch` API returns a `Response` object. The `.json()` method parses the body:
+
+```javascript
+const response = await fetch("/api/users/1");
+const data = await response.json();
+// data is whatever the API returns — no type safety
+```
+
+Without TypeScript, developers often assume the shape:
+
+```javascript
+// Fragile — assumes the API returns this shape
+console.log(data.user.name);
+```
+
+Defensive programming checks assumptions:
+
+```javascript
+if (data && data.user && typeof data.user.name === "string") {
+  console.log(data.user.name);
+}
+```
+
+TypeScript replaces this manual checking with typed validation at the boundary.
+
+## Object transformation
+
+Transforming objects is common when converting between API format and internal format:
+
+```javascript
+// Destructuring and restructuring
+const apiUser = { first_name: "Colin", last_name: "Kim" };
+const user = {
+  name: `${apiUser.first_name} ${apiUser.last_name}`,
+};
+```
+
+```javascript
+// Mapping arrays
+const apiUsers = [{ id: "1", name: "Colin" }, { id: "2", name: "Sarah" }];
+const users = apiUsers.map((u) => ({ id: Number(u.id), name: u.name }));
+```
+
+```javascript
+// Picking and omitting
+const { password, ...safeUser } = apiUser;  // remove password
+const publicUser = { id: user.id, name: user.name };  // pick fields
+```
+
+## Defensive programming
+
+Defensive programming checks assumptions before using values:
+
+```javascript
+// Checking for null/undefined
+function getUserName(user) {
+  if (!user) return "Anonymous";
+  return user.name || "Anonymous";
+}
+
+// Checking types
+function process(data) {
+  if (!Array.isArray(data)) {
+    throw new Error("Expected an array");
+  }
+  // now safe to use array methods
+}
+
+// Checking object shape
+function handleUser(user) {
+  if (
+    typeof user !== "object" ||
+    user === null ||
+    typeof user.name !== "string"
+  ) {
+    throw new Error("Invalid user object");
+  }
+  // now safe to use user.name
+}
+```
+
+Defensive programming is what you do in JavaScript to compensate for the lack of a type system. In TypeScript, many of these checks are replaced by compile-time type checking — but the checks at the trust boundary (external data) are still needed.
+
+## What to carry forward
+
+- `JSON.parse()` returns `unknown` — the result could be any valid JSON
+- `JSON.stringify()` drops `undefined`, converts `Date` to strings, cannot represent functions
+- API responses arrive untyped — manual checks are needed in JavaScript
+- object transformation uses destructuring, mapping, and picking
+- defensive programming checks assumptions before using values
+- in TypeScript, compile-time types replace many of these checks internally, but boundary checks are still needed
+
+The next module covers runtime validation and trust boundaries — why TypeScript alone cannot validate external input.

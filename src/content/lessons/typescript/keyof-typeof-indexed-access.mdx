@@ -1,0 +1,131 @@
+---
+title: keyof, typeof, and indexed access types
+description: Learn how to extract and look up types from other types and values.
+course: typescript
+status: draft
+---
+
+TypeScript provides operators that work on types the way JavaScript operators work on values. These let you extract, query, and transform types programmatically.
+
+## `keyof`: the keys of a type
+
+`keyof` produces a union of all property names of a type:
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+type UserKeys = keyof User;
+// UserKeys is "id" | "name" | "email"
+```
+
+`keyof` is most useful with generics:
+
+```typescript
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+
+const user: User = { id: 1, name: "Colin", email: "c@example.com" };
+getProperty(user, "name");  // OK — returns string
+getProperty(user, "age");   // Error — "age" is not a key of User
+```
+
+The constraint `K extends keyof T` ensures the key actually exists on the object.
+
+## `typeof` in type positions
+
+`typeof` in a type context extracts the type of a value:
+
+```typescript
+const config = {
+  retries: 3,
+  timeout: 5000,
+  verbose: false,
+};
+
+type Config = typeof config;
+// Config is { retries: number; timeout: number; verbose: boolean }
+```
+
+This is useful for capturing the type of a value without duplicating its shape:
+
+```typescript
+const defaultHeaders = {
+  "Content-Type": "application/json",
+  "Authorization": "",
+};
+
+type Headers = typeof defaultHeaders;
+
+function mergeHeaders(overrides: Partial<Headers>): Headers {
+  return { ...defaultHeaders, ...overrides };
+}
+```
+
+Do not confuse `typeof` in type positions (which extracts types) with `typeof` at runtime (which checks primitive types). They are the same keyword used in different contexts.
+
+## Indexed access types
+
+Indexed access types look up the type of a property using bracket notation:
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  settings: { theme: string; lang: string };
+}
+
+type NameType = User["name"];
+// NameType is string
+
+type SettingsType = User["settings"];
+// SettingsType is { theme: string; lang: string }
+```
+
+Indexed access works with unions of keys:
+
+```typescript
+type NameOrId = User["name" | "id"];
+// NameOrId is string | number
+```
+
+And with `keyof`:
+
+```typescript
+type AnyUserValue = User[keyof User];
+// AnyUserValue is number | string | { theme: string; lang: string }
+```
+
+## Combining the operators
+
+These operators compose naturally:
+
+```typescript
+interface Config {
+  database: { host: string; port: number };
+  cache: { ttl: number; enabled: boolean };
+}
+
+type DatabaseConfig = Config["database"];
+// { host: string; port: number }
+
+type DatabaseKeys = keyof Config["database"];
+// "host" | "port"
+
+type AnyConfigValue = Config[keyof Config];
+// { host: string; port: number } | { ttl: number; enabled: boolean }
+```
+
+## What to carry forward
+
+- `keyof T` produces a union of all property names of `T`
+- `typeof value` in a type position extracts the type of a value
+- `T[K]` (indexed access) looks up the type of property `K` on type `T`
+- these operators compose: `keyof T["property"]`, `T[keyof T]`
+- they enable type-safe property access and dynamic type extraction
+
+The next lesson covers mapped types — how to transform every property of a type.

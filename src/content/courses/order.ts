@@ -54,8 +54,82 @@ export const courseLessonOrder: Record<string, string[]> = {
     "pnpm-reference",
   ],
   typescript: [
-    "what-is-typescript",
-    "the-type-system-in-practice",
+    // Module 1: TypeScript mental model
+    "what-typescript-adds",
+    "compile-time-vs-runtime",
+    "type-erasure",
+    "structural-typing",
+    "type-inference",
+    "why-typescript-allows-unsafe-looking-code",
+    "strict-mode",
+    // Module 2: Core type syntax
+    "primitive-types",
+    "arrays-and-tuples",
+    "object-types",
+    "function-types",
+    "type-aliases-and-interfaces",
+    // JS refresher (optional, after Module 2)
+    "js-refresher-functions-objects-destructuring",
+    // Module 3: Unions, literals, and narrowing
+    "union-types",
+    "literal-types",
+    "narrowing-with-type-guards",
+    "discriminated-unions",
+    "exhaustiveness-checking",
+    // Module 4: Functions, callbacks, and typed APIs
+    "function-type-expressions",
+    "contextual-typing",
+    "higher-order-functions-with-types",
+    "function-overloads",
+    // Module 5: Safer uncertainty
+    "any-and-unknown",
+    "never-null-undefined",
+    "assertions-vs-narrowing",
+    "when-to-redesign-a-type",
+    // Module 6: Generics
+    "generic-functions",
+    "generic-interfaces-and-type-aliases",
+    "generic-constraints-and-defaults",
+    "good-generic-design",
+    // Module 7: Type operators and utility types
+    "keyof-typeof-indexed-access",
+    "mapped-types",
+    "conditional-types-and-infer",
+    "utility-types",
+    // Module 8: Classes, objects, and domain models
+    "classes-in-typescript",
+    "access-modifiers-and-readonly",
+    "implementing-interfaces",
+    "composition-vs-inheritance",
+    // JS refresher (optional, after Module 8)
+    "js-refresher-prototypes-classes-this",
+    // Module 9: Modeling real systems
+    "api-response-types",
+    "config-objects-and-form-data",
+    "domain-entities-and-typed-errors",
+    "dtos-vs-internal-models",
+    // JS refresher (optional, after Module 9)
+    "js-refresher-json-apis-defensive",
+    // Module 10: Runtime validation and trust boundaries
+    "why-typescript-cannot-validate",
+    "parsing-unknown-and-narrowing",
+    "schema-validation-libraries",
+    "safe-ingestion-patterns",
+    // Module 11: Tooling and project configuration
+    "tsconfig-json-explained",
+    "strict-flags-in-depth",
+    "important-compiler-flags",
+    "esm-vs-commonjs",
+    "linting-formatting-ci",
+    "migrating-from-javascript",
+    // Module 12: Application tracks
+    // Frontend track
+    "react-props-and-component-types",
+    "react-hooks-events-state",
+    // Backend track
+    "node-backend-track",
+    // Library track
+    "library-design-track",
   ],
   javascript: [
     // Unit 1: What is JavaScript

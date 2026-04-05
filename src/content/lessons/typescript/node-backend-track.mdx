@@ -1,0 +1,236 @@
+---
+title: Node.js with TypeScript
+description: Learn how to set up a Node.js project with TypeScript, type request/response objects, and structure a typed backend.
+course: typescript
+status: draft
+---
+
+Running TypeScript on the server requires a slightly different setup than frontend projects. The code compiles to JavaScript that runs on Node.js instead of in a browser.
+
+## Project setup
+
+Install TypeScript and types for Node.js:
+
+```bash
+pnpm add -D typescript @types/node
+```
+
+A Node.js `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
+```
+
+Run with `tsx` for development (no separate compile step):
+
+```bash
+pnpm add -D tsx
+npx tsx src/index.ts
+```
+
+For production, compile and run the output:
+
+```bash
+npx tsc
+node dist/index.js
+```
+
+## Request and response types
+
+Express-style frameworks provide typed request and response objects. The types come from `@types/express` or framework-specific packages:
+
+```typescript
+import express, { Request, Response } from "express";
+
+const app = express();
+app.use(express.json());
+
+interface CreatePostBody {
+  title: string;
+  body: string;
+  tags: string[];
+}
+
+interface PostParams {
+  id: string;
+}
+
+app.post("/api/posts", (req: Request<{}, CreatePostBody>, res: Response) => {
+  const { title, body, tags } = req.body;
+  // title, body, and body are typed from CreatePostBody
+  // ...
+  res.status(201).json({ id: "1", title, body, tags });
+});
+
+app.get("/api/posts/:id", (req: Request<PostParams>, res: Response) => {
+  const { id } = req.params;
+  // id is string from PostParams
+  // ...
+});
+```
+
+The `Request<Params, Body, Query>` generic lets you type URL parameters, request body, and query string separately.
+
+## Configuration typing
+
+Server configuration should be typed and validated at startup:
+
+```typescript
+interface ServerConfig {
+  port: number;
+  databaseUrl: string;
+  nodeEnv: "development" | "production" | "test";
+  secretKey: string;
+}
+
+function loadConfig(): ServerConfig {
+  const config = {
+    port: Number(process.env.PORT) || 3000,
+    databaseUrl: process.env.DATABASE_URL,
+    nodeEnv: (process.env.NODE_ENV as ServerConfig["nodeEnv"]) || "development",
+    secretKey: process.env.SECRET_KEY,
+  };
+
+  if (!config.databaseUrl) throw new Error("DATABASE_URL is required");
+  if (!config.secretKey) throw new Error("SECRET_KEY is required");
+
+  return config;
+}
+```
+
+For production, use a schema validation library (covered in Module 10) instead of manual checks.
+
+## Service layers
+
+Separate request handling from business logic. Services are plain functions or classes that operate on domain types:
+
+```typescript
+// services/posts.ts
+interface CreatePostInput {
+  title: string;
+  body: string;
+  tags: string[];
+}
+
+interface Post {
+  id: string;
+  title: string;
+  body: string;
+  tags: string[];
+  createdAt: Date;
+}
+
+async function createPost(input: CreatePostInput): Promise<Post> {
+  // business logic — no HTTP details here
+  return {
+    id: crypto.randomUUID(),
+    ...input,
+    createdAt: new Date(),
+  };
+}
+
+// routes/posts.ts
+app.post("/api/posts", async (req, res) => {
+  try {
+    const post = await createPost(req.body);
+    res.status(201).json(post);
+  } catch (error) {
+    res.status(400).json({ error: (error as Error).message });
+  }
+});
+```
+
+The service operates on domain types (`CreatePostInput`, `Post`). The route handles HTTP concerns (status codes, JSON serialization, error responses).
+
+## Typed errors
+
+Services should return typed errors rather than throwing:
+
+```typescript
+type ServiceResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; error: ValidationError | NotFoundError };
+
+async function getPost(id: string): Promise<ServiceResult<Post>> {
+  const post = await db.posts.find(id);
+  if (!post) {
+    return { ok: false, error: { kind: "not-found", resource: "post", id } };
+  }
+  return { ok: true, data: post };
+}
+```
+
+The route layer translates service errors to HTTP responses:
+
+```typescript
+app.get("/api/posts/:id", async (req, res) => {
+  const result = await getPost(req.params.id);
+  if (!result.ok) {
+    if (result.error.kind === "not-found") {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    return res.status(400).json({ message: result.error.message });
+  }
+  res.json(result.data);
+});
+```
+
+## Persistence boundaries
+
+The data access layer is the boundary between the database format and the domain model:
+
+```typescript
+// Data layer — raw database row
+interface PostRow {
+  id: string;
+  title: string;
+  body: string;
+  tags: string;  // JSON string in the database
+  created_at: string;  // ISO date string
+}
+
+// Domain model — application type
+interface Post {
+  id: string;
+  title: string;
+  body: string;
+  tags: string[];  // parsed array
+  createdAt: Date;  // parsed date
+}
+
+// Mapper at the boundary
+function postFromRow(row: PostRow): Post {
+  return {
+    id: row.id,
+    title: row.title,
+    body: row.body,
+    tags: JSON.parse(row.tags),
+    createdAt: new Date(row.created_at),
+  };
+}
+```
+
+This is the same DTO-to-domain pattern from Module 9, applied to database rows.
+
+## What to carry forward
+
+- Node.js projects use `module: "NodeNext"` and `@types/node`
+- `tsx` enables running TypeScript directly during development
+- request types use `Request<Params, Body, Query>` generics
+- separate business logic (services) from HTTP handling (routes)
+- services return typed results; routes translate to HTTP responses
+- database rows are DTOs — map them to domain models at the boundary
+
+The final track covers library and public API design.

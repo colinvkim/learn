@@ -1,0 +1,127 @@
+---
+title: Implementing interfaces
+description: Learn how classes can commit to type contracts, and the difference between `implements` and `extends`.
+course: typescript
+status: draft
+---
+
+The `implements` keyword lets a class declare that it satisfies an interface. This creates a contract: the class must provide all the properties and methods the interface requires.
+
+## Basic implementation
+
+```typescript
+interface Printable {
+  print(): string;
+}
+
+class Report implements Printable {
+  title: string;
+  content: string;
+
+  constructor(title: string, content: string) {
+    this.title = title;
+    this.content = content;
+  }
+
+  print(): string {
+    return `${this.title}\n${this.content}`;
+  }
+}
+```
+
+If the class does not provide `print()`, TypeScript produces an error. The interface is a contract the class must fulfill.
+
+## Multiple interfaces
+
+A class can implement multiple interfaces:
+
+```typescript
+interface Serializable {
+  toJSON(): string;
+}
+
+interface Printable {
+  print(): string;
+}
+
+class Report implements Serializable, Printable {
+  // must provide both toJSON() and print()
+}
+```
+
+## `implements` vs `extends`
+
+`implements` and `extends` do different things:
+
+- `extends` — inherits implementation from a parent class
+- `implements` — commits to a type contract without inheriting any implementation
+
+```typescript
+interface Loggable {
+  log(): void;
+}
+
+class Entity {
+  id: string;
+  constructor(id: string) {
+    this.id = id;
+  }
+}
+
+class User extends Entity implements Loggable {
+  name: string;
+
+  constructor(id: string, name: string) {
+    super(id);
+    this.name = name;
+  }
+
+  log(): void {
+    console.log(`User ${this.name} (id: ${this.id})`);
+  }
+}
+```
+
+`User` inherits `id` from `Entity` and commits to the `Loggable` contract.
+
+## Interfaces describe shape, not implementation
+
+An interface says "this type has these properties and methods." It says nothing about how they are implemented. This means:
+
+- a class, a plain object, or a function can all satisfy the same interface
+- changing the implementation does not change the interface
+- multiple classes can satisfy the same interface differently
+
+```typescript
+interface Repository<T> {
+  find(id: string): Promise<T | null>;
+}
+
+// Implementation 1: in-memory
+class InMemoryRepository<T> implements Repository<T> {
+  private store = new Map<string, T>();
+  async find(id: string) {
+    return this.store.get(id) ?? null;
+  }
+}
+
+// Implementation 2: database
+class DatabaseRepository<T> implements Repository<T> {
+  async find(id: string) {
+    // query database
+    return null;
+  }
+}
+```
+
+Both satisfy `Repository<T>`. Code that depends on the interface does not care which implementation is used.
+
+## What to carry forward
+
+- `implements` creates a contract between a class and an interface
+- the class must provide all properties and methods the interface requires
+- a class can implement multiple interfaces
+- `extends` inherits implementation; `implements` commits to a shape
+- interfaces describe shape, not implementation — enabling interchangeable implementations
+
+The next lesson covers composition vs inheritance in typed systems.

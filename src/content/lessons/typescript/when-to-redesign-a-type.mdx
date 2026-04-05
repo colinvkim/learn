@@ -1,0 +1,118 @@
+---
+title: When to redesign a type
+description: Learn when a type error is signaling a design problem, and how to restructure types instead of working around them.
+course: typescript
+status: draft
+---
+
+Not every type error should be silenced. Sometimes the error is revealing that the type itself is poorly designed for the actual usage.
+
+## Signs the type is the problem
+
+These patterns suggest a redesign rather than a workaround:
+
+### Repeated type assertions
+
+If you find yourself writing `as SomeType` in multiple places, the type is probably too narrow or wrong:
+
+```typescript
+// Repeated assertions suggest a design issue
+const config = loadConfig() as Config;
+const parsed = JSON.parse(raw) as Config;
+const merged = { ...defaults, ...overrides } as Config;
+```
+
+Instead, make `Config` the natural result of these operations:
+
+```typescript
+function loadConfig(): Config { /* ... */ }
+function parseConfig(raw: string): Config { /* validates and returns Config */ }
+```
+
+### Complex narrowing chains
+
+If narrowing requires five nested checks, the input type is probably too broad:
+
+```typescript
+// Cumbersome narrowing
+function handle(event: unknown) {
+  if (
+    typeof event === "object" &&
+    event !== null &&
+    "type" in event &&
+    typeof event.type === "string" &&
+    "payload" in event &&
+    typeof event.payload === "object"
+  ) {
+    // finally use event
+  }
+}
+```
+
+Define a proper type and validate at the boundary (covered in Module 10):
+
+```typescript
+interface AppEvent {
+  type: string;
+  payload: Record<string, unknown>;
+}
+
+// Validate once at the boundary, use the typed value everywhere
+```
+
+### Union types that are hard to use
+
+When a union has many members and every usage requires a `switch` with a `default` case, consider whether the union should be a discriminated union with a clear discriminant:
+
+```typescript
+// Hard to use — no common property
+type Result = User | Error | null;
+
+// Easier — discriminated union
+type Result =
+  | { kind: "success"; data: User }
+  | { kind: "error"; message: string }
+  | { kind: "loading" };
+```
+
+### Optional properties that are always checked
+
+When every consumer of a type checks whether an optional property exists, the property should probably not be optional — or the type should split into two variants:
+
+```typescript
+// Everyone always checks `.error`
+interface Response {
+  ok: boolean;
+  data?: unknown;
+  error?: string;
+}
+
+// Better: two distinct variants
+type Response =
+  | { ok: true; data: unknown }
+  | { ok: false; error: string };
+```
+
+## Redesign strategies
+
+| Problem | Redesign |
+|---------|----------|
+| Too many type assertions | Make the type the natural output of the operation |
+| Complex narrowing chains | Define the type once, validate at the boundary |
+| Unwieldy unions | Use discriminated unions with a shared discriminant |
+| Always-checked optionals | Split into distinct variants |
+| `any` everywhere | Start with `unknown`, build a proper type from usage patterns |
+
+## The mindset shift
+
+A type error is not always a mistake in your code. Sometimes it is the type system telling you that the model does not match reality. The right response is not always to quiet the error — it is sometimes to improve the model.
+
+## What to carry forward
+
+- repeated type assertions suggest the type is wrong, not the usage
+- complex narrowing chains mean the input type is too broad
+- unwieldy unions benefit from discriminated union redesign
+- always-checked optional properties suggest the type should split into variants
+- a type error can signal a design problem, not just a usage mistake
+
+The next module covers generics — how to write types that work with many input types while preserving relationships.

@@ -1,0 +1,115 @@
+---
+title: Type inference
+description: Learn how TypeScript figures out types automatically and when you need to annotate explicitly.
+course: typescript
+status: draft
+---
+
+TypeScript does not require a type annotation everywhere. It infers types from context — from initial values, from function bodies, from return statements.
+
+## Inference in action
+
+```typescript
+// TypeScript infers `number` from the initializer
+let count = 0;
+count = 10;   // OK
+count = "x";  // Error: Type 'string' is not assignable to type 'number'.
+
+// TypeScript infers the return type from the body
+function double(n: number) {
+  return n * 2;
+}
+// Return type is inferred as `number`
+```
+
+Inference works through expressions, control flow, and function bodies. TypeScript tracks what each value could be at every point in the code.
+
+## Where inference is strongest
+
+TypeScript infers types well in these situations:
+
+```typescript
+// Variable initialization — infers from the right-hand side
+const name = "Colin";        // string
+const active = true;          // boolean
+const items = [1, 2, 3];      // number[]
+
+// Return types — infers from what the function returns
+function getUser(id: number) {
+  return { id, name: "Colin" };
+}
+// Inferred return: { id: number; name: string }
+
+// Contextual typing — infers parameter types from the expected type
+const names = ["a", "b", "c"];
+names.map((n) => n.toUpperCase());
+// `n` is inferred as `string` because `map` expects a function on a string[]
+```
+
+Inference is generally strongest when TypeScript has a concrete value to look at, or when a type is expected by the surrounding context.
+
+## Where inference is weak or absent
+
+TypeScript cannot infer everything. In these cases, annotations are needed:
+
+```typescript
+// Function parameters — TypeScript cannot guess what the caller will pass
+function greet(name) {
+//              ^^^^ Parameter 'name' implicitly has an 'any' type.
+  return `Hello, ${name}`;
+}
+
+// Fix: annotate the parameter
+function greet(name: string) {
+  return `Hello, ${name}`;
+}
+
+// Empty arrays — no elements to infer from
+const items = [];  // inferred as any[]
+
+// Fix: annotate the type
+const items: string[] = [];
+
+// Complex conditional returns
+function process(value: string | number) {
+  if (typeof value === "string") {
+    return value.split("");
+  }
+  return value.toFixed(2);
+}
+// Inferred return: string[] | string — correct but hard to read
+// Better: annotate explicitly for clarity
+function process(value: string | number): string[] | string {
+  // ...
+}
+```
+
+## Inference vs explicit annotation
+
+A good rule of thumb: **annotate function parameters and public API boundaries, rely on inference for local variables and return types when they are obvious.**
+
+```typescript
+// Annotate parameters (required), let return type infer when simple
+function add(a: number, b: number) {
+  return a + b;  // inferred as number
+}
+
+// Annotate return type when it communicates intent clearly
+function parseJson(raw: string): unknown {
+  return JSON.parse(raw);
+}
+
+// Annotate complex local variables for readability
+const config: { retries: number; timeout: number } = loadConfig();
+```
+
+Explicit annotations are documentation. They tell readers what a function expects and what it produces without requiring them to trace through the body.
+
+## What to carry forward
+
+- TypeScript infers types from initializers, return values, and context
+- function parameters always need annotations (or a typed context to infer from)
+- empty arrays and `any`-heavy code weaken inference
+- annotate public APIs and complex types; rely on inference for the rest
+
+The next lesson explains why TypeScript sometimes allows code that looks unsafe, and what the type system is actually guaranteeing.

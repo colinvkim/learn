@@ -1,0 +1,71 @@
+---
+title: Union types
+description: Learn how to express that a value can be one of several types.
+course: typescript
+status: draft
+---
+
+A union type expresses that a value can be one of several types. The `|` operator combines types:
+
+```typescript
+let id: string | number;
+id = "abc123";  // OK
+id = 42;        // OK
+id = true;      // Error — boolean is not part of the union
+```
+
+Unions are how you model "either/or" in the type system.
+
+## Common union patterns
+
+### Nullable values
+
+Before strict null checks, `null` and `undefined` were silently assignable to every type. With strict mode, you must include them explicitly:
+
+```typescript
+function findUser(id: string): User | null {
+  // returns a User or null
+}
+```
+
+### Multiple types
+
+```typescript
+type InputValue = string | number | boolean;
+```
+
+### Literal unions
+
+Literal types combined with `|` create constrained sets of values:
+
+```typescript
+type Alignment = "left" | "center" | "right";
+
+const align: Alignment = "left";   // OK
+const align: Alignment = "justify"; // Error
+```
+
+This is one of the most useful patterns in TypeScript — it creates an enumerated set of values without needing a special construct.
+
+## Working with unions
+
+When you have a union, TypeScript only allows you to use members that exist on **all** types in the union:
+
+```typescript
+function process(value: string | number) {
+  value.toString();  // OK — both string and number have toString
+  value.length;      // Error — number does not have length
+  value.toFixed(2);  // Error — string does not have toFixed
+}
+```
+
+To access type-specific members, you must **narrow** the type first. That is the subject of the next lessons.
+
+## What to carry forward
+
+- unions use `|` to express "one of these types"
+- literal unions (`"a" | "b" | "c"`) create constrained value sets
+- TypeScript only allows members common to all union types until you narrow
+- nullable values are unions with `null` or `undefined`
+
+The next lesson covers literal types and how they make unions more precise.

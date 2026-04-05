@@ -1,0 +1,101 @@
+---
+title: Generic interfaces and type aliases
+description: Learn how to define types that are parameterized over other types.
+course: typescript
+status: draft
+---
+
+Just as functions can be generic, interfaces and type aliases can too. This lets you define reusable type templates that adapt to different data shapes.
+
+## Generic type aliases
+
+Type aliases use generic syntax with angle brackets:
+
+```typescript
+type Result<T> = 
+  | { ok: true; data: T }
+  | { ok: false; error: string };
+
+function fetchUser(): Result<User> {
+  // ...
+}
+
+function fetchPosts(): Result<Post[]> {
+  // ...
+}
+```
+
+The `Result` type captures a common pattern — operations that either succeed with data or fail with an error — while keeping the data type flexible.
+
+## Generic interfaces
+
+Interfaces also accept type parameters:
+
+```typescript
+interface Repository<T> {
+  findById(id: string): Promise<T | null>;
+  findAll(): Promise<T[]>;
+  create(data: Omit<T, "id">): Promise<T>;
+  update(id: string, data: Partial<T>): Promise<T>;
+  delete(id: string): Promise<void>;
+}
+
+const userRepository: Repository<User> = {
+  // implementation must match the User shape
+};
+```
+
+Generic interfaces are common in data access layers, API clients, and state management.
+
+## Multiple type parameters
+
+```typescript
+type Mapper<K, V> = Map<K, V>;
+type EventHandler<EventName extends string, Payload> = {
+  event: EventName;
+  handler: (payload: Payload) => void;
+};
+```
+
+## Generic constraints in type aliases
+
+Constraints work the same way in type aliases and interfaces:
+
+```typescript
+type Identifiable<T extends { id: string }> = {
+  entity: T;
+  lastModified: Date;
+};
+
+type Versioned<T extends { version: number }> = T & {
+  history: T[];
+};
+```
+
+## Extending generic interfaces
+
+Interfaces can extend generic interfaces, passing through or fixing type parameters:
+
+```typescript
+interface Readable<T> {
+  read(id: string): Promise<T | null>;
+}
+
+interface Writable<T> {
+  write(data: T): Promise<void>;
+}
+
+interface UserRepository extends Readable<User>, Writable<User> {
+  // inherits read(id) and write(data)
+}
+```
+
+## What to carry forward
+
+- generic type aliases and interfaces define type templates
+- `Result<T>` is a common pattern for operations that may succeed or fail
+- generic interfaces are common in data access layers and API clients
+- constraints with `extends` work the same way in generic types
+- interfaces can extend generic interfaces with fixed or passed-through type parameters
+
+The next lesson covers constraints in depth — how to limit generic types and why it matters.

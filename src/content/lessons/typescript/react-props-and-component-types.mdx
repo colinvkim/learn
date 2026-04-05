@@ -1,0 +1,120 @@
+---
+title: React props and component types
+description: Learn how to type React component props, children, and default patterns with TypeScript.
+course: typescript
+status: draft
+---
+
+Typing React components is one of the most common TypeScript frontend tasks. The goal is to make component interfaces clear and catch mistakes before rendering.
+
+## Typing props
+
+Component props are typed as an interface or type alias:
+
+```tsx
+interface ButtonProps {
+  variant: "primary" | "secondary";
+  size: "sm" | "md" | "lg";
+  onClick: () => void;
+  children: React.ReactNode;
+  disabled?: boolean;
+}
+
+function Button({ variant, size, onClick, children, disabled = false }: ButtonProps) {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {children}
+    </button>
+  );
+}
+```
+
+### Inline prop types
+
+For simple components, inline types work fine:
+
+```tsx
+function Greeting({ name }: { name: string }) {
+  return <h1>Hello, {name}</h1>;
+}
+```
+
+Named interfaces are better when props are reused or exported:
+
+```tsx
+export interface CardProps {
+  title: string;
+  description: string;
+  actions: Action[];
+}
+```
+
+## Children
+
+`React.ReactNode` is the type for anything that can be rendered as children:
+
+```tsx
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+function Layout({ children }: LayoutProps) {
+  return <div className="layout">{children}</div>;
+}
+```
+
+`React.ReactNode` covers JSX, strings, numbers, arrays of elements, `null`, and `undefined`.
+
+## Optional props with defaults
+
+Destructure with default values:
+
+```tsx
+interface AlertProps {
+  type: "info" | "warning" | "error";
+  message: string;
+  dismissible?: boolean;
+}
+
+function Alert({ type, message, dismissible = false }: AlertProps) {
+  return (
+    <div className={`alert alert-${type}`}>
+      {message}
+      {dismissible && <button>Dismiss</button>}
+    </div>
+  );
+}
+```
+
+## Extending native element props
+
+When a component wraps a native element, extend its props:
+
+```tsx
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  error?: string;
+}
+
+function Input({ label, error, ...rest }: InputProps) {
+  return (
+    <div>
+      <label>{label}</label>
+      <input {...rest} />
+      {error && <span className="error">{error}</span>}
+    </div>
+  );
+}
+```
+
+`React.InputHTMLAttributes<HTMLInputElement>` gives you all standard `<input>` attributes (`type`, `value`, `onChange`, etc.) plus your custom ones.
+
+## What to carry forward
+
+- props are typed with interfaces or type aliases
+- `React.ReactNode` is the type for children
+- optional props with defaults use destructuring defaults
+- extend `React.HTMLAttributes` to wrap native elements
+- named interfaces are preferred for reused or exported props
+
+The next lesson covers React hooks, events, and state with TypeScript.

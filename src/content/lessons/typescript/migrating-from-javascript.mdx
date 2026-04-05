@@ -1,0 +1,132 @@
+---
+title: Migrating from JavaScript to TypeScript
+description: Learn strategies for converting a JavaScript codebase to TypeScript incrementally and safely.
+course: typescript
+status: draft
+---
+
+Migrating a JavaScript project to TypeScript does not need to be a rewrite. TypeScript is designed to be adopted incrementally.
+
+## Step 1: Install TypeScript and add tsconfig.json
+
+```bash
+pnpm add -D typescript
+npx tsc --init
+```
+
+The generated `tsconfig.json` has sensible defaults. Start with `"strict": true` if the project is small. For larger projects, start without strict mode and enable it incrementally.
+
+## Step 2: Rename files one at a time
+
+Rename `.js` files to `.ts`. TypeScript allows you to do this gradually. Each renamed file is type-checked.
+
+Start with the simplest files — utility functions, constants, and modules with few dependencies:
+
+```bash
+mv src/utils.js src/utils.ts
+mv src/constants.js src/constants.ts
+```
+
+Fix type errors in each file before moving to the next.
+
+## Step 3: Add `allowJs` for gradual migration
+
+If the project mixes `.js` and `.ts` files, enable `allowJs`:
+
+```json
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false
+  }
+}
+```
+
+`allowJs` lets TypeScript process JavaScript files. `checkJs` adds type checking to `.js` files (using JSDoc annotations). Enable `checkJs` when you are ready to type-check JavaScript files without renaming them.
+
+## Step 4: Handle `any` and implicit anys
+
+Enable `noImplicitAny` to find places where TypeScript cannot infer types:
+
+```json
+{
+  "compilerOptions": {
+    "noImplicitAny": true
+  }
+}
+```
+
+Fix these by:
+- adding type annotations to function parameters
+- installing `@types/*` packages for untyped dependencies
+- writing type definitions for internal modules
+
+## Step 5: Enable strictNullChecks
+
+This is the highest-impact change. Enable it and fix the errors:
+
+```json
+{
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}
+```
+
+Expect to add `| null` or `| undefined` to many types, and to add null checks throughout the codebase.
+
+## Step 6: Add types for dependencies
+
+Many popular packages have type definitions:
+
+```bash
+pnpm add -D @types/react @types/node @types/express
+```
+
+For packages without types, create a `src/types.d.ts` file:
+
+```typescript
+declare module "some-untyped-package";
+```
+
+This silences the error and gives you `any` for that module. Refine the types later as needed.
+
+## Step 7: Enable remaining strict flags
+
+Once the project compiles with `strictNullChecks` and `noImplicitAny`, enable the rest of strict mode:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true
+  }
+}
+```
+
+Fix the remaining errors from `strictFunctionTypes`, `strictPropertyInitialization`, and other flags.
+
+## Migration strategies
+
+### Bottom-up
+
+Start with leaf modules (utilities, constants, types) and work up to the main application. This is the safest approach — lower-level code has fewer dependencies.
+
+### Top-down
+
+Start with entry points and work down. This gets the application running in TypeScript quickly but leaves harder typing work for later.
+
+### Strangler fig
+
+Write all new code in TypeScript. Migrate old files as they are touched by feature work. This is the most realistic approach for active projects.
+
+## What to carry forward
+
+- migrate incrementally — rename files one at a time
+- start with `allowJs` to mix JavaScript and TypeScript
+- enable strict flags incrementally: `noImplicitAny` → `strictNullChecks` → `strict`
+- install `@types/*` packages for typed dependencies
+- create `.d.ts` files for untyped packages
+- the strangler fig strategy (migrate as you touch files) is most realistic for active projects
+- do not aim for zero `any` — aim for zero *unnecessary* `any`
+
+The next module covers application tracks — applying TypeScript in frontend, backend, and library contexts.

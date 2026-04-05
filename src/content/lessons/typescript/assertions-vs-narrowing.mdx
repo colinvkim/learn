@@ -1,0 +1,120 @@
+---
+title: Assertions vs narrowing
+description: Learn the two ways to convince TypeScript of a more specific type, and when to use each.
+course: typescript
+status: draft
+---
+
+Sometimes TypeScript needs help understanding what type a value has. There are two ways to provide that help: narrowing (which checks at runtime) and assertions (which tell the compiler to trust you).
+
+## Narrowing: the safe path
+
+Narrowing uses runtime checks that TypeScript understands:
+
+```typescript
+function process(value: unknown) {
+  if (typeof value === "string") {
+    // value is string — verified at runtime
+    console.log(value.length);
+  }
+}
+```
+
+Narrowing is safe. The check actually runs, and the type only narrows when the check passes.
+
+## Type assertions: trusting the developer
+
+A type assertion tells the compiler that a value has a more specific type than it currently knows. It uses the `as` keyword:
+
+```typescript
+const el = document.getElementById("app") as HTMLElement;
+// el is HTMLElement, not HTMLElement | null
+```
+
+TypeScript does not insert a runtime check. It trusts you. If the value is not actually an `HTMLElement`, the code crashes.
+
+### Angle bracket syntax
+
+An older syntax uses angle brackets. It is equivalent but conflicts with JSX in `.tsx` files:
+
+```typescript
+const el = <HTMLElement>document.getElementById("app");
+// Avoid this style — prefer `as`
+```
+
+### Double assertions
+
+TypeScript does not allow assertions that are "too far" from the current type:
+
+```typescript
+const value = "hello" as number;
+// Error: Conversion of type 'string' to type 'number' may be a mistake
+```
+
+To force an unrelated type, go through `unknown`:
+
+```typescript
+const value = "hello" as unknown as number;
+// This compiles, but it is a lie to the type system
+```
+
+Double assertions through `unknown` should be rare. They completely bypass type safety.
+
+## Type predicate functions
+
+Type predicate functions encapsulate narrowing logic in a reusable form:
+
+```typescript
+function isStringArray(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => typeof item === "string")
+  );
+}
+
+function process(value: unknown) {
+  if (isStringArray(value)) {
+    // value is string[] here
+    console.log(value.join(", "));
+  }
+}
+```
+
+The return type `value is string[]` is a **type predicate**. When the function returns `true`, TypeScript narrows `value` to `string[]`.
+
+### Assertion functions
+
+Assertion functions throw when the condition is not met, rather than returning a boolean:
+
+```typescript
+function assertIsString(value: unknown): asserts value is string {
+  if (typeof value !== "string") {
+    throw new Error("Not a string");
+  }
+}
+
+function process(value: unknown) {
+  assertIsString(value);
+  // value is string here — if it wasn't, the function would have thrown
+  console.log(value.toUpperCase());
+}
+```
+
+The `asserts value is T` return type tells TypeScript that after this function returns normally, `value` is `T`.
+
+## When to use which
+
+- **narrowing** — preferred for most cases; always safe
+- **type assertions** — when you genuinely know more than TypeScript (DOM APIs, known data formats)
+- **type predicates** — for reusable narrowing logic used in multiple places
+- **assertion functions** — when the absence of a condition is an error, not a branch
+
+## What to carry forward
+
+- narrowing uses runtime checks and is always safe
+- type assertions (`as T`) tell TypeScript to trust you — no runtime check
+- type predicates (`value is T`) encapsulate narrowing in reusable functions
+- assertion functions (`asserts value is T`) throw on failure and narrow after the call
+- prefer narrowing and predicates; use assertions only when you genuinely know more
+
+The next lesson covers when to redesign a type instead of fighting the type system.

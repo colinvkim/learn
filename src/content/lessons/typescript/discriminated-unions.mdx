@@ -1,0 +1,93 @@
+---
+title: Discriminated unions
+description: Learn how to model distinct variants of data using a shared literal property.
+course: typescript
+status: draft
+---
+
+A discriminated union is a union of types that all share a common property (the discriminant) with different literal values. It is the single most useful pattern for modeling real data in TypeScript.
+
+## The pattern
+
+```typescript
+interface Success {
+  kind: "success";
+  data: User[];
+}
+
+interface Loading {
+  kind: "loading";
+}
+
+interface ErrorState {
+  kind: "error";
+  message: string;
+}
+
+type State = Success | Loading | ErrorState;
+```
+
+The `kind` property is the **discriminant**. Each variant has a different literal value for `kind`. TypeScript uses this to narrow the union:
+
+```typescript
+function render(state: State) {
+  switch (state.kind) {
+    case "success":
+      // state is Success — data is available
+      return state.data.map((u) => u.name).join(", ");
+    case "loading":
+      // state is Loading — no data yet
+      return "Loading...";
+    case "error":
+      // state is ErrorState — message is available
+      return `Error: ${state.message}`;
+  }
+}
+```
+
+## Why this works so well
+
+Discriminated unions solve a practical problem: representing state that changes shape over time. API responses, UI states, form validation results — all of these naturally fit the pattern.
+
+The discriminant property gives TypeScript a reliable hook for narrowing. After checking `state.kind`, the compiler knows exactly which variant you are dealing with.
+
+## Using a single property
+
+The discriminant must be a property that exists on every variant with a comparable literal type:
+
+```typescript
+// Good: all variants have `status`
+type Result = 
+  | { status: "ok"; data: string }
+  | { status: "fail"; reason: string };
+
+// Bad: the property names do not match
+type BadResult = 
+  | { kind: "ok"; data: string }
+  | { type: "fail"; reason: string };
+// TypeScript cannot use this as a discriminant
+```
+
+## Nesting discriminated unions
+
+Discriminated unions compose. A variant can itself contain another discriminated union:
+
+```typescript
+type ValidationField =
+  | { field: "email"; error: "invalid" | "required" }
+  | { field: "password"; error: "too-short" | "missing-special" };
+
+type FormState =
+  | { status: "valid" }
+  | { status: "invalid"; errors: ValidationField[] };
+```
+
+## What to carry forward
+
+- discriminated unions use a shared literal property to distinguish variants
+- `switch` or `if` on the discriminant narrows the type in each branch
+- they are the best way to model state that changes shape (API responses, UI states, forms)
+- the discriminant property must exist on every variant
+- discriminated unions compose — variants can contain other discriminated unions
+
+The next lesson covers exhaustiveness checking — using the type system to ensure every case is handled.

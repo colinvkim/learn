@@ -1,0 +1,142 @@
+---
+title: Schema validation libraries
+description: Learn why schema validation libraries exist, what problems they solve, and how they complement TypeScript.
+course: typescript
+status: draft
+---
+
+Schema validation libraries solve the problems that manual type predicates create: verbosity, maintenance burden, and the risk of the validation drifting out of sync with the TypeScript type.
+
+## The problem
+
+A manual type predicate and its TypeScript type must be kept in sync by hand:
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "user";
+}
+
+// This predicate must be updated manually if User changes
+function isUser(value: unknown): value is User {
+  // ... many checks that must match the User interface exactly
+}
+```
+
+If `User` gains a `phone` field and the predicate is not updated, the predicate accepts objects without `phone` and the application may crash downstream.
+
+## How schema libraries work
+
+Schema validation libraries define the shape of data in a runtime schema, then validate unknown values against it:
+
+```typescript
+import { z } from "zod";
+
+const userSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  role: z.enum(["admin", "user"]),
+});
+
+// Infer the TypeScript type from the schema
+type User = z.infer<typeof userSchema>;
+
+// Validate unknown data
+function parseUser(raw: unknown): User {
+  return userSchema.parse(raw);
+  // throws with detailed error messages if validation fails
+}
+```
+
+The TypeScript type is **inferred from the schema**. There is only one source of truth. If the schema changes, the type changes automatically.
+
+## Popular libraries
+
+- **Zod** — the most popular TypeScript-first schema validation library. Excellent ergonomics and inference.
+- **Valibot** — lightweight, tree-shakeable alternative with similar API.
+- **ArkType** — focuses on developer experience with a syntax that resembles TypeScript types.
+- **Superstruct** — earlier library, less inference support but still functional.
+
+All solve the same core problem: one definition produces both the runtime validation and the compile-time type.
+
+## Key concepts
+
+### Schema definition
+
+Schemas describe the expected shape:
+
+```typescript
+const schema = z.object({
+  name: z.string(),
+  age: z.number().int().min(0),
+  email: z.string().email(),
+  tags: z.array(z.string()).default([]),
+});
+```
+
+### Parsing and safe parsing
+
+`parse()` throws on invalid data. `safeParse()` returns a result object:
+
+```typescript
+// Throws
+const user = schema.parse(raw);
+
+// Returns result object
+const result = schema.safeParse(raw);
+if (!result.success) {
+  console.error(result.error.errors);  // detailed error messages
+}
+```
+
+### Type inference
+
+The TypeScript type is inferred from the schema:
+
+```typescript
+type User = z.infer<typeof schema>;
+```
+
+No separate interface is needed. The schema IS the type definition.
+
+### Transformations
+
+Schemas can transform data during validation:
+
+```typescript
+const userSchema = z.object({
+  createdAt: z.string().transform((s) => new Date(s)),
+});
+
+// Input: string, Output: Date
+type User = z.infer<typeof userSchema>;
+// createdAt is Date, not string
+```
+
+## When to use a schema library
+
+Use a schema library when:
+
+- you parse external data (API responses, config files, form submissions)
+- you want validation and types from one source of truth
+- you need detailed error messages for invalid data
+
+Skip it when:
+
+- the data is trivially simple (a single string or number)
+- you are building a prototype and speed matters more than correctness
+- the data comes from a fully trusted typed source (another TypeScript function)
+
+## What to carry forward
+
+- schema validation libraries produce both runtime validation and compile-time types from one definition
+- Zod is the most popular choice; Valibot is a lightweight alternative
+- `parse()` throws, `safeParse()` returns a result object
+- `z.infer<typeof schema>` extracts the TypeScript type
+- schemas can transform data during validation (string → Date)
+- use schema libraries at trust boundaries; skip them for trivial or trusted data
+
+The next module covers tooling and project configuration — tsconfig, strict flags, and setting up a TypeScript project for success.

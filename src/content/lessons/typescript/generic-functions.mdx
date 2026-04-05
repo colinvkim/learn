@@ -1,0 +1,99 @@
+---
+title: Generic functions
+description: Learn how to write functions that work with any type while preserving the relationship between inputs and outputs.
+course: typescript
+status: draft
+---
+
+Generics allow you to write functions, interfaces, and types that work with **any** type while still maintaining type safety. Instead of committing to one specific type, you write code that is parameterized over types.
+
+## The problem generics solve
+
+Without generics, you must choose a specific type:
+
+```typescript
+function first(arr: string[]): string | undefined {
+  return arr[0];
+}
+```
+
+This works for `string[]` but not for `number[]` or `User[]`. You could use `any`:
+
+```typescript
+function first(arr: any[]): any {
+  return arr[0];
+}
+```
+
+But now you lose all type information. The return type is `any` — TypeScript cannot help you downstream.
+
+Generics solve this by making the type a parameter:
+
+```typescript
+function first<T>(arr: T[]): T | undefined {
+  return arr[0];
+}
+
+const n = first([1, 2, 3]);      // n is number | undefined
+const s = first(["a", "b"]);      // s is string | undefined
+const u = first([{ id: 1 }]);     // u is { id: number } | undefined
+```
+
+The type `T` is inferred from the argument. The return type preserves the relationship: whatever goes in comes out.
+
+## Multiple type parameters
+
+Functions can have multiple generic parameters:
+
+```typescript
+function pair<A, B>(first: A, second: B): [A, B] {
+  return [first, second];
+}
+
+const result = pair("hello", 42);
+// result is [string, number]
+```
+
+## Generic constraints
+
+Sometimes a generic needs to support certain operations. Constraints use `extends` to limit what types are allowed:
+
+```typescript
+function logLength<T extends { length: number }>(value: T): T {
+  console.log(value.length);
+  return value;
+}
+
+logLength("hello");   // OK — string has length
+logLength([1, 2, 3]); // OK — arrays have length
+logLength(42);        // Error — number does not have length
+```
+
+The constraint `extends { length: number }` means `T` must have a `length` property that is a `number`. The function can now safely access `.length`.
+
+## Inference vs explicit type arguments
+
+TypeScript usually infers generic types:
+
+```typescript
+first([1, 2, 3]);  // T is inferred as number
+```
+
+You can also specify them explicitly:
+
+```typescript
+first<number>([1, 2, 3]);  // explicit
+```
+
+Explicit type arguments are rarely needed. They become necessary when inference fails or when you want to override the inferred type.
+
+## What to carry forward
+
+- generics make types parameterized, like function parameters
+- `T` (or any name) stands for "whatever type the caller provides"
+- the relationship between inputs and outputs is preserved
+- constraints with `extends` limit which types are allowed
+- TypeScript infers generic types from arguments in most cases
+- explicit type arguments (`<T>`) are rarely needed
+
+The next lesson covers generic interfaces and type aliases.

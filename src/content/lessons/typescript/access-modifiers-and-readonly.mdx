@@ -1,0 +1,105 @@
+---
+title: Access modifiers and readonly properties
+description: Learn how to control visibility and mutability in TypeScript classes.
+course: typescript
+status: draft
+---
+
+TypeScript provides access modifiers that control which code can see class members. These are compile-time only — they do not produce runtime enforcement.
+
+## `public`, `private`, and `protected`
+
+- `public` — visible everywhere (the default)
+- `private` — visible only within the class
+- `protected` — visible within the class and its subclasses
+
+```typescript
+class Account {
+  public id: number;
+  private balance: number;
+  protected createdAt: Date;
+
+  constructor(id: number, initialBalance: number) {
+    this.id = id;
+    this.balance = initialBalance;
+    this.createdAt = new Date();
+  }
+
+  public getBalance(): number {
+    return this.balance;
+  }
+
+  private adjustBalance(amount: number): void {
+    this.balance += amount;
+  }
+}
+
+const account = new Account(1, 100);
+account.id;            // OK — public
+account.balance;       // Error — private
+account.getBalance();  // OK
+account.adjustBalance(50); // Error — private
+```
+
+## `readonly` properties
+
+`readonly` prevents reassignment outside the constructor:
+
+```typescript
+class User {
+  readonly id: number;
+  name: string;
+
+  constructor(id: number, name: string) {
+    this.id = id;
+    this.name = name;
+  }
+}
+
+const user = new User(1, "Colin");
+user.name = "Sarah";  // OK
+user.id = 2;          // Error — readonly
+```
+
+`readonly` is a compile-time check. At runtime, the property can still be modified by untyped code.
+
+## Private fields (`#`)
+
+TypeScript supports JavaScript's native private fields using `#`:
+
+```typescript
+class Counter {
+  #count: number = 0;
+
+  increment(): void {
+    this.#count++;
+  }
+
+  get count(): number {
+    return this.#count;
+  }
+}
+
+const c = new Counter();
+c.increment();
+c.#count;  // SyntaxError at runtime — true privacy
+```
+
+Unlike `private` (which is erased at compile time), `#` fields are truly private at runtime. They are enforced by the JavaScript engine.
+
+## When to use which
+
+- **`private`** — when you want TypeScript-only access control and do not need runtime enforcement
+- **`#`** — when you want true runtime privacy
+- **`protected`** — when subclasses need access but external code does not
+- **`readonly`** — when a property should not change after construction
+
+## What to carry forward
+
+- `public` is the default — visible everywhere
+- `private` is compile-time only; `#` is runtime-enforced
+- `protected` is visible to subclasses
+- `readonly` prevents reassignment after construction (compile-time only)
+- prefer `#` for true privacy, `private` for TypeScript-only encapsulation
+
+The next lesson covers implementing interfaces and the relationship between classes and types.

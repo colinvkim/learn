@@ -1,0 +1,131 @@
+---
+title: Config objects and form data
+description: Learn how to type configuration, form inputs, and user-provided data structures.
+course: typescript
+status: draft
+---
+
+Config objects and form data are structured data that your application depends on. Typing them correctly prevents a class of runtime errors.
+
+## Config objects
+
+Configuration is usually a flat or shallow object with known keys:
+
+```typescript
+interface AppConfig {
+  apiUrl: string;
+  retries: number;
+  timeout: number;
+  debug: boolean;
+  features: {
+    darkMode: boolean;
+    betaFeatures: boolean;
+  };
+}
+```
+
+Use `Readonly` for config that should not change after initialization:
+
+```typescript
+const config: Readonly<AppConfig> = loadConfig();
+```
+
+### Optional config with defaults
+
+When config has sensible defaults, make those properties optional in the input type:
+
+```typescript
+interface AppConfigInput {
+  apiUrl: string;
+  retries?: number;
+  timeout?: number;
+  debug?: boolean;
+}
+
+function createConfig(input: AppConfigInput): AppConfig {
+  return {
+    apiUrl: input.apiUrl,
+    retries: input.retries ?? 3,
+    timeout: input.timeout ?? 5000,
+    debug: input.debug ?? false,
+    features: {
+      darkMode: false,
+      betaFeatures: false,
+    },
+  };
+}
+```
+
+The input type is partial. The output type is complete. This pattern — partial input, complete output — appears everywhere.
+
+## Form data
+
+Form data arrives as `FormData` or plain objects from controlled inputs. Model the expected shape:
+
+```typescript
+interface SignupForm {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreeToTerms: boolean;
+}
+```
+
+### Form state vs form data
+
+Separate the current state of the form (which includes errors, touched fields, and submission status) from the data that will be submitted:
+
+```typescript
+interface FormState<T> {
+  values: T;
+  errors: Partial<Record<keyof T, string>>;
+  touched: Partial<Record<keyof T, boolean>>;
+  isSubmitting: boolean;
+}
+
+type SignupFormState = FormState<SignupForm>;
+```
+
+Generic form state works for any form data type. The `Partial<Record<keyof T, string>>` pattern creates an error map where any field may or may not have an error.
+
+### Validation types
+
+Validation functions take raw data and return either success or errors:
+
+```typescript
+type ValidationResult<T> = 
+  | { valid: true; data: T }
+  | { valid: false; errors: Partial<Record<keyof T, string>> };
+
+function validateSignup(form: SignupForm): ValidationResult<SignupForm> {
+  const errors: Partial<Record<keyof SignupForm, string>> = {};
+  
+  if (!form.email.includes("@")) {
+    errors.email = "Invalid email";
+  }
+  if (form.password.length < 8) {
+    errors.password = "Password must be at least 8 characters";
+  }
+  if (form.password !== form.confirmPassword) {
+    errors.confirmPassword = "Passwords do not match";
+  }
+  if (!form.agreeToTerms) {
+    errors.agreeToTerms = "You must agree to the terms";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return { valid: false, errors };
+  }
+  return { valid: true, data: form };
+}
+```
+
+## What to carry forward
+
+- config objects should be `Readonly` after initialization
+- separate input types (partial) from output types (complete with defaults applied)
+- separate form state (errors, touched, submitting) from form data (the values)
+- validation returns a discriminated union: valid with data, or invalid with errors
+- `Partial<Record<keyof T, string>>` is a common pattern for error maps
+
+The next lesson covers domain entities and typed error models.

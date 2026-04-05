@@ -1,0 +1,105 @@
+---
+title: "JS refresher: functions, objects, and destructuring"
+description: A quick review of JavaScript function syntax, object and array patterns, and destructuring — the parts most relevant for learning TypeScript.
+course: typescript
+status: draft
+---
+
+This lesson is optional. It reviews JavaScript patterns that TypeScript builds on directly. If these are familiar, skip ahead.
+
+## Function declarations vs expressions
+
+A **function declaration** is hoisted — available before it appears in the source:
+
+```javascript
+function add(a, b) {
+  return a + b;
+}
+```
+
+A **function expression** is a value assigned to a variable. It is not hoisted:
+
+```javascript
+const add = function (a, b) {
+  return a + b;
+};
+```
+
+In TypeScript, both accept type annotations the same way. Function declarations are slightly more common in TypeScript codebases.
+
+## Arrow functions
+
+Arrow functions are a shorter function expression syntax with lexically bound `this`:
+
+```javascript
+const double = (n) => n * 2;
+const greet = (name) => `Hello, ${name}`;
+```
+
+Arrow functions are the dominant style for callbacks and inline functions in modern JavaScript and TypeScript.
+
+## Default parameters
+
+Default values are declared directly in the parameter list:
+
+```javascript
+function greet(name, greeting = "Hello") {
+  return `${greeting}, ${name}`;
+}
+```
+
+TypeScript infers the type of `greeting` from the default value.
+
+## Destructuring
+
+Destructuring pulls properties or elements out of values:
+
+```javascript
+// Object destructuring
+const { name, age } = user;
+
+// Array destructuring
+const [first, second] = items;
+
+// With defaults
+const { role = "viewer" } = config;
+const [first = "default"] = items;
+
+// Rest patterns
+const { id, ...rest } = user;
+const [first, ...others] = items;
+```
+
+In TypeScript, destructured parameters need type annotations:
+
+```typescript
+function greet({ name, age }: { name: string; age: number }) {
+  return `${name} is ${age}`;
+}
+```
+
+## Objects and arrays
+
+Object literals create values with inferred types:
+
+```javascript
+const user = { name: "Colin", age: 30 };
+// TypeScript infers: { name: string; age: number }
+```
+
+Arrays are inferred from their elements:
+
+```javascript
+const numbers = [1, 2, 3];  // number[]
+const mixed = [1, "two"];   // (string | number)[]
+```
+
+## What to carry forward
+
+- function declarations are hoisted; expressions and arrows are not
+- arrow functions are the dominant style for callbacks
+- default parameters provide both a value and a type inference point
+- destructuring extracts properties and elements — in TypeScript, the source needs a type annotation
+- objects and arrays are inferred from their contents
+
+The next module begins unions, literals, and narrowing.

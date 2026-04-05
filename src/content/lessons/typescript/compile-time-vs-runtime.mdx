@@ -1,0 +1,73 @@
+---
+title: Compile time vs runtime
+description: Understand the difference between type checking and execution, and why it matters for how you write TypeScript.
+course: typescript
+status: draft
+---
+
+TypeScript has two distinct phases. Confusing them is the most common source of frustration for beginners.
+
+## Compile time
+
+Compile time is when the TypeScript compiler **reads your source code and checks types**. It does not execute anything. It does not make network requests. It does not read files from disk. It analyzes the text you wrote and verifies that types are used consistently.
+
+```typescript
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+const result = add(1, "2");
+// Error: Argument of type 'string' is not assignable to parameter of type 'number'.
+```
+
+The error appears at compile time. The code never runs, because the compiler rejects it before producing JavaScript.
+
+## Runtime
+
+Runtime is when the compiled JavaScript actually **executes**. At this point, all TypeScript types have been erased. The JavaScript engine has no idea what types you declared. It works with whatever values it receives.
+
+```typescript
+// Compiled output (types are gone):
+function add(a, b) {
+  return a + b;
+}
+
+const result = add(1, "2");  // result is "12" — JavaScript concatenates
+```
+
+If you bypass the compiler (using `any`, type assertions, or turning off strict checks), type errors will not appear at compile time. They will surface at runtime — as bugs.
+
+## Why this distinction matters
+
+**TypeScript cannot validate data that arrives at runtime.** JSON from an API, user input from a form, environment variables, files on disk — all of these arrive after the compiler has finished its job. TypeScript checks the code you write, not the data you receive.
+
+This is a fundamental boundary. Understanding it early prevents a class of confusion later.
+
+## The compilation output
+
+TypeScript compiles to JavaScript. The output depends on your `tsconfig.json` target, but the types are always removed.
+
+```typescript
+// Input (.ts)
+function wrap(value: string): string[] {
+  return [value];
+}
+```
+
+```javascript
+// Output (.js) — types erased
+function wrap(value) {
+  return [value];
+}
+```
+
+The compiled JavaScript is what runs in production. The types exist only during development and compilation.
+
+## What to carry forward
+
+- compile time = type checking; runtime = execution
+- types are erased before code runs
+- TypeScript cannot validate external data — that happens at runtime
+- the compiled output is plain JavaScript
+
+The next lesson covers type erasure in more detail and explains why TypeScript's approach is deliberately lightweight.

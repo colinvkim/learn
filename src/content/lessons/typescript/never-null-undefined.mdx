@@ -1,0 +1,123 @@
+---
+title: never, null, and undefined
+description: Learn how TypeScript represents absence, impossibility, and missing values.
+course: typescript
+status: draft
+---
+
+These three types handle edge cases that appear in every codebase: values that should not exist, values that are missing, and code paths that should never be reached.
+
+## `null` and `undefined`
+
+Both represent the absence of a value, but with different intentions:
+
+- `null` — intentionally absent; the value is known to be "nothing"
+- `undefined` — not yet assigned or not present; the value has not been provided
+
+```typescript
+let configured: string | null = null;    // intentionally not set yet
+let maybeName: string | undefined;       // may or may not exist
+```
+
+Under `strictNullChecks`, neither is assignable to other types. You must include them in a union explicitly:
+
+```typescript
+function find(id: string): User | null {
+  // returns User or null
+}
+```
+
+### Handling nullable values
+
+```typescript
+const user: User | null = findUser("abc");
+
+// Option 1: optional chaining
+console.log(user?.name);  // string | undefined
+
+// Option 2: nullish coalescing
+const name = user?.name ?? "Anonymous";  // string
+
+// Option 3: narrowing
+if (user !== null) {
+  console.log(user.name);  // User — narrowed
+}
+```
+
+### `void` vs `undefined`
+
+`void` is the return type of functions that do not return a meaningful value. `undefined` is a value type. They are related but distinct:
+
+```typescript
+function log(msg: string): void {
+  console.log(msg);
+  // implicitly returns undefined
+}
+```
+
+## `never`
+
+`never` represents a value that should never occur. It appears in two situations:
+
+### Functions that always throw
+
+```typescript
+function fail(message: string): never {
+  throw new Error(message);
+}
+```
+
+A function with return type `never` never returns normally. It always throws or loops infinitely.
+
+### Exhaustiveness checking
+
+`never` appears in exhaustiveness checks (covered in Module 3):
+
+```typescript
+type Color = "red" | "green" | "blue";
+
+function toHex(color: Color): string {
+  switch (color) {
+    case "red": return "#ff0000";
+    case "green": return "#00ff00";
+    case "blue": return "#0000ff";
+    default:
+      const _check: never = color;
+      return _check;
+  }
+}
+```
+
+If a case is missing, TypeScript produces an error because a real value cannot be assigned to `never`.
+
+### The `never` type in unions
+
+`never` is the identity element for unions — it disappears:
+
+```typescript
+type T = string | never;  // string
+```
+
+This matters for conditional types and generic type construction.
+
+## Non-null assertion
+
+The `!` operator tells TypeScript to treat a nullable value as non-nullable:
+
+```typescript
+const el = document.getElementById("app")!;
+// el is HTMLElement, not HTMLElement | null
+```
+
+This is an escape hatch. If the value is actually `null` at runtime, the code crashes. Use it only when you genuinely know more than the type system.
+
+## What to carry forward
+
+- `null` = intentionally absent; `undefined` = not provided or not assigned
+- under strict mode, both must be included in unions explicitly
+- use optional chaining (`?.`) and nullish coalescing (`??`) to handle nullable values
+- `never` = a value that should never exist
+- `never` is used for exhaustiveness checking and always-throwing functions
+- the non-null assertion (`!`) is an escape hatch — use sparingly
+
+The next lesson covers assertions vs narrowing — two ways to convince TypeScript of a type.

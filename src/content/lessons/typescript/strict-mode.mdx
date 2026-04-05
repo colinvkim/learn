@@ -1,0 +1,103 @@
+---
+title: The role of strict mode
+description: Learn what strict mode changes, why it is the default, and how to configure it.
+course: typescript
+status: draft
+---
+
+TypeScript has a **strict mode** that turns on a set of checks making the type system significantly tighter. Since version 4.0, it is the default for new projects.
+
+## What strict mode enables
+
+Strict mode is not a single flag. It is a bundle of several flags turned on together:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true
+  }
+}
+```
+
+Setting `"strict": true` in your `tsconfig.json` enables these checks:
+
+| Flag | What it does |
+|------|-------------|
+| `strictNullChecks` | `null` and `undefined` are not assignable to other types. You must handle them explicitly. |
+| `strictFunctionTypes` | Function parameter types are checked more strictly (contravariantly), preventing unsafe function assignments. |
+| `strictBindCallApply` | `bind`, `call`, and `apply` are type-checked correctly. |
+| `strictPropertyInitialization` | Class properties must be initialized in the constructor or marked as possibly undefined. |
+| `noImplicitThis` | `this` expressions must have a known type. |
+| `alwaysStrict` | Emit `"use strict"` at the top of files. |
+| `useUnknownInCatchVariables` | Catch clause variables are typed as `unknown` instead of `any`. |
+
+## What strict mode changes in practice
+
+Without strict mode, TypeScript is quite permissive:
+
+```typescript
+// Without strictNullChecks
+function greet(name: string) {
+  return `Hello, ${name}`;
+}
+greet(null);       // No error — null is assignable to string
+greet(undefined);  // No error — undefined is assignable to string
+```
+
+With strict mode on:
+
+```typescript
+// With strictNullChecks (via strict: true)
+function greet(name: string) {
+  return `Hello, ${name}`;
+}
+greet(null);       // Error: Argument of type 'null' is not assignable to parameter of type 'string'.
+```
+
+You must now handle nullable values explicitly:
+
+```typescript
+function greet(name: string | null) {
+  if (name === null) {
+    return "Hello, stranger";
+  }
+  return `Hello, ${name}`;
+}
+```
+
+## Why strict mode is the default
+
+Starting new projects without strict mode means writing code that will later need changes when strictness is added. TypeScript made strict the default because:
+
+- the extra catches are almost always real issues
+- fixing them early is cheaper than fixing them later
+- the ecosystem has adapted and most libraries now work well with strict mode
+
+## Turning strict mode on for an existing project
+
+If you are migrating a JavaScript codebase to TypeScript, you may not want strict mode immediately. Turn it on gradually:
+
+```json
+{
+  "compilerOptions": {
+    "strict": false,
+    "strictNullChecks": true
+  }
+}
+```
+
+Enable one flag at a time. Fix the errors it surfaces. Then enable the next one.
+
+## What strict mode does NOT do
+
+Strict mode does not eliminate `any`. It does not prevent all runtime errors. It does not validate external data. It makes the type system tighter within the boundaries of your source code.
+
+## What to carry forward
+
+- `"strict": true` enables a bundle of checks that make TypeScript significantly tighter
+- `strictNullChecks` is the most impactful — it forces you to handle `null` and `undefined`
+- strict mode is the default for new projects
+- for migrations, enable strict checks incrementally
+- strict mode makes the type system stricter but does not guarantee runtime safety
+
+The next module begins the core type syntax: primitives, objects, arrays, and the difference between type aliases and interfaces.

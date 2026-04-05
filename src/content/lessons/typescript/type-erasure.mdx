@@ -1,0 +1,93 @@
+---
+title: Type erasure
+description: See how TypeScript removes types during compilation and what that means for your code at runtime.
+course: typescript
+status: draft
+---
+
+When TypeScript compiles to JavaScript, **every type annotation, interface, and type alias disappears**. This process is called type erasure.
+
+## What gets erased
+
+Everything that only exists in the type system is removed during compilation.
+
+```typescript
+// Input (.ts)
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+type Status = "active" | "inactive";
+
+function activate(user: User, status: Status): User {
+  return { ...user, status: "active" };
+}
+```
+
+```javascript
+// Output (.js) — all types are gone
+function activate(user, status) {
+  return { ...user, status: "active" };
+}
+```
+
+The `interface`, the `type` alias, the parameter annotations, and the return type annotation all disappear. Only the JavaScript logic remains.
+
+## What is NOT erased
+
+Values that exist at runtime stay. Some constructs in TypeScript serve double duty as both types and values:
+
+```typescript
+// This is both a value (const) and a type (from the class)
+class Counter {
+  count: number = 0;
+
+  increment(): void {
+    this.count++;
+  }
+}
+
+// At runtime, Counter is a real constructor
+const c = new Counter();
+```
+
+Classes and `enum` declarations produce JavaScript output. They are not erased. `interface` and `type` aliases, on the other hand, are purely compile-time and disappear entirely.
+
+## Why erasure matters
+
+Because types are erased, **TypeScript cannot perform runtime checks**. If you write:
+
+```typescript
+function processUser(user: User) {
+  // TypeScript trusts that `user` matches the `User` type.
+  // It does NOT insert a runtime check to verify this.
+  console.log(user.name.toUpperCase());
+}
+```
+
+TypeScript trusts that the caller passed a valid `User`. If the value actually came from an untyped source (raw JSON, a third-party library using `any`, or a type assertion), the runtime code will still try to call `.toUpperCase()` — and crash if `name` is missing.
+
+TypeScript checks your code, not your data.
+
+## Type-only imports
+
+TypeScript provides a `type` keyword for imports that should be removed entirely at compile time:
+
+```typescript
+import type { User } from "./types";
+// This import will NOT appear in the compiled JavaScript
+```
+
+This is useful for avoiding circular dependencies and making it clear which imports are only used for type checking. Modern TypeScript with `verbatimModuleSyntax` enforces this distinction automatically.
+
+## What to carry forward
+
+- all type annotations, interfaces, and type aliases are erased during compilation
+- classes and enums produce runtime output — they are not erased
+- TypeScript does not insert runtime checks based on types
+- type-only imports (`import type`) make it explicit which imports disappear
+- the compiled output is plain JavaScript with zero type overhead
+
+The next lesson looks at how TypeScript determines whether two types are compatible — through structural typing rather than naming.

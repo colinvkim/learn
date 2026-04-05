@@ -1,0 +1,119 @@
+---
+title: ESM vs CommonJS
+description: Understand the two module systems in JavaScript, how TypeScript handles each, and which to choose.
+course: typescript
+status: draft
+---
+
+JavaScript has two module systems in active use: ES Modules (ESM) and CommonJS (CJS). TypeScript can output either, and the choice affects how imports, exports, and file resolution work.
+
+## CommonJS
+
+CommonJS is the original Node.js module system. It uses `require()` and `module.exports`:
+
+```javascript
+// CJS
+const fs = require("fs");
+const { join } = require("path");
+
+module.exports = { readFiles };
+```
+
+TypeScript configuration:
+```json
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node"
+  }
+}
+```
+
+## ES Modules (ESM)
+
+ES Modules are the standard module system, using `import` and `export`:
+
+```typescript
+// ESM
+import { readFileSync } from "fs";
+import { join } from "path";
+
+export { readFiles };
+```
+
+TypeScript configuration:
+```json
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler"
+  }
+}
+```
+
+For native Node.js ESM, use:
+```json
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
+  }
+}
+```
+
+## Key differences
+
+| | CommonJS | ESM |
+|---|---|---|
+| Syntax | `require()` / `module.exports` | `import` / `export` |
+| Loading | Synchronous | Asynchronous |
+| Top-level await | Not supported | Supported |
+| File extension | `.js` | `.js` (with `"type": "module"` in package.json) or `.mjs` |
+| Dynamic imports | `require(variable)` works | Requires `import()` |
+| Tree shaking | Not supported | Supported by bundlers |
+
+## The `.ts` file extension behavior
+
+TypeScript files always use `.ts` (or `.tsx` for JSX). The output extension depends on your configuration:
+
+- `module: CommonJS` → outputs `.js` with CJS syntax
+- `module: ESNext` → outputs `.js` with ESM syntax
+- `module: NodeNext` → outputs `.js` or `.mjs` depending on `package.json`
+
+## Which to choose
+
+- **Frontend projects** — ESM with `moduleResolution: "bundler"`. Bundlers expect ESM.
+- **Node.js backends** — ESM with `module: "NodeNext"` for new projects. CommonJS for legacy projects.
+- **Libraries** — publish both ESM and CommonJS for maximum compatibility.
+- **Tooling/scripts** — CommonJS is fine for simple Node.js scripts.
+
+## Dual publishing for libraries
+
+Libraries that want to support both module systems typically build twice:
+
+```json
+{
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  }
+}
+```
+
+The `exports` field in `package.json` tells bundlers and runtimes which file to use based on the module system.
+
+## What to carry forward
+
+- CommonJS uses `require()`; ESM uses `import`/`export`
+- ESM supports top-level await, tree shaking, and async loading
+- frontend projects should use ESM with `moduleResolution: "bundler"`
+- Node.js projects should use ESM with `module: "NodeNext"` for new projects
+- libraries should publish both ESM and CommonJS
+- the `exports` field in `package.json` controls which file is used
+
+The next lesson covers linting, formatting, and type checking in CI.

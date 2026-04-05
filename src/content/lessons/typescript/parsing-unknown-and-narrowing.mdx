@@ -1,0 +1,119 @@
+---
+title: Parsing unknown and narrowing after checks
+description: Learn how to safely narrow unknown values into typed data using manual checks.
+course: typescript
+status: draft
+---
+
+When data arrives as `unknown`, you must narrow it to a known type before using it. TypeScript understands a specific set of narrowing patterns.
+
+## The manual narrowing pattern
+
+```typescript
+function parseUser(raw: unknown): User {
+  if (typeof raw !== "object" || raw === null) {
+    throw new Error("User must be an object");
+  }
+
+  if (!("id" in raw) || typeof raw.id !== "string") {
+    throw new Error("User must have a string id");
+  }
+
+  if (!("name" in raw) || typeof raw.name !== "string") {
+    throw new Error("User must have a string name");
+  }
+
+  if (!("email" in raw) || typeof raw.email !== "string") {
+    throw new Error("User must have a string email");
+  }
+
+  // After all checks, TypeScript still sees raw as object | null
+  // We need a type assertion here because manual checks on individual
+  // properties do not automatically narrow the whole object.
+  return raw as User;
+}
+```
+
+This works but is verbose and error-prone. Each check must be written manually. The final assertion is necessary because TypeScript does not track property-by-property narrowing across multiple `if` statements on the same object.
+
+## A better manual pattern: type predicate
+
+A type predicate function encapsulates the check:
+
+```typescript
+function isUser(value: unknown): value is User {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "id" in value &&
+    typeof value.id === "string" &&
+    "name" in value &&
+    typeof value.name === "string" &&
+    "email" in value &&
+    typeof value.email === "string"
+  );
+}
+
+function parseUser(raw: unknown): User {
+  if (!isUser(raw)) {
+    throw new Error("Invalid user");
+  }
+  return raw;  // no assertion needed — narrowed by isUser
+}
+```
+
+The type predicate `value is User` tells TypeScript that after the check passes, `raw` is `User`. No `as` assertion is needed.
+
+## Type predicates for nested data
+
+For complex nested structures, write type predicates for each level:
+
+```typescript
+function isAddress(value: unknown): value is Address {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "street" in value &&
+    typeof value.street === "string" &&
+    "city" in value &&
+    typeof value.city === "string" &&
+    "zip" in value &&
+    typeof value.zip === "string"
+  );
+}
+
+function isUser(value: unknown): value is User {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "id" in value &&
+    typeof value.id === "string" &&
+    "name" in value &&
+    typeof value.name === "string" &&
+    "address" in value &&
+    isAddress((value as any).address)
+  );
+}
+```
+
+## The limitations
+
+Manual narrowing works but has real drawbacks:
+
+- it is verbose for anything beyond trivial shapes
+- error messages are generic ("Invalid user") without field-level detail
+- maintaining type predicates as types evolve is error-prone — the predicate and the type can drift apart
+- nested structures multiply the complexity
+
+This is why schema validation libraries exist. They generate type predicates and error messages automatically from a schema definition.
+
+## What to carry forward
+
+- treat all external data as `unknown`
+- type predicates (`value is T`) narrow unknown to a specific type
+- after a type predicate check, no `as` assertion is needed
+- manual narrowing is verbose and error-prone for complex data
+- maintaining type predicates alongside evolving types is a maintenance burden
+- schema validation libraries solve these problems — covered next
+
+The next lesson covers schema validation libraries and the concepts behind them.

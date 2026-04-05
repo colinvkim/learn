@@ -1,0 +1,110 @@
+---
+title: Object types
+description: Learn how to describe the shape of objects in TypeScript, including optional and readonly properties.
+course: typescript
+status: draft
+---
+
+Object types describe what properties an object has and what type each property holds. They are the most common type you will write in TypeScript.
+
+## Defining object types
+
+Object types use curly braces with property names and their types:
+
+```typescript
+interface User {
+  name: string;
+  age: number;
+  email: string;
+}
+
+const user: User = {
+  name: "Colin",
+  age: 30,
+  email: "colin@example.com",
+};
+```
+
+## Optional properties
+
+Not every property is always present. Mark optional properties with `?`:
+
+```typescript
+interface User {
+  name: string;
+  age: number;
+  nickname?: string;  // may or may not be present
+}
+
+const a: User = { name: "Colin", age: 30 };            // OK
+const b: User = { name: "Colin", age: 30, nickname: "C" }; // OK
+```
+
+When you access an optional property, TypeScript includes `undefined` in the type:
+
+```typescript
+function greet(user: User) {
+  console.log(user.nickname?.toUpperCase());
+  // nickname is `string | undefined`, so use optional chaining
+}
+```
+
+## Readonly properties
+
+Properties marked `readonly` cannot be reassigned after the object is created:
+
+```typescript
+interface User {
+  readonly id: number;
+  name: string;
+}
+
+const user: User = { id: 1, name: "Colin" };
+user.name = "Sarah";   // OK
+user.id = 2;           // Error — id is readonly
+```
+
+`readonly` in TypeScript is a compile-time check only. It does not produce runtime immutability. At runtime, the property can still be modified by untyped code.
+
+## Index signatures
+
+When an object has an unknown set of keys that all share the same type, use an index signature:
+
+```typescript
+interface StringMap {
+  [key: string]: number;
+}
+
+const scores: StringMap = {
+  alice: 95,
+  bob: 87,
+};
+```
+
+With `noUncheckedIndexedAccess` enabled in strict mode, accessing an index returns `number | undefined` because the key may not exist:
+
+```typescript
+const score = scores.charlie;  // number | undefined
+```
+
+## Inline object types
+
+You do not always need to name an object type. For local or one-off usage, write it inline:
+
+```typescript
+function logUser(user: { name: string; age: number }) {
+  console.log(`${user.name} is ${user.age}`);
+}
+```
+
+Named types (`interface` or `type`) are better when the same shape appears in multiple places or when you want to communicate intent with a clear name.
+
+## What to carry forward
+
+- object types describe the shape of an object: which properties exist and their types
+- `?` marks optional properties that may or may not be present
+- `readonly` prevents reassignment at compile time
+- index signatures handle objects with arbitrary keys of a known type
+- inline object types work for one-off usage; named types are better for reused shapes
+
+The next lesson covers function types — how to annotate parameters and return types.

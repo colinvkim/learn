@@ -1,0 +1,95 @@
+---
+title: Function overloads
+description: Learn how to declare multiple signatures for a single function when the return type depends on the input.
+course: typescript
+status: draft
+---
+
+Function overloads let you declare multiple type signatures for one function. The implementation has a single body, but callers see different signatures depending on the arguments they pass.
+
+## Why overloads exist
+
+Some JavaScript functions behave differently depending on the arguments. A single function type cannot always express the relationship between specific inputs and outputs.
+
+```typescript
+// In JavaScript:
+function createElement(tag: string, attrs?: object, ...children: any[]) {
+  // ...
+}
+
+// The return type depends on `tag`:
+// - "img" → HTMLImageElement
+// - "a" → HTMLAnchorElement
+// - etc.
+```
+
+Overloads express this relationship:
+
+```typescript
+function parse(value: string): number;
+function parse(value: string[]): number[];
+function parse(value: string | string[]): number | number[] {
+  if (Array.isArray(value)) {
+    return value.map(Number);
+  }
+  return Number(value);
+}
+
+parse("42");      // returns number
+parse(["1", "2"]); // returns number[]
+```
+
+## How overloads work
+
+Overload signatures are declarations without bodies. The implementation signature comes last and must be general enough to cover all overloads:
+
+```typescript
+// Overload 1
+function get(id: string): User;
+// Overload 2
+function get(id: number): User | null;
+// Implementation (must be compatible with both)
+function get(id: string | number): User | null {
+  // actual implementation
+}
+```
+
+Callers only see the overload signatures, never the implementation signature.
+
+## When to use overloads
+
+Overloads are appropriate when:
+- the return type genuinely depends on specific input types
+- the function is part of a public API where callers benefit from precise types
+- the behavior differs meaningfully between signatures
+
+In many cases, **generics** or **discriminated unions** are a cleaner solution. Overloads add complexity and the implementation signature can be hard to get right.
+
+## A modern alternative: conditional return types
+
+For some patterns, conditional types are clearer than overloads:
+
+```typescript
+// Instead of overloads:
+function wrap(value: string): Wrapper<string>;
+function wrap(value: number): Wrapper<number>;
+function wrap(value: string | number): Wrapper<string | number> {
+  return { value };
+}
+
+// Consider a generic:
+function wrap<T>(value: T): Wrapper<T> {
+  return { value };
+}
+```
+
+## What to carry forward
+
+- overloads declare multiple signatures for one function
+- the implementation signature must cover all overloads
+- callers see overload signatures, not the implementation
+- overloads are useful when return type depends on specific inputs
+- generics or conditional types are often a cleaner alternative
+- prefer overloads only for public APIs where the precision matters
+
+The next module covers safer uncertainty — `any`, `unknown`, `never`, and how to design types instead of fighting the type system.

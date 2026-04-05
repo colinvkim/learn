@@ -1,0 +1,76 @@
+---
+title: Primitive types
+description: Learn TypeScript's built-in primitive types and how they map to JavaScript values.
+course: typescript
+status: draft
+---
+
+TypeScript has a small set of primitive types. Primitives are values that are not objects — they have no methods that mutate them in place, and they are passed by value rather than by reference.
+
+## The primitive types
+
+| Type | What it covers |
+|------|---------------|
+| `string` | Text values: `"hello"`, `'world'`, `` `template` `` |
+| `number` | All numeric values: integers, floats, `Infinity`, `NaN` |
+| `boolean` | `true` or `false` |
+| `bigint` | Arbitrary-precision integers: `9007199254740991n` |
+| `symbol` | Unique identifiers created with `Symbol()` |
+| `null` | The intentional absence of a value |
+| `undefined` | A value that has not been assigned |
+
+```typescript
+let name: string = "Colin";
+let age: number = 30;
+let active: boolean = true;
+let big: bigint = 9007199254740991n;
+let id: symbol = Symbol("id");
+let empty: null = null;
+let missing: undefined = undefined;
+```
+
+## `null` and `undefined`
+
+Under strict mode, these are their own distinct types. They are not assignable to other types:
+
+```typescript
+let msg: string = "hello";
+msg = null;       // Error with strictNullChecks
+msg = undefined;  // Error with strictNullChecks
+```
+
+To allow them, include them in a union:
+
+```typescript
+let msg: string | null = null;
+msg = "hello";  // OK
+```
+
+## `any`, `unknown`, and `never`
+
+These three are special types that do not correspond to JavaScript values. They are covered in detail in the "Safer uncertainty" module. Briefly:
+
+- `any` opts out of type checking — the value can be anything
+- `unknown` accepts any value but requires a type check before use
+- `never` represents a value that should never occur
+
+## The `object` type
+
+`object` is not a primitive. It represents any non-primitive value: objects, arrays, functions. It is rarely useful in practice. You will almost always want more specific shapes instead.
+
+```typescript
+let value: object;
+value = { a: 1 };    // OK
+value = [1, 2, 3];   // OK
+value = "hello";     // Error — string is a primitive
+```
+
+## What to carry forward
+
+- TypeScript has seven primitives: `string`, `number`, `boolean`, `bigint`, `symbol`, `null`, `undefined`
+- JavaScript has only one numeric type: `number` (plus `bigint` for large integers)
+- under strict mode, `null` and `undefined` are not assignable to other types
+- use unions to explicitly allow nullable values
+- `object` is rarely useful — prefer specific shapes instead
+
+The next lesson covers arrays and tuples, the typed versions of JavaScript's list structures.

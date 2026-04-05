@@ -1,0 +1,146 @@
+---
+title: Built-in utility types
+description: Learn the utility types TypeScript ships with and when to use each one.
+course: typescript
+status: draft
+---
+
+TypeScript includes a set of utility types that transform other types. They are generic, well-tested, and cover the most common type transformation needs.
+
+## `Partial<T>` and `Required<T>`
+
+`Partial<T>` makes all properties optional. `Required<T>` makes all properties required.
+
+```typescript
+interface User {
+  name: string;
+  age: number;
+}
+
+type PartialUser = Partial<User>;
+// { name?: string; age?: number }
+
+type RequiredUser = Required<{ name?: string; age?: number }>;
+// { name: string; age: number }
+```
+
+Use `Partial` for update payloads, patch objects, and optional configurations.
+
+## `Readonly<T>`
+
+`Readonly<T>` makes all properties readonly:
+
+```typescript
+type ReadonlyUser = Readonly<User>;
+// { readonly name: string; readonly age: number }
+```
+
+Use `Readonly` for values that should not be mutated after creation, such as configuration objects or cached data.
+
+## `Record<K, V>`
+
+`Record<K, V>` creates an object type with keys of type `K` and values of type `V`:
+
+```typescript
+type Roles = Record<"admin" | "editor" | "viewer", string>;
+// { admin: string; editor: string; viewer: string }
+
+const permissions: Roles = {
+  admin: "full-access",
+  editor: "edit-only",
+  viewer: "read-only",
+};
+```
+
+Use `Record` when you need a map from a known set of keys to a value type.
+
+## `Pick<T, K>` and `Omit<T, K>`
+
+`Pick<T, K>` keeps only the specified keys. `Omit<T, K>` removes the specified keys.
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
+
+type PublicUser = Pick<User, "id" | "name">;
+// { id: number; name: string }
+
+type SafeUser = Omit<User, "password">;
+// { id: number; name: string; email: string }
+```
+
+`Pick` and `Omit` are essential for creating derived types from larger ones — removing sensitive fields, creating subsets for different contexts, or splitting a type for different consumers.
+
+## `Exclude<T, U>` and `Extract<T, U>`
+
+`Exclude` removes members from a union. `Extract` keeps only matching members.
+
+```typescript
+type Status = "pending" | "loading" | "success" | "error";
+
+type LoadingStatus = Exclude<Status, "success" | "error">;
+// "pending" | "loading"
+
+type FinalStatus = Extract<Status, "success" | "error">;
+// "success" | "error"
+```
+
+## `ReturnType<T>` and `Parameters<T>`
+
+`ReturnType<T>` extracts the return type of a function type. `Parameters<T>` extracts the parameter types as a tuple.
+
+```typescript
+function createUser(name: string): { id: number; name: string } {
+  return { id: 1, name };
+}
+
+type CreateUserReturn = ReturnType<typeof createUser>;
+// { id: number; name: string }
+
+type CreateUserParams = Parameters<typeof createUser>;
+// [name: string]
+```
+
+Use these for deriving types from existing functions rather than duplicating them.
+
+## `Awaited<T>`
+
+`Awaited<T>` unwraps a `Promise` type, recursively:
+
+```typescript
+type A = Awaited<Promise<string>>;
+// string
+
+type B = Awaited<Promise<Promise<number>>>;
+// number
+```
+
+Use `Awaited` when working with async function return types.
+
+## `NonNullable<T>`
+
+`NonNullable<T>` removes `null` and `undefined` from a union:
+
+```typescript
+type A = NonNullable<string | null | undefined>;
+// string
+```
+
+## What to carry forward
+
+- `Partial<T>` — all properties optional (update payloads)
+- `Required<T>` — all properties required
+- `Readonly<T>` — all properties readonly
+- `Record<K, V>` — object with keys `K` and values `V`
+- `Pick<T, K>` — keep only keys `K`
+- `Omit<T, K>` — remove keys `K`
+- `Exclude<T, U>` / `Extract<T, U>` — filter union members
+- `ReturnType<T>` / `Parameters<T>` — derive types from functions
+- `Awaited<T>` — unwrap promise types
+- `NonNullable<T>` — remove null and undefined
+
+The next module covers classes, objects, and domain modeling — how to type object-oriented code and model real-world entities.

@@ -1,0 +1,87 @@
+---
+title: Classes in TypeScript
+description: Learn how to type classes, use access modifiers, and implement interfaces.
+course: typescript
+status: draft
+---
+
+Classes in TypeScript are like JavaScript classes with added type annotations, access modifiers, and interface implementation.
+
+## Basic class syntax
+
+TypeScript classes look like JavaScript classes with type annotations on properties and methods:
+
+```typescript
+class User {
+  id: number;
+  name: string;
+  email: string;
+
+  constructor(id: number, name: string, email: string) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+  }
+
+  displayName(): string {
+    return this.name;
+  }
+}
+```
+
+## Property initialization
+
+Under `strictPropertyInitialization`, all class properties must be initialized in the constructor or have a default value:
+
+```typescript
+class Counter {
+  count: number = 0;        // default value
+  label: string;            // must be initialized in constructor
+
+  constructor(label: string) {
+    this.label = label;
+  }
+}
+```
+
+Properties that are intentionally left uninitialized use the definite assignment assertion or `undefined`:
+
+```typescript
+class Database {
+  connection!: Connection;  // "I will set this before using it"
+
+  async connect() {
+    this.connection = await createConnection();
+  }
+}
+```
+
+The `!` assertion tells TypeScript to trust you. Use it sparingly — it is an escape hatch.
+
+## Parameter properties
+
+TypeScript provides shorthand syntax for declaring and initializing properties in the constructor:
+
+```typescript
+class User {
+  constructor(
+    public id: number,
+    public name: string,
+    public email: string,
+  ) {}
+}
+
+// Equivalent to the longer form above
+const user = new User(1, "Colin", "c@example.com");
+```
+
+The `public` (or `private`/`readonly`) keyword in the constructor parameter both declares the property and assigns it.
+
+## What to carry forward
+
+- class properties must be initialized under strict mode
+- parameter properties are shorthand for declaring and assigning in the constructor
+- the definite assignment assertion (`!`) is an escape hatch — use sparingly
+- class methods are typed like regular functions
+
+The next lesson covers access modifiers and readonly properties.

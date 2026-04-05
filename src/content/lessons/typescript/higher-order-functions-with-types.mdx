@@ -1,0 +1,99 @@
+---
+title: Higher-order functions with types
+description: Learn how to type functions that accept or return other functions.
+course: typescript
+status: draft
+---
+
+Higher-order functions are functions that take other functions as arguments or return them. Typing them correctly is essential for building reusable, typed abstractions.
+
+## Functions that accept callbacks
+
+The most common higher-order pattern. The callback's type is declared in the parameter:
+
+```typescript
+function repeat(action: () => void, times: number) {
+  for (let i = 0; i < times; i++) {
+    action();
+  }
+}
+
+repeat(() => console.log("tick"), 3);
+```
+
+### Callbacks with parameters
+
+When the callback receives data, type both the callback and the data:
+
+```typescript
+function processItems(
+  items: string[],
+  handler: (item: string, index: number) => void,
+) {
+  items.forEach((item, index) => handler(item, index));
+}
+
+processItems(["a", "b", "c"], (item, index) => {
+  console.log(`${index}: ${item}`);
+});
+```
+
+## Functions that return functions
+
+A function can return another function. The return type is a function type:
+
+```typescript
+function adder(x: number): (y: number) => number {
+  return (y) => x + y;
+}
+
+const add5 = adder(5);
+add5(10);  // 15
+```
+
+The returned function closes over `x`. The type signature communicates what the returned function expects and produces.
+
+## Generic higher-order functions
+
+Generics let the callback type depend on the input type:
+
+```typescript
+function pipe<A, B, C>(
+  value: A,
+  fn1: (a: A) => B,
+  fn2: (b: B) => C,
+): C {
+  return fn2(fn1(value));
+}
+
+const result = pipe(
+  "hello",
+  (s) => s.length,     // string → number
+  (n) => n * 2,        // number → number
+);
+// result is number
+```
+
+The generic parameters `A`, `B`, `C` thread through the entire pipeline. TypeScript infers each step from the actual functions passed in.
+
+## Predicates and type guards
+
+A common callback pattern is a predicate — a function that returns a boolean. TypeScript narrows types when predicates are used with `filter`:
+
+```typescript
+const values: (string | number)[] = [1, "a", 2, "b"];
+
+const strings = values.filter((v): v is string => typeof v === "string");
+// strings is string[] — the type predicate `v is string` tells TypeScript to narrow
+```
+
+The `v is string` syntax is a **type predicate**. It tells TypeScript that when this function returns `true`, the parameter `v` is guaranteed to be a `string`. This is covered in more depth in the "Safer uncertainty" module.
+
+## What to carry forward
+
+- callbacks are typed as function type expressions: `(arg: T) => R`
+- functions that return functions have function types as return types
+- generic higher-order functions thread type parameters through the chain
+- type predicates (`v is T`) in callbacks enable type narrowing after `filter`
+
+The next lesson introduces function overloads — multiple signatures for the same function.

@@ -1,0 +1,101 @@
+---
+title: Structural typing
+description: Learn how TypeScript determines type compatibility by shape rather than by name.
+course: typescript
+status: draft
+---
+
+TypeScript uses **structural typing**. Two types are compatible if their shapes are compatible, regardless of what they are named or where they are declared.
+
+This is different from nominal typing, where type compatibility depends on explicit names or declarations.
+
+## Shape matters, not names
+
+```typescript
+interface Point2D {
+  x: number;
+  y: number;
+}
+
+interface Vector {
+  x: number;
+  y: number;
+}
+
+function logPoint(p: Point2D) {
+  console.log(`${p.x}, ${p.y}`);
+}
+
+const v: Vector = { x: 10, y: 20 };
+logPoint(v);  // OK — same shape
+```
+
+`Point2D` and `Vector` are different names with different intentions, but they have the same shape. TypeScript allows the assignment because structurally, they match.
+
+## Extra properties are allowed (in some cases)
+
+A value with **more** properties than a type requires is generally assignable to that type:
+
+```typescript
+interface Point2D {
+  x: number;
+  y: number;
+}
+
+interface Point3D {
+  x: number;
+  y: number;
+  z: number;
+}
+
+function logPoint(p: Point2D) {
+  console.log(`${p.x}, ${p.y}`);
+}
+
+const p3: Point3D = { x: 1, y: 2, z: 3 };
+logPoint(p3);  // OK — Point3D has everything Point2D needs
+```
+
+`Point3D` satisfies `Point2D` because it has at least `x` and `y`. The extra `z` property is ignored by the function.
+
+## Extra properties are rejected in fresh object literals
+
+TypeScript performs **excess property checking** on fresh object literals to catch likely mistakes:
+
+```typescript
+interface Point2D {
+  x: number;
+  y: number;
+}
+
+logPoint({ x: 1, y: 2, z: 3 });
+// Error: Object literal may only specify known properties, and 'z' does not exist in type 'Point2D'.
+```
+
+This check only applies when you pass an object literal directly. If the object is assigned to a variable first, excess properties pass through:
+
+```typescript
+const p = { x: 1, y: 2, z: 3 };
+logPoint(p);  // OK — p is not a fresh literal in this context
+```
+
+This behavior can seem inconsistent, but it is intentional. Fresh literals are likely typos. Variables that already exist are assumed to be intentional.
+
+## Why structural typing works well
+
+Structural typing matches how JavaScript actually works. JavaScript does not care about class names or declared types — it cares about what properties and methods a value has at runtime.
+
+This makes structural typing natural for:
+
+- duck typing patterns ("if it has these properties, it works")
+- consuming API responses where shape matters more than origin
+- composing data from multiple sources
+
+## What to carry forward
+
+- TypeScript compares types by shape, not by name
+- a type with extra properties is generally assignable to a narrower type
+- fresh object literals get excess property checking to catch typos
+- structural typing matches how JavaScript works at runtime
+
+The next lesson explores how TypeScript figures out types on its own through inference.

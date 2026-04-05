@@ -1,0 +1,141 @@
+---
+title: Important compiler flags beyond strict
+description: Learn noUncheckedIndexedAccess, exactOptionalPropertyTypes, and other flags that tighten your type system.
+course: typescript
+status: draft
+---
+
+Beyond the strict mode bundle, several additional flags catch real-world bugs and improve type precision.
+
+## `noUncheckedIndexedAccess`
+
+By default, accessing an object property by index returns the property type directly:
+
+```typescript
+interface Users {
+  [id: string]: User;
+}
+
+declare const users: Users;
+const user = users["abc"];  // User — assumes the key exists
+```
+
+With `noUncheckedIndexedAccess`, indexed access includes `undefined`:
+
+```typescript
+const user = users["abc"];  // User | undefined
+```
+
+This is more accurate — the key may not exist. Enable this flag for any project that uses index signatures or arrays heavily.
+
+## `exactOptionalPropertyTypes`
+
+By default, you can assign `undefined` to optional properties even when `undefined` is not in the type:
+
+```typescript
+interface Config {
+  timeout?: number;
+}
+
+const config: Config = { timeout: undefined };  // Allowed by default
+```
+
+With `exactOptionalPropertyTypes`, this is only allowed if `undefined` is explicitly in the type:
+
+```typescript
+interface Config {
+  timeout?: number;  // means number | undefined
+}
+
+const config: Config = { timeout: undefined };  // Error with exactOptionalPropertyTypes
+// Because ? means "may be absent", not "may be undefined"
+```
+
+This flag makes optional properties behave more precisely. It catches cases where code sets a property to `undefined` instead of deleting it.
+
+## `verbatimModuleSyntax`
+
+This flag enforces that `import type` and `export type` are used for type-only imports, and that type-only imports are completely removed from the output:
+
+```typescript
+import type { User } from "./types";  // removed at compile time
+import { createUser } from "./api";    // kept at compile time (value import)
+```
+
+Without this flag, TypeScript may leave type imports in the JavaScript output, causing runtime errors in some bundler configurations.
+
+## `noUnusedLocals` and `noUnusedParameters`
+
+These flags produce errors for unused variables and parameters:
+
+```typescript
+// With noUnusedLocals
+const unused = 42;  // Error: 'unused' is declared but its value is never read.
+
+// With noUnusedParameters
+function process(data: string, options: Options) {
+  // Error: 'options' is declared but its value is never read.
+  return data.toUpperCase();
+}
+```
+
+Prefix unused parameters with `_` to suppress the error:
+
+```typescript
+function process(data: string, _options: Options) {
+  return data.toUpperCase();
+}
+```
+
+These flags keep codebases clean but can be noisy during active development. Consider enabling them in CI but not locally.
+
+## `isolatedModules`
+
+This flag ensures that every file can be transpiled independently (required by esbuild, swc, and other fast transpilers):
+
+```json
+"isolatedModules": true
+```
+
+It disallows certain patterns that require full-project knowledge, like `const enum` and non-module-level `export type`. Enable this if you use a fast transpiler alongside `tsc` for type checking.
+
+## `declaration` and `declarationMap`
+
+These flags produce `.d.ts` type declaration files and source maps for them:
+
+```json
+"declaration": true,
+"declarationMap": true
+```
+
+Declaration files are needed when publishing a TypeScript library. Application projects typically do not need them.
+
+## Recommended baseline
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+This is a strong starting point for most projects.
+
+## What to carry forward
+
+- `noUncheckedIndexedAccess` makes indexed access return `T | undefined`
+- `exactOptionalPropertyTypes` makes optional properties more precise
+- `verbatimModuleSyntax` ensures type-only imports are removed
+- `noUnusedLocals` and `noUnusedParameters` keep code clean
+- `isolatedModules` is required for fast transpilers
+- `declaration` is needed for publishing libraries
+- enable flags incrementally based on project needs
+
+The next lesson covers ESM vs CommonJS, declaration files, and module configuration.

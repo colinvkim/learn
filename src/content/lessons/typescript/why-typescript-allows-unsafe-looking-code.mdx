@@ -1,0 +1,92 @@
+---
+title: Why TypeScript allows unsafe-looking code
+description: Understand what TypeScript actually guarantees, and why some code that looks wrong still type-checks.
+course: typescript
+status: draft
+---
+
+TypeScript occasionally allows code that looks like it should be an error. Understanding why requires understanding what TypeScript is designed to do — and what it is not.
+
+## TypeScript favors pragmatism over soundness
+
+A **sound** type system rejects any program that could possibly go wrong at runtime. TypeScript is not sound. It allows some programs that will fail at runtime, because forbidding them would make everyday JavaScript patterns too difficult.
+
+```typescript
+const arr: number[] = [1, 2, 3];
+const first = arr[10];
+// first is `number | undefined` — TypeScript knows this might not exist
+
+// But:
+const value = arr[10]!.toFixed();
+// The `!` non-null assertion tells TypeScript "trust me, it exists"
+// At runtime: this crashes. TypeScript allowed it.
+```
+
+TypeScript trusts you when you use escape hatches. It does not try to be a proof system.
+
+## Structural typing allows surprising assignments
+
+Because TypeScript uses structural typing, values with matching shapes are interchangeable even when their names suggest they should not be:
+
+```typescript
+type UserId = string;
+type PostId = string;
+
+function getUser(id: UserId) { /* ... */ }
+
+const postId: PostId = "abc123";
+getUser(postId);  // OK — both are just `string` underneath
+```
+
+Both types erase to `string` at compile time. Structural typing sees no difference. This is consistent with how JavaScript works, but it can feel loose if you expect nominal distinctions.
+
+To create real separation, use branded types or distinct object shapes:
+
+```typescript
+type UserId = string & { __brand: "UserId" };
+type PostId = string & { __brand: "PostId" };
+// Now these are not interchangeable
+```
+
+## The type system models possibilities, not certainties
+
+TypeScript tracks what a value **could be**, not what it **will be** at any exact moment.
+
+```typescript
+function process(input: string | null) {
+  if (input !== null) {
+    console.log(input.length);  // OK — narrowed to string
+  }
+  // Here, input could still be null — TypeScript knows this
+}
+```
+
+But TypeScript also cannot track every runtime condition:
+
+```typescript
+const config = JSON.parse(process.env.CONFIG || "{}");
+// config is `unknown` — TypeScript cannot know what JSON contains
+```
+
+## JavaScript compatibility constrains the type system
+
+TypeScript must type real JavaScript, including patterns that are inherently loose:
+
+```typescript
+// This is valid JavaScript and valid TypeScript
+const obj: Record<string, unknown> = {};
+obj.dynamicKey = "anything";
+```
+
+Forbidding this would break compatibility with huge amounts of existing JavaScript. Instead, TypeScript provides options to tighten things up when you want to.
+
+## What to carry forward
+
+- TypeScript is not sound — it allows some programs that will fail at runtime
+- structural typing permits surprising assignments when shapes match
+- branded types create real nominal distinctions
+- the type system tracks possibilities, not runtime certainties
+- JavaScript compatibility constrains how strict TypeScript can be by default
+- strict mode (covered later) tightens many of these loose areas
+
+The next lesson covers strict mode and what it changes.

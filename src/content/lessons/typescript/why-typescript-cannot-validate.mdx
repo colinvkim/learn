@@ -1,0 +1,99 @@
+---
+title: Why TypeScript cannot validate external input
+description: Understand the boundary between compile-time types and runtime data, and why validation is still necessary.
+course: typescript
+status: draft
+---
+
+TypeScript checks the types of your source code at compile time. It does **not** check the data your application receives at runtime. This distinction is the most important boundary in a typed application.
+
+## The trust boundary
+
+Every application has a boundary where untyped external data enters:
+
+- HTTP request bodies and query parameters
+- API responses
+- environment variables
+- files on disk
+- messages from a queue
+- user form input
+- localStorage / sessionStorage
+
+At this boundary, data is `unknown`. It could be anything. A type annotation does not change this:
+
+```typescript
+// This does NOT validate the data — it only tells TypeScript to trust you
+const user = JSON.parse(raw) as User;
+
+// If raw is '{"foo": "bar"}', user is still that object.
+// TypeScript thinks it is a User, but it is not.
+// user.name will be undefined. user.foo is actually present.
+```
+
+The `as` assertion changes what TypeScript believes, not what the data actually is.
+
+## What happens without validation
+
+Without runtime validation, type errors become runtime crashes:
+
+```typescript
+interface Config {
+  apiUrl: string;
+  retries: number;
+}
+
+const config = JSON.parse(rawConfig) as Config;
+
+// If the API returns { apiUrl: 123, retries: "three" },
+// the code will fail when it tries to call config.apiUrl.toLowerCase()
+// or when it tries to loop config.retries times.
+```
+
+The type system said `string` and `number`. The actual data has `number` and `string`. TypeScript was wrong, and the application crashes.
+
+## The right approach
+
+Treat all external data as `unknown` until it has been validated:
+
+```typescript
+const raw: unknown = JSON.parse(rawConfig);
+
+// Validate and narrow
+if (
+  typeof raw === "object" &&
+  raw !== null &&
+  "apiUrl" in raw &&
+  typeof raw.apiUrl === "string" &&
+  "retries" in raw &&
+  typeof raw.retries === "number"
+) {
+  const config: Config = raw;  // now safe
+}
+```
+
+This is verbose. Schema validation libraries (covered next) make it ergonomic.
+
+## Where type assertions are acceptable
+
+Type assertions (`as T`) are safe when:
+
+- the data comes from a trusted, typed source (another TypeScript function that returns `T`)
+- the data has already been validated
+- you are in test code with known fixtures
+
+Type assertions are unsafe when:
+
+- the data comes from JSON parsing
+- the data comes from an HTTP request
+- the data comes from user input
+- the data comes from any untyped source
+
+## What to carry forward
+
+- TypeScript checks source code at compile time, not data at runtime
+- all external data enters as `unknown` — type assertions do not validate it
+- the trust boundary is where external data enters your application
+- validate at the boundary, use typed values everywhere inside
+- type assertions are safe only with already-trusted sources
+
+The next lesson covers parsing `unknown` and narrowing after checks.

@@ -1,0 +1,141 @@
+---
+title: Linting, formatting, and type checking in CI
+description: Learn how to set up a TypeScript project with linting, formatting, and automated type checking.
+course: typescript
+status: draft
+---
+
+A well-configured TypeScript project does more than compile. It lints for quality, formats code consistently, and checks types in CI.
+
+## Type checking vs compilation
+
+`tsc` does two things: type checking and compilation. In many projects, a faster transpiler (esbuild, swc, Vite) handles compilation, while `tsc` is used for type checking only:
+
+```bash
+# Type check without emitting files
+npx tsc --noEmit
+
+# Compile with a fast transpiler
+npx vite build
+```
+
+This separation is common because `tsc` compilation can be slow for large projects, while `--noEmit` type checking is fast.
+
+## Linting with ESLint
+
+ESLint catches code quality issues that TypeScript does not:
+
+```bash
+pnpm add -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+```
+
+A minimal ESLint config (`.eslintrc.json`):
+
+```json
+{
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ]
+}
+```
+
+Run it:
+
+```bash
+npx eslint src/
+```
+
+ESLint and TypeScript complement each other. TypeScript catches type errors; ESLint catches style, correctness, and maintainability issues.
+
+## Formatting with Prettier
+
+Prettier enforces consistent code formatting:
+
+```bash
+pnpm add -D prettier
+```
+
+A minimal Prettier config (`.prettierrc`):
+
+```json
+{
+  "semi": true,
+  "singleQuote": false,
+  "trailingComma": "all"
+}
+```
+
+Run it:
+
+```bash
+npx prettier --check src/     # check formatting
+npx prettier --write src/     # fix formatting
+```
+
+### ESLint + Prettier
+
+Use `eslint-config-prettier` to disable ESLint rules that conflict with Prettier:
+
+```bash
+pnpm add -D eslint-config-prettier
+```
+
+```json
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ]
+}
+```
+
+## Type checking in CI
+
+Type checking should run in CI on every pull request:
+
+```yaml
+# GitHub Actions example
+name: Type Check
+on: [pull_request]
+jobs:
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install
+      - run: npx tsc --noEmit
+```
+
+The `--noEmit` flag runs type checking without producing output files. It is fast and catches type errors.
+
+## Recommended package.json scripts
+
+```json
+{
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write src/",
+    "format:check": "prettier --check src/",
+    "build": "tsc",
+    "dev": "tsc --watch"
+  }
+}
+```
+
+## What to carry forward
+
+- `tsc --noEmit` type-checks without compiling — use it in CI
+- use a fast transpiler (esbuild, Vite) for compilation in large projects
+- ESLint catches code quality issues that TypeScript does not
+- Prettier enforces consistent formatting
+- `eslint-config-prettier` prevents conflicts between ESLint and Prettier
+- type checking in CI catches type errors before they reach production
+
+The next lesson covers migrating JavaScript projects to TypeScript.

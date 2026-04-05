@@ -1,0 +1,115 @@
+---
+title: tsconfig.json explained
+description: Learn how TypeScript's configuration file works, what each section does, and how to set up a project.
+course: typescript
+status: draft
+---
+
+`tsconfig.json` is the configuration file that tells TypeScript how to compile your project. It controls which files to include, how strict the type checking is, and what JavaScript output to produce.
+
+## A minimal tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src"]
+}
+```
+
+## Key compiler options
+
+### `target`
+
+`target` controls which version of JavaScript TypeScript outputs. It affects which language features are transpiled vs left as-is:
+
+```json
+"target": "ES2022"
+```
+
+- `ES2022` — modern features like top-level await, class fields, `.at()` are preserved
+- `ES2020` — optional chaining and nullish coalescing preserved, but newer features transpiled
+- `ES5` — nearly everything is transpiled (classes, arrow functions, etc.)
+
+Choose the oldest version your runtime supports. For Node.js 18+, `ES2022` is a good choice. For browsers, match your target browser list.
+
+### `module`
+
+`module` controls the module system in the output:
+
+```json
+"module": "ESNext"
+```
+
+- `ESNext` / `ES2020` — ES modules (`import`/`export`)
+- `CommonJS` — Node.js `require()` style
+- `NodeNext` / `Node16` — matches Node.js ESM resolution
+
+Use `ESNext` with a bundler, or `NodeNext` for native Node.js ESM.
+
+### `moduleResolution`
+
+`moduleResolution` controls how TypeScript resolves imports:
+
+```json
+"moduleResolution": "bundler"
+```
+
+- `bundler` — matches modern bundler behavior (Vite, webpack, esbuild)
+- `node` — matches Node.js resolution
+- `NodeNext` / `Node16` — matches Node.js ESM resolution
+
+Use `bundler` for frontend projects, `NodeNext` for Node.js ESM.
+
+### `outDir` and `rootDir`
+
+`outDir` is where compiled JavaScript goes. `rootDir` is the source directory:
+
+```json
+"outDir": "./dist",
+"rootDir": "./src"
+```
+
+### `include` and `exclude`
+
+These control which files TypeScript processes:
+
+```json
+"include": ["src"],
+"exclude": ["node_modules", "dist", "**/*.test.ts"]
+```
+
+## The `extends` field
+
+Configs can inherit from a shared base:
+
+```json
+{
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "./dist"
+  }
+}
+```
+
+`extends` merges the base config with your overrides. This is common in monorepos and teams with shared standards.
+
+## What to carry forward
+
+- `tsconfig.json` controls compilation, strictness, and file inclusion
+- `target` controls the output JavaScript version
+- `module` controls the module system (ESM vs CommonJS)
+- `moduleResolution` controls import resolution
+- `strict: true` is the most important setting — it enables all strict checks
+- `extends` allows sharing configuration across projects
+
+The next lesson covers the individual strict flags and what each one catches.

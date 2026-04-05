@@ -1,0 +1,112 @@
+---
+title: any and unknown
+description: Learn the difference between opting out of type checking and accepting uncertain types safely.
+course: typescript
+status: draft
+---
+
+TypeScript provides two types that accept any value: `any` and `unknown`. They look similar but behave very differently. Understanding the distinction is one of the most important skills in practical TypeScript.
+
+## `any`: opting out of the type system
+
+`any` disables type checking for a value. An `any` value can be assigned to anything and accessed in any way:
+
+```typescript
+let value: any = "hello";
+value = 42;        // OK
+value.foo.bar;     // OK — no type error, but will crash at runtime
+value();           // OK — no type error, but will crash at runtime
+```
+
+`any` tells TypeScript: "I do not know or care what type this is. Do not check me."
+
+### Where `any` appears
+
+- explicitly, when you annotate a variable as `any`
+- implicitly, when TypeScript cannot infer a type and `noImplicitAny` is off
+- from untyped JavaScript libraries that have no type declarations
+- from type assertions (`as any`)
+
+### When `any` is acceptable
+
+`any` is pragmatic in limited situations:
+
+- migrating JavaScript to TypeScript incrementally
+- working with a library that has no types and no time to add them
+- prototyping where correctness does not matter yet
+
+Even in these cases, `any` should be a temporary state, not a permanent design choice.
+
+## `unknown`: the type-safe alternative
+
+`unknown` also accepts any value, but unlike `any`, you **cannot use an `unknown` value until you narrow it**:
+
+```typescript
+let value: unknown = "hello";
+value = 42;
+
+value.foo;          // Error: Object is of type 'unknown'
+value.toFixed(2);   // Error: Object is of type 'unknown'
+value();            // Error: Object is of type 'unknown'
+```
+
+To use an `unknown` value, you must narrow it first:
+
+```typescript
+function process(value: unknown) {
+  if (typeof value === "string") {
+    // value is string here
+    console.log(value.toUpperCase());
+  } else if (typeof value === "number") {
+    // value is number here
+    console.log(value.toFixed(2));
+  }
+}
+```
+
+## `any` vs `unknown` in practice
+
+| | `any` | `unknown` |
+|---|---|---|
+| Accepts any value | Yes | Yes |
+| Can be used without narrowing | Yes | No |
+| Preserves type safety | No | Yes |
+| Use when | migrating, prototyping | parsing external data, catch blocks |
+
+## The rule of thumb
+
+**Prefer `unknown` over `any` whenever you need to accept a value whose type is not known ahead of time.** The extra narrowing step is small, and it prevents the class of bugs where an `any` value is used incorrectly at runtime.
+
+```typescript
+// Bad: any
+function handle(data: any) {
+  console.log(data.user.name);  // No type error, may crash
+}
+
+// Better: unknown
+function handle(data: unknown) {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "user" in data &&
+    typeof data.user === "object" &&
+    data.user !== null &&
+    "name" in data.user &&
+    typeof data.user.name === "string"
+  ) {
+    console.log(data.user.name);  // Safe
+  }
+}
+```
+
+The `unknown` version is more verbose. It is also correct. The next modules on generics and utility types will show how to make this pattern more ergonomic.
+
+## What to carry forward
+
+- `any` opts out of type checking entirely
+- `unknown` accepts any value but requires narrowing before use
+- prefer `unknown` for external data, catch blocks, and uncertain values
+- `any` is acceptable only as a temporary measure during migration or prototyping
+- the narrowing burden of `unknown` is a feature, not a drawback
+
+The next lesson covers `never`, `null`, and `undefined` — the types that handle absence and impossibility.

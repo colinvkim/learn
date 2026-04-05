@@ -1,6 +1,6 @@
 ---
 title: TypeScript
-description: Learn what TypeScript adds to JavaScript and how teams use it to write more reliable code.
+description: Learn how to model data, design APIs, and write more reliable code with TypeScript — from core type syntax to real-world application patterns.
 status: draft
 sortOrder: 10
 topics:
@@ -8,8 +8,16 @@ topics:
 tags:
   - TypeScript
   - JavaScript
+  - programming
+  - web development
+  - frontend
+  - backend
+  - type system
+  - APIs
 ---
 
-TypeScript helps teams make large JavaScript codebases easier to change with confidence.
+TypeScript is JavaScript with a type system. It helps you make intent explicit, catch mistakes early, and refactor with confidence.
 
-This draft course is here to validate the content system, lesson ordering, and course page layout before the first public course is published.
+This course teaches TypeScript from the ground up: mental models, core syntax, data modeling, and applied tracks for frontend, backend, and library development.
+
+The JavaScript course is a helpful prerequisite but not required — a basic understanding of JavaScript and a strong programming foundation are enough.

@@ -1,0 +1,174 @@
+---
+title: Strict flags in depth
+description: Learn the individual strict compiler options, what each one catches, and when to enable them.
+course: typescript
+status: draft
+---
+
+`"strict": true` enables a bundle of flags. Understanding each one helps you decide which to enable and in what order.
+
+## `strictNullChecks`
+
+`null` and `undefined` are not assignable to other types. This is the single most impactful flag.
+
+```typescript
+// Without strictNullChecks
+function greet(name: string) {
+  return `Hello, ${name}`;
+}
+greet(null);  // No error — compiles fine
+
+// With strictNullChecks
+function greet(name: string) {
+  return `Hello, ${name}`;
+}
+greet(null);  // Error: Argument of type 'null' is not assignable to parameter of type 'string'.
+```
+
+Enable this first. It catches the most real-world bugs.
+
+## `noImplicitAny`
+
+When TypeScript cannot infer a type, it normally falls back to `any`. This flag makes those implicit `any` types an error:
+
+```typescript
+// Without noImplicitAny
+function process(data) {
+  // data is implicitly `any` — no error
+}
+
+// With noImplicitAny
+function process(data) {
+  // Error: Parameter 'data' implicitly has an 'any' type.
+}
+
+// Fix: annotate explicitly
+function process(data: unknown) {
+  // ...
+}
+```
+
+Enable this early. It forces you to be explicit about uncertain types.
+
+## `strictFunctionTypes`
+
+Function parameter types are checked more strictly, preventing unsafe function assignments:
+
+```typescript
+// Without strictFunctionTypes
+function logString(s: string) { /* ... */ }
+function logAny(s: any) { /* ... */ }
+
+let fn: (s: string) => void = logString;
+fn = logAny;  // Allowed unsafely
+
+// With strictFunctionTypes
+fn = logAny;  // Error — function types are checked contravariantly
+```
+
+## `strictPropertyInitialization`
+
+Class properties must be initialized in the constructor or have a default value:
+
+```typescript
+// Without strictPropertyInitialization
+class User {
+  name: string;  // uninitialized — no error
+}
+
+// With strictPropertyInitialization
+class User {
+  name: string;  // Error: Property 'name' has no initializer
+                 // and is not definitely assigned in the constructor.
+}
+
+// Fix: initialize
+class User {
+  name: string = "";
+  // or: initialize in constructor
+}
+```
+
+## `noImplicitThis`
+
+`this` expressions must have a known type:
+
+```typescript
+// Without noImplicitThis
+const btn = {
+  name: "Submit",
+  onClick: function() {
+    console.log(this.name);  // this is implicitly any
+  },
+};
+
+// With noImplicitThis
+const btn = {
+  name: "Submit",
+  onClick: function() {
+    console.log(this.name);  // Error: 'this' implicitly has type 'any'
+  },
+};
+```
+
+## `alwaysStrict`
+
+Emit `"use strict"` at the top of every output file. This enables JavaScript strict mode at runtime.
+
+## `useUnknownInCatchVariables`
+
+Catch clause variables are typed as `unknown` instead of `any`:
+
+```typescript
+// Without useUnknownInCatchVariables
+try {
+  // ...
+} catch (error) {
+  // error is `any` — can access anything
+  console.log(error.message);  // No type error, may crash
+}
+
+// With useUnknownInCatchVariables
+try {
+  // ...
+} catch (error) {
+  // error is `unknown` — must narrow
+  if (error instanceof Error) {
+    console.log(error.message);  // Safe
+  }
+}
+```
+
+## Enabling flags incrementally
+
+For migrations, enable one at a time:
+
+```json
+{
+  "compilerOptions": {
+    "strict": false,
+    "strictNullChecks": true
+  }
+}
+```
+
+Fix all errors from one flag before enabling the next. The order of impact (highest to lowest):
+
+1. `strictNullChecks`
+2. `noImplicitAny`
+3. `useUnknownInCatchVariables`
+4. `strictPropertyInitialization`
+5. `strictFunctionTypes`
+6. `noImplicitThis`
+7. `alwaysStrict`
+
+## What to carry forward
+
+- `strictNullChecks` is the most impactful — enables null safety
+- `noImplicitAny` forces explicit typing where inference fails
+- `useUnknownInCatchVariables` makes catch blocks safe
+- `strictPropertyInitialization` prevents uninitialized class properties
+- enable flags one at a time for migrations
+- `strict: true` is the goal for all new projects
+
+The next lesson covers additional important compiler flags beyond strict mode.

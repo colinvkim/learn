@@ -1,0 +1,63 @@
+---
+title: What TypeScript adds
+description: Understand what TypeScript is, what it does not do, and why teams adopt it.
+course: typescript
+status: draft
+---
+
+TypeScript is JavaScript with a static type system layered on top of the language. It does not introduce a new runtime, a new engine, or a new way of executing code. Every TypeScript program is eventually turned into JavaScript and runs the same way JavaScript always has.
+
+The goal is not to make code academic. The goal is to make intent, assumptions, and mistakes visible before the code runs.
+
+## What TypeScript is
+
+TypeScript adds a **compile-time type checker**. Before your code runs, the TypeScript compiler reads it and verifies that values are used consistently with the types you have declared — or that the compiler has inferred.
+
+```typescript
+function greet(name: string) {
+  return `Hello, ${name}!`;
+}
+
+greet("World");  // OK
+greet(42);       // Error: Argument of type 'number' is not assignable to parameter of type 'string'.
+```
+
+The type error appears in your editor or during a build — not in production when a user encounters it.
+
+## What TypeScript is not
+
+TypeScript does not validate data at runtime. It checks the types in your source code, then **erases them entirely** before producing JavaScript output. A value that arrives from an API, a form submission, or a file on disk is still untrusted. TypeScript cannot protect you from data that arrives after compilation.
+
+TypeScript also does not guarantee correctness. It checks the rules you ask it to check. Code can still have logic errors, race conditions, and security issues. TypeScript catches a specific class of mistakes: type mismatches.
+
+## Why teams use it
+
+- **Editor feedback while writing.** Autocomplete, inline errors, and go-to-definition come from the same type information the compiler uses.
+- **Safer refactors.** Renaming a field, changing a function signature, or reorganizing modules surfaces type errors everywhere the change matters.
+- **Clearer public APIs.** A function's type signature documents what it accepts and what it returns. Readers and callers do not need to guess.
+- **Easier onboarding.** New contributors can explore a typed codebase faster. The types communicate intent that comments and conventions alone rarely achieve.
+
+## The cost
+
+TypeScript requires learning a type system, annotating code, and sometimes designing around type errors that feel pedantic. Small projects and prototypes may move faster without it. The payoff grows with codebase size, team size, and the frequency of changes.
+
+## The compile step
+
+TypeScript code lives in `.ts` or `.tsx` files. Before it runs in a browser or Node.js, it must be **compiled** (often called "transpiled") to JavaScript. This is the extra step that JavaScript does not require.
+
+```bash
+npx tsc          # compile TypeScript to JavaScript
+npx tsc --watch  # recompile on every save
+```
+
+The compiler produces `.js` files. The types are gone. What remains is JavaScript, ready to run anywhere JavaScript runs.
+
+## What to carry forward
+
+- TypeScript adds compile-time type checking on top of JavaScript
+- types are erased at runtime — TypeScript does not validate external data
+- the type system catches mismatches early and communicates intent
+- there is a compile step: `.ts` becomes `.js`
+- the benefits scale with project size and change frequency
+
+The next lesson digs into what "compile time" actually means and how it differs from runtime.

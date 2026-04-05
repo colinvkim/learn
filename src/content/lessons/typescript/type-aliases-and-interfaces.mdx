@@ -1,0 +1,96 @@
+---
+title: Type aliases vs interfaces
+description: Learn the two ways to name types in TypeScript, when to use each, and how they differ.
+course: typescript
+status: draft
+---
+
+TypeScript provides two mechanisms for naming types: **type aliases** and **interfaces**. They overlap significantly but have distinct capabilities.
+
+## Type aliases
+
+A type alias gives a name to any type:
+
+```typescript
+type UserId = string;
+type Point = [number, number];
+type Callback = (result: string) => void;
+type Maybe<T> = T | null;
+```
+
+Type aliases can name primitives, tuples, unions, intersections, function types, and mapped types. They are fully general.
+
+## Interfaces
+
+Interfaces describe object shapes. They can only describe types that have properties and methods:
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+```
+
+Interfaces have one capability that type aliases do not: **declaration merging**.
+
+```typescript
+interface User {
+  id: number;
+}
+
+interface User {
+  name: string;
+}
+
+// The final User type has both id and name
+const user: User = { id: 1, name: "Colin" };
+```
+
+Declaration merging is rarely needed in application code. It exists primarily for augmenting types from external libraries.
+
+## Extending and implementing
+
+Both interfaces and type aliases support composition:
+
+```typescript
+// Interface extension
+interface Person {
+  name: string;
+}
+
+interface Employee extends Person {
+  id: number;
+}
+
+// Type intersection
+type Person = { name: string };
+type Employee = Person & { id: number };
+```
+
+Interfaces can also `extend` types:
+
+```typescript
+type Person = { name: string };
+interface Employee extends Person {
+  id: number;
+}
+```
+
+## When to use which
+
+A practical guideline:
+
+- **use `interface`** for object shapes that might be extended or that represent public API contracts
+- **use `type`** for unions, tuples, function types, mapped types, utility types, and anything that is not an object shape
+
+Many teams standardize on `interface` for objects and `type` for everything else. This is a reasonable convention.
+
+## What to carry forward
+
+- type aliases can name any type; interfaces only describe object shapes
+- interfaces support declaration merging (rarely needed in application code)
+- both support extension and composition
+- convention: `interface` for objects, `type` for everything else
+
+The next module covers unions, literal types, and narrowing — the tools that make TypeScript's type system genuinely useful.

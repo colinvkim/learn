@@ -1,0 +1,114 @@
+---
+title: Mapped types
+description: Learn how to transform every property of a type systematically.
+course: typescript
+status: draft
+---
+
+Mapped types let you create a new type by transforming each property of an existing type. They use a syntax similar to `for...in` loops, but operate entirely at the type level.
+
+## The basic pattern
+
+```typescript
+type Readonly<T> = {
+  readonly [K in keyof T]: T[K];
+};
+
+interface User {
+  name: string;
+  age: number;
+}
+
+type ReadonlyUser = Readonly<User>;
+// { readonly name: string; readonly age: number }
+```
+
+The `[K in keyof T]` part iterates over every key in `T`. The `T[K]` part is the type of each property. The `readonly` modifier is applied to each one.
+
+## Common mapped type transformations
+
+### Making all properties optional
+
+```typescript
+type Partial<T> = {
+  [K in keyof T]?: T[K];
+};
+
+type PartialUser = Partial<User>;
+// { name?: string; age?: number }
+```
+
+### Making all properties required
+
+```typescript
+type Required<T> = {
+  [K in keyof T]-?: T[K];
+};
+```
+
+The `-?` removes the optional flag.
+
+### Making all properties nullable
+
+```typescript
+type Nullable<T> = {
+  [K in keyof T]: T[K] | null;
+};
+```
+
+### Removing properties
+
+```typescript
+type Pick<T, K extends keyof T> = {
+  [K in keyof T]: T[K];
+};
+// Actually, Pick only keeps the keys in K — see utility types below
+```
+
+## Remapping with `as`
+
+Mapped types can rename or filter keys using `as`:
+
+```typescript
+// Rename: add a prefix
+type WithPrefix<T, Prefix extends string> = {
+  [K in keyof T as `${Prefix}${Capitalize<string & K>}`]: T[K];
+};
+
+type PrefixedUser = WithPrefix<User, "user_">;
+// { user_Name: string; user_Age: number }
+
+// Filter: keep only string properties
+type StringProperties<T> = {
+  [K in keyof T as T[K] extends string ? K : never]: T[K];
+};
+
+type StringUserProps = StringProperties<User>;
+// { name: string } — age is filtered out
+```
+
+The `as` clause transforms the key. Returning `never` removes the property entirely.
+
+## Template literal types in mapped types
+
+Mapped types compose with template literal types for powerful transformations:
+
+```typescript
+type Getters<T> = {
+  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];
+};
+
+type UserGetters = Getters<{ name: string; age: number }>;
+// { getName: () => string; getAge: () => number }
+```
+
+## What to carry forward
+
+- mapped types iterate over keys with `[K in keyof T]`
+- modifiers (`readonly`, `?`) apply to every property
+- `-?` removes optionality; `-readonly` removes readonly
+- `as` remaps or filters keys
+- returning `never` from `as` removes a property
+- template literal types enable naming transformations
+
+The next lesson covers conditional types and `infer` — TypeScript's type-level if/else and pattern matching.

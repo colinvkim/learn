@@ -1,0 +1,173 @@
+---
+title: Domain entities and typed error models
+description: Learn how to model business domain objects and design a type-safe error system.
+course: typescript
+status: draft
+---
+
+Domain entities are the core objects in your application — users, orders, posts, comments. Typed error models ensure that every failure mode is named and handled.
+
+## Domain entities
+
+Domain entities model real-world concepts in the problem domain. They should be:
+
+- **named clearly** — `Order`, not `Obj`
+- **immutable by default** — use `readonly` where possible
+- **self-contained** — all necessary data is present
+
+```typescript
+interface Order {
+  readonly id: string;
+  readonly customerId: string;
+  readonly items: OrderItem[];
+  readonly status: OrderStatus;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
+}
+
+interface OrderItem {
+  readonly productId: string;
+  readonly quantity: number;
+  readonly unitPrice: number;
+}
+
+type OrderStatus = "draft" | "submitted" | "paid" | "shipped" | "delivered" | "cancelled";
+```
+
+### Entity operations
+
+Operations on entities are best expressed as free functions that take and return the entity:
+
+```typescript
+function addItem(order: Order, item: OrderItem): Order {
+  if (order.status !== "draft") {
+    throw new Error("Can only add items to draft orders");
+  }
+  return {
+    ...order,
+    items: [...order.items, item],
+    updatedAt: new Date(),
+  };
+}
+
+function submitOrder(order: Order): Order {
+  if (order.items.length === 0) {
+    throw new Error("Cannot submit an empty order");
+  }
+  return {
+    ...order,
+    status: "submitted",
+    updatedAt: new Date(),
+  };
+}
+```
+
+Functions are easier to test and compose than methods on classes.
+
+## Typed error models
+
+Instead of throwing generic `Error` objects, define specific error types:
+
+```typescript
+interface NotFoundError {
+  kind: "not-found";
+  resource: string;
+  id: string;
+}
+
+interface ValidationError {
+  kind: "validation";
+  field: string;
+  message: string;
+}
+
+interface PermissionDeniedError {
+  kind: "permission-denied";
+  required: string;
+  actual: string;
+}
+
+type AppError = NotFoundError | ValidationError | PermissionDeniedError;
+```
+
+This discriminated union makes every error type explicit. Callers can handle each case:
+
+```typescript
+function handleResult(result: Result<User, AppError>) {
+  if (!result.ok) {
+    switch (result.error.kind) {
+      case "not-found":
+        return `User ${result.error.id} does not exist`;
+      case "validation":
+        return `Invalid ${result.error.field}: ${result.error.message}`;
+      case "permission-denied":
+        return `Need ${result.error.required}, have ${result.error.actual}`;
+    }
+  }
+  return result.data.name;
+}
+```
+
+## Result type with errors
+
+Combine success and error into a `Result` type:
+
+```typescript
+interface Success<T, E> {
+  ok: true;
+  data: T;
+}
+
+interface Failure<T, E> {
+  ok: false;
+  error: E;
+}
+
+type Result<T, E = Error> = Success<T, E> | Failure<T, E>;
+```
+
+The generic `E` parameter lets different operations return different error types:
+
+```typescript
+function getUser(id: string): Result<User, NotFoundError> {
+  // ...
+}
+
+function createOrder(input: CreateOrderInput): Result<Order, ValidationError> {
+  // ...
+}
+```
+
+## Making invalid states hard to represent
+
+The best type systems do not just catch errors — they make invalid states impossible to construct:
+
+```typescript
+// Bad: these states are possible but invalid:
+// - both success and error are set
+// - neither is set
+interface BadResponse {
+  success?: boolean;
+  data?: User;
+  error?: string;
+}
+
+// Good: discriminated union prevents invalid states
+type Response = 
+  | { status: "loading" }
+  | { status: "success"; data: User }
+  | { status: "error"; message: string };
+```
+
+The good version makes it impossible to have data and an error simultaneously. The type system enforces the invariant.
+
+## What to carry forward
+
+- domain entities should be named clearly, immutable, and self-contained
+- prefer free functions over methods for entity operations
+- typed error models use discriminated unions to make every error explicit
+- `Result<T, E>` combines success and error into one type
+- design types so that invalid states are impossible to represent
+- discriminated unions are the best tool for state machines and response types
+
+The next lesson covers DTOs vs internal models — the boundary between external data and internal types.

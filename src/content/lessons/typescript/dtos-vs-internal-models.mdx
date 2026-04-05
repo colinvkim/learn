@@ -1,0 +1,109 @@
+---
+title: DTOs vs internal models
+description: Learn how to separate external data contracts from internal domain types, and transform between them.
+course: typescript
+status: draft
+---
+
+One of the most important design decisions in a typed codebase is the separation between **DTOs** (Data Transfer Objects — types that match external data) and **internal models** (types that represent your domain concepts).
+
+## What is a DTO
+
+A DTO mirrors the shape of external data — an API response, a database row, a message queue payload:
+
+```typescript
+// DTO: matches the API wire format
+interface UserDto {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email_address: string;
+  created_at: string;  // ISO date string
+  role: "admin" | "user" | "viewer";
+}
+```
+
+The DTO reflects reality: snake_case keys, string dates, the exact structure the API sends.
+
+## What is an internal model
+
+An internal model represents the domain concept in your application:
+
+```typescript
+// Internal model: how the application thinks about users
+interface User {
+  id: string;
+  name: string;          // combined
+  email: EmailAddress;   // validated type
+  createdAt: Date;       // actual Date object
+  role: UserRole;
+}
+
+type UserRole = "admin" | "user" | "viewer";
+
+interface EmailAddress {
+  value: string;
+}
+```
+
+The internal model uses the types and naming that make sense for the application, not for the API.
+
+## Transforming between them
+
+The transformation happens at the boundary — in the data access layer:
+
+```typescript
+function userFromDto(dto: UserDto): User {
+  return {
+    id: dto.id,
+    name: `${dto.first_name} ${dto.last_name}`,
+    email: { value: dto.email_address },
+    createdAt: new Date(dto.created_at),
+    role: dto.role,
+  };
+}
+
+function userToDto(user: User): UserDto {
+  return {
+    id: user.id,
+    first_name: user.name.split(" ")[0],
+    last_name: user.name.split(" ").slice(1).join(" "),
+    email_address: user.email.value,
+    created_at: user.createdAt.toISOString(),
+    role: user.role,
+  };
+}
+```
+
+## Why this separation matters
+
+Keeping DTOs and internal models separate prevents several problems:
+
+- **API changes are isolated.** If the API renames a field, only the DTO and the mapper change. Internal code is unaffected.
+- **Internal types can be stricter.** You can validate and transform data at the boundary, ensuring internal code works with correct values.
+- **Multiple sources can converge.** Two APIs with different formats can map to the same internal model.
+
+## When to skip the separation
+
+Not every application needs this separation. For small projects or prototypes, using the DTO directly as the internal type is fine:
+
+```typescript
+// Acceptable for small projects
+type User = UserDto;
+```
+
+Add the separation when:
+- the API format differs from domain concepts
+- you need to combine data from multiple sources
+- you want to enforce invariants (validated emails, parsed dates)
+- the API is likely to change
+
+## What to carry forward
+
+- DTOs mirror external data format; internal models represent domain concepts
+- transform between them at the boundary (data access layer)
+- the separation isolates API changes and allows stricter internal types
+- small projects can skip the separation; add it when the API diverges from the domain
+- the mapper is the single place where external format differences are handled
+
+The next module covers runtime validation — why TypeScript alone cannot validate external input, and how to handle trust boundaries.

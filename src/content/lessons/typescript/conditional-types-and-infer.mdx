@@ -1,0 +1,126 @@
+---
+title: Conditional types and infer
+description: Learn how to make types depend on conditions, and how to extract types from within other types.
+course: typescript
+status: draft
+---
+
+Conditional types are the type-level equivalent of if/else. They let you choose one type or another based on a condition. Combined with `infer`, they can extract types from complex structures.
+
+## Conditional type syntax
+
+```typescript
+T extends U ? X : Y
+```
+
+If `T` is assignable to `U`, the result is `X`. Otherwise, it is `Y`.
+
+```typescript
+type IsString<T> = T extends string ? "yes" : "no";
+
+type A = IsString<"hello">;  // "yes"
+type B = IsString<42>;       // "no"
+```
+
+## Practical conditional types
+
+### Unwrapping array types
+
+```typescript
+type UnwrapArray<T> = T extends (infer U)[] ? U : T;
+
+type A = UnwrapArray<string[]>;   // string
+type B = UnwrapArray<number>;     // number (not an array, stays as-is)
+```
+
+### Extracting return types
+
+```typescript
+type MyReturnType<T> = T extends (...args: unknown[]) => infer R ? R : never;
+
+type A = MyReturnType<() => string>;     // string
+type B = MyReturnType<() => Promise<number>>;  // Promise<number>
+```
+
+### Flattening promises
+
+```typescript
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+
+type A = UnwrapPromise<Promise<string>>;  // string
+type B = UnwrapPromise<number>;           // number
+```
+
+## The `infer` keyword
+
+`infer` introduces a type variable inside a conditional. It says: "if this pattern matches, capture the matched type as a new variable."
+
+```typescript
+type FirstElement<T> = T extends [infer First, ...any[]] ? First : never;
+
+type A = FirstElement<[string, number, boolean]>;  // string
+type B = FirstElement<string[]>;                    // string
+```
+
+`infer` can only be used in the `extends` clause of a conditional. It is a pattern-matching tool.
+
+### Multiple inferences
+
+`infer` can appear multiple times in one conditional:
+
+```typescript
+type FunctionParams<T> = T extends (
+  ...args: infer P
+) => infer R
+  ? { params: P; return: R }
+  : never;
+
+type A = FunctionParams<(name: string, age: number) => boolean>;
+// { params: [string, number]; return: boolean }
+```
+
+## Distributive conditional types
+
+When a conditional type operates on a union, it distributes over each member:
+
+```typescript
+type ToArray<T> = T extends any ? T[] : never;
+
+type A = ToArray<string | number>;
+// string[] | number[] — NOT (string | number)[]
+```
+
+This is often desirable. If you want to prevent distribution, wrap the type in a tuple:
+
+```typescript
+type ToArrayNonDist<T> = [T] extends [any] ? T[] : never;
+
+type A = ToArrayNonDist<string | number>;
+// (string | number)[]
+```
+
+## Built-in conditional types
+
+TypeScript ships with several conditional types you will use regularly:
+
+```typescript
+// Extract members of a union that match
+type A = Extract<"a" | "b" | "c", "a" | "b">;  // "a" | "b"
+
+// Exclude members of a union that match
+type B = Exclude<"a" | "b" | "c", "a">;  // "b" | "c"
+
+// NonNullable removes null and undefined
+type C = NonNullable<string | null | undefined>;  // string
+```
+
+## What to carry forward
+
+- conditional types use `T extends U ? X : Y` syntax
+- `infer` captures matched types inside conditionals — it is type-level pattern matching
+- conditional types distribute over unions by default
+- wrap in `[T]` to prevent distribution
+- built-in `Extract`, `Exclude`, and `NonNullable` are conditional types
+- conditional types are powerful but can become hard to read — use them when simpler tools do not suffice
+
+The next lesson covers the built-in utility types you will reach for most often.

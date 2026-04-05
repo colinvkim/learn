@@ -1,0 +1,129 @@
+---
+title: Safe ingestion of JSON and request bodies
+description: Learn patterns for safely parsing external data at trust boundaries in real applications.
+course: typescript
+status: draft
+---
+
+Trust boundaries appear everywhere: API calls, environment variables, file reads, message queues. Each needs a consistent pattern for safe ingestion.
+
+## API response ingestion
+
+Parse and validate at the boundary, before the data enters your application logic:
+
+```typescript
+import { z } from "zod";
+
+const userSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+});
+
+async function fetchUser(id: string): Promise<User> {
+  const response = await fetch(`/api/users/${id}`);
+  
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  
+  const raw: unknown = await response.json();
+  return userSchema.parse(raw);
+}
+```
+
+The `raw` variable is `unknown`. The schema validates it and either returns a typed `User` or throws with a detailed error.
+
+## Request body ingestion (backend)
+
+On the server, request bodies arrive untyped:
+
+```typescript
+import { z } from "zod";
+import type { IncomingMessage, ServerResponse } from "http";
+
+const createPostSchema = z.object({
+  title: z.string().min(1).max(200),
+  body: z.string().min(1),
+  tags: z.array(z.string()).default([]),
+});
+
+async function handleCreatePost(
+  req: IncomingMessage,
+  res: ServerResponse,
+) {
+  const raw: unknown = JSON.parse(await readBody(req));
+  const result = createPostSchema.safeParse(raw);
+  
+  if (!result.success) {
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ errors: result.error.errors }));
+    return;
+  }
+  
+  const post = result.data;  // typed CreatePostInput
+  // ... create the post
+}
+```
+
+The pattern: parse → validate → respond with errors or proceed with typed data.
+
+## Environment variables
+
+Environment variables are always strings (if present):
+
+```typescript
+const envSchema = z.object({
+  DATABASE_URL: z.string().url(),
+  PORT: z.coerce.number().int().positive().default(3000),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  SECRET_KEY: z.string().min(32),
+});
+
+const env = envSchema.parse(process.env);
+// env is typed with all validated fields
+```
+
+`z.coerce.number()` converts the string to a number during validation. This is a common pattern for environment variables that should be numbers.
+
+## File and config ingestion
+
+Configuration files are read, parsed, and validated the same way:
+
+```typescript
+import { readFileSync } from "fs";
+import { z } from "zod";
+
+const configSchema = z.object({
+  apiUrl: z.string().url(),
+  retries: z.number().int().min(0).max(10).default(3),
+  timeout: z.number().int().positive().default(5000),
+});
+
+function loadConfig(path: string): z.infer<typeof configSchema> {
+  const raw = JSON.parse(readFileSync(path, "utf-8"));
+  return configSchema.parse(raw);
+}
+```
+
+## The universal pattern
+
+Every trust boundary follows the same pattern:
+
+1. receive data as `unknown`
+2. validate against a schema
+3. on failure: return/log errors
+4. on success: use the typed data freely throughout the application
+
+Inside the application, after validation, the data is typed. No more assertions, narrowing, or defensive checks are needed.
+
+## What to carry forward
+
+- every trust boundary follows: receive as unknown → validate → use typed data
+- API responses: parse JSON, validate with schema, return typed result or throw
+- request bodies: validate and return 400 with error details on failure
+- environment variables: always strings, validate and coerce at startup
+- config files: read, parse, validate — same pattern everywhere
+- after validation, data is typed — no more defensive checks needed internally
+
+The next module covers tsconfig.json, strict flags, ESM vs CommonJS, and setting up a TypeScript project.

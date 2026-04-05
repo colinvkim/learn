@@ -1,0 +1,136 @@
+---
+title: Composition vs inheritance
+description: Learn why composition is usually the better choice in typed systems, and how to structure code around it.
+course: typescript
+status: draft
+---
+
+Inheritance and composition are two ways to share code and structure. In typed systems, composition is almost always the better choice.
+
+## The problem with deep inheritance
+
+Inheritance creates tight coupling between parent and child classes. Changes to the parent ripple through all children:
+
+```typescript
+class Animal {
+  eat() { /* ... */ }
+  sleep() { /* ... */ }
+}
+
+class Dog extends Animal {
+  bark() { /* ... */ }
+}
+
+class GuardDog extends Dog {
+  patrol() { /* ... */ }
+}
+```
+
+This hierarchy seems natural until you need a dog that does not bark, or a guard animal that is not a dog. The hierarchy encodes assumptions that become restrictive.
+
+## Composition: building from pieces
+
+Composition assembles behavior from small, independent units:
+
+```typescript
+interface Eater {
+  eat(): void;
+}
+
+interface Sleeper {
+  sleep(): void;
+}
+
+interface Barker {
+  bark(): void;
+}
+
+class Dog implements Eater, Sleeper, Barker {
+  eat() { /* ... */ }
+  sleep() { /* ... */ }
+  bark() { /* ... */ }
+}
+```
+
+Each behavior is independent. Adding or removing a capability does not require restructuring a hierarchy.
+
+## Mixins
+
+Mixins are a pattern for composing class behaviors. TypeScript supports them with intersection types:
+
+```typescript
+type Constructor = new (...args: any[]) => object;
+
+function Timestamped<T extends Constructor>(Base: T) {
+  return class extends Base {
+    createdAt = new Date();
+  };
+}
+
+function Activatable<T extends Constructor>(Base: T) {
+  return class extends Base {
+    isActivated = false;
+    activate() {
+      this.isActivated = true;
+    }
+  };
+}
+
+class User {}
+
+const TimestampedActivatableUser = Timestamped(Activatable(User));
+
+type UserInstance = InstanceType<typeof TimestampedActivatableUser>;
+// Has createdAt, isActivated, and activate()
+```
+
+Mixins compose behaviors without inheritance hierarchies. They are more flexible but add complexity — use them when composition of plain functions is not enough.
+
+## Prefer interfaces and plain functions
+
+Before reaching for classes or mixins, consider whether interfaces and plain functions are enough:
+
+```typescript
+// Instead of a class hierarchy:
+interface User { id: string; name: string }
+interface Post { id: string; title: string; author: User }
+
+// Instead of methods on a class:
+function publishPost(post: Post): void { /* ... */ }
+function deletePost(post: Post): void { /* ... */ }
+```
+
+Plain data with free functions is easier to test, serialize, and compose. Classes add value when you need encapsulation, lifecycle management, or polymorphism.
+
+## Domain modeling
+
+The best type structures model the domain, not the implementation. Think about the entities, their relationships, and the transitions they go through — not about which class inherits from which.
+
+```typescript
+// Good domain model
+type OrderStatus = "draft" | "submitted" | "paid" | "shipped" | "delivered";
+
+interface Order {
+  id: string;
+  status: OrderStatus;
+  items: OrderItem[];
+  total: number;
+}
+
+// Operations are free functions that transform the domain
+function submitOrder(order: Order): Order { /* ... */ }
+function payOrder(order: Order): Order { /* ... */ }
+```
+
+The type captures the domain. Functions transform it. This is simpler and more flexible than a class hierarchy.
+
+## What to carry forward
+
+- inheritance creates tight coupling; changes to parents affect all children
+- composition assembles behavior from independent pieces
+- mixins compose class behaviors but add complexity
+- interfaces and plain functions are often enough — reach for classes when you need encapsulation
+- model the domain, not the implementation
+- prefer types and free functions over deep class hierarchies
+
+The next module covers modeling real systems — API responses, config objects, form data, and domain entities.

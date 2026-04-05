@@ -1,0 +1,139 @@
+---
+title: Good generic design
+description: Learn when to use generics, when to avoid them, and how to strike the right balance.
+course: typescript
+status: draft
+---
+
+Generics are powerful, but they are easy to overuse. A function with five type parameters and nested constraints is harder to understand than one with concrete types.
+
+## When generics are the right choice
+
+Use generics when:
+
+### The relationship between input and output matters
+
+```typescript
+function first<T>(arr: T[]): T | undefined {
+  return arr[0];
+}
+```
+
+The output type depends on the input element type. A concrete type like `any` would lose this relationship.
+
+### You are building a reusable abstraction
+
+```typescript
+interface Repository<T> {
+  find(id: string): Promise<T | null>;
+  save(data: T): Promise<void>;
+}
+```
+
+The same data access pattern applies to `User`, `Post`, `Comment`, and everything else. Generics avoid duplication.
+
+### You are wrapping a generic value
+
+```typescript
+function withTiming<T>(fn: () => T): T {
+  const start = performance.now();
+  const result = fn();
+  console.log(`Took ${performance.now() - start}ms`);
+  return result;
+}
+```
+
+`withTiming` does not care what `fn` returns, but the caller needs the return value typed correctly.
+
+## When to avoid generics
+
+### The type is always the same
+
+If a function only ever works with one type, do not make it generic:
+
+```typescript
+// Bad: only ever handles User
+function process<T extends User>(user: T): T {
+  return user;
+}
+
+// Good: use the concrete type
+function process(user: User): User {
+  return user;
+}
+```
+
+### The generic parameter is only used once
+
+If a type parameter appears in only one place, it probably does not need to be generic:
+
+```typescript
+// Bad: T only appears once
+function logValue<T>(value: T): void {
+  console.log(value);
+}
+
+// Good: unknown expresses "any value, no assumptions"
+function logValue(value: unknown): void {
+  console.log(value);
+}
+```
+
+### Too many constraints
+
+A generic with many constraints often means the abstraction is too broad:
+
+```typescript
+// Overengineered
+function process<T extends { id: string; name: string; createdAt: Date; updatedAt: Date }>(
+  item: T,
+): T {
+  // ...
+}
+
+// If only these specific properties matter, use a concrete type
+interface Entity {
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+function process(item: Entity): Entity {
+  // ...
+}
+```
+
+## Naming conventions
+
+Single-letter names (`T`, `K`, `V`, `R`) are conventional for simple generics:
+
+- `T` — the main type parameter (Type)
+- `K` — a key type
+- `V` — a value type
+- `R` — a return type
+- `E` — an error type
+
+For more complex generics, use descriptive names:
+
+```typescript
+type ApiResponse<Data = unknown, Error = string> = {
+  status: "success" | "error";
+  data?: Data;
+  error?: Error;
+};
+```
+
+## The rule of thumb
+
+**Start concrete. Generalize when you see a repeated pattern.** Do not pre-emptively make things generic "just in case." The right abstraction emerges from usage, not speculation.
+
+## What to carry forward
+
+- use generics when input/output relationships matter or when a pattern repeats
+- avoid generics when the type is always the same or only appears once
+- too many constraints suggest the abstraction is too broad
+- single-letter names are conventional; descriptive names are better for complex generics
+- start concrete, generalize when a pattern repeats
+
+The next module covers type operators and utility types — the tools that let you transform and compose types programmatically.

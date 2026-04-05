@@ -1,0 +1,126 @@
+---
+title: Narrowing with type guards
+description: Learn how TypeScript refines types using typeof, instanceof, equality checks, and truthiness.
+course: typescript
+status: draft
+---
+
+Narrowing is how TypeScript reduces a broad type to a more specific one based on runtime checks. After narrowing, the type system knows more about what a value actually is.
+
+## `typeof` narrowing
+
+`typeof` narrows primitive types at compile time:
+
+```typescript
+function process(value: string | number) {
+  if (typeof value === "string") {
+    // value is `string` here
+    console.log(value.toUpperCase());
+  } else {
+    // value is `number` here
+    console.log(value.toFixed(2));
+  }
+}
+```
+
+TypeScript tracks which branch corresponds to which type. Inside each branch, the type is narrowed.
+
+## Truthiness narrowing
+
+JavaScript's truthiness rules narrow types similarly:
+
+```typescript
+function greet(name: string | null) {
+  if (name) {
+    // name is `string` here — null is falsy
+    console.log(`Hello, ${name}`);
+  }
+}
+```
+
+This works for `null`, `undefined`, `""`, `0`, `false`, and `NaN` — all falsy values are eliminated in the truthy branch.
+
+## Equality narrowing
+
+Equality checks narrow union types:
+
+```typescript
+type Direction = "up" | "down" | "left" | "right";
+
+function move(dir: Direction) {
+  if (dir === "up") {
+    // dir is "up" here
+  } else if (dir === "down") {
+    // dir is "down" here
+  }
+  // dir is "left" | "right" here
+}
+```
+
+## The `in` operator
+
+The `in` operator checks whether a property exists on an object:
+
+```typescript
+interface Fish {
+  swim(): void;
+  name: string;
+}
+
+interface Bird {
+  fly(): void;
+  name: string;
+}
+
+function move(animal: Fish | Bird) {
+  if ("swim" in animal) {
+    // animal is Fish here
+    animal.swim();
+  } else {
+    // animal is Bird here
+    animal.fly();
+  }
+}
+```
+
+## `instanceof` narrowing
+
+`instanceof` narrows class types:
+
+```typescript
+function handleError(error: Error | string) {
+  if (error instanceof Error) {
+    // error is Error here
+    console.error(error.message);
+  } else {
+    // error is string here
+    console.error(error);
+  }
+}
+```
+
+## Control flow analysis
+
+TypeScript tracks narrowing across control flow, not just inside `if` blocks:
+
+```typescript
+function process(value: string | null) {
+  if (value === null) return;
+  
+  // value is `string` here — the early return eliminated null
+  console.log(value.length);
+}
+```
+
+Early returns are a common pattern. TypeScript understands that code after the return guard has a narrowed type.
+
+## What to carry forward
+
+- `typeof` narrows primitive types
+- truthiness eliminates falsy values from the union
+- equality checks narrow literal unions
+- `in` narrows by property existence
+- `instanceof` narrows class types
+- TypeScript tracks narrowing across early returns and control flow
+
+The next lesson covers discriminated unions, one of the most powerful patterns in TypeScript.

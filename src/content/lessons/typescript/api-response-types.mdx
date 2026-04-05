@@ -1,0 +1,94 @@
+---
+title: API response types
+description: Learn how to type API responses, handle partial data, and separate external contracts from internal models.
+course: typescript
+status: draft
+---
+
+API responses are one of the most common places where TypeScript meets reality. The data arrives at runtime, in an untyped format, and your code needs to understand it.
+
+## Typing the response shape
+
+Start by defining the shape the API returns:
+
+```typescript
+interface UserResponse {
+  id: string;
+  name: string;
+  email: string;
+  avatar_url: string;
+  created_at: string;
+}
+```
+
+Notice that dates arrive as strings. The type reflects the actual wire format, not the ideal internal representation.
+
+## Handling partial responses
+
+APIs often support field selection or return partial data:
+
+```typescript
+interface ListUserResponse {
+  id: string;
+  name: string;
+  // email, avatar_url, created_at may not be present in list view
+}
+```
+
+Use `Pick` to derive this from the full response:
+
+```typescript
+type ListUserResponse = Pick<UserResponse, "id" | "name">;
+```
+
+## Paginated responses
+
+Most APIs paginate. Model the wrapper separately from the data:
+
+```typescript
+interface Paginated<T> {
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+}
+
+type UserListResponse = Paginated<ListUserResponse>;
+```
+
+Generic pagination avoids repeating the pagination shape for every resource.
+
+## Error responses
+
+APIs return errors in various formats. Model them explicitly:
+
+```typescript
+interface ApiError {
+  error: {
+    code: string;
+    message: string;
+    details?: Record<string, unknown>;
+  };
+}
+
+type ApiResponse<T> = 
+  | { ok: true; data: T }
+  | { ok: false; error: ApiError };
+```
+
+This discriminated union makes error handling explicit at the type level.
+
+## The key principle
+
+**Type the wire format as it actually arrives, not as you wish it looked.** Transform the data into your internal model after it arrives. This separation between external (wire) and internal (domain) types is one of the most important design decisions in a typed codebase.
+
+## What to carry forward
+
+- type API responses in their actual wire format (strings for dates, snake_case, etc.)
+- use `Pick` and generics to derive partial and paginated variants
+- model error responses explicitly with discriminated unions
+- separate external (wire) types from internal (domain) types
+- transform data at the boundary, not throughout the codebase
+
+The next lesson covers config objects and how to type them well.

@@ -1,0 +1,83 @@
+---
+title: Literal types
+description: Learn how TypeScript can track exact values, not just broad types.
+course: typescript
+status: draft
+---
+
+A literal type represents one specific value, not a broad type like `string` or `number`.
+
+## Literal types in action
+
+When you declare a `const` variable, TypeScript narrows its type to the literal value:
+
+```typescript
+const method = "GET";
+// Type is "GET", not string
+
+const status = 200;
+// Type is 200, not number
+```
+
+This is because a `const` cannot be reassigned — the value is fixed.
+
+With `let`, TypeScript keeps the broader type because the value can change:
+
+```typescript
+let method = "GET";
+// Type is string — could be reassigned to something else
+```
+
+## Named literal unions
+
+Literal types become powerful when combined with unions:
+
+```typescript
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+type StatusCode = 200 | 201 | 301 | 400 | 401 | 404 | 500;
+type Theme = "light" | "dark";
+```
+
+These are more precise than enums or plain strings. The type system knows exactly which values are valid:
+
+```typescript
+function request(method: HttpMethod, url: string) {
+  // ...
+}
+
+request("GET", "/api/users");    // OK
+request("TRACE", "/api/users");  // Error — not in the union
+```
+
+## Literal types in object shapes
+
+Literal types make object properties precise:
+
+```typescript
+interface ApiResponse {
+  status: "success" | "error";
+  code: number;
+  data: unknown;
+}
+
+interface SuccessResponse extends ApiResponse {
+  status: "success";
+  data: User[];
+}
+
+interface ErrorResponse extends ApiResponse {
+  status: "error";
+  message: string;
+}
+```
+
+This pattern — using a literal property to distinguish between variants of a type — is the foundation of discriminated unions.
+
+## What to carry forward
+
+- `const` declarations produce literal types; `let` declarations produce broader types
+- literal unions (`"a" | "b" | "c"`) are more precise than `string`
+- literal types in object properties enable discriminated unions
+- literal types make invalid values impossible to pass
+
+The next lesson covers narrowing — how TypeScript refines types based on runtime checks.

@@ -1,0 +1,124 @@
+---
+title: "JS refresher: prototypes, classes, and this"
+description: A quick review of JavaScript's object model — prototypes, classes, methods, and the `this` keyword.
+course: typescript
+status: draft
+---
+
+This lesson is optional. It reviews JavaScript's object-oriented patterns that TypeScript builds on.
+
+## Prototypes
+
+Every JavaScript object has a prototype — another object it delegates to for missing properties. This is the basis of JavaScript's inheritance model.
+
+```javascript
+function Person(name) {
+  this.name = name;
+}
+
+Person.prototype.greet = function () {
+  console.log(`Hello, I'm ${this.name}`);
+};
+
+const p = new Person("Colin");
+p.greet();  // Finds greet on the prototype chain
+```
+
+In TypeScript, you rarely work with prototypes directly. Classes abstract this away. But understanding prototypes helps understand how `this` works and why methods on classes behave the way they do.
+
+## Classes
+
+ES6 classes are syntactic sugar over prototype-based inheritance:
+
+```javascript
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+
+  greet() {
+    console.log(`Hello, I'm ${this.name}`);
+  }
+}
+```
+
+TypeScript adds type annotations, access modifiers, and `implements`:
+
+```typescript
+class Person {
+  constructor(public name: string) {}
+
+  greet(): void {
+    console.log(`Hello, I'm ${this.name}`);
+  }
+}
+```
+
+## `this` in JavaScript
+
+`this` is determined by **how a function is called**, not where it is defined:
+
+```javascript
+const user = {
+  name: "Colin",
+  greet() {
+    console.log(`Hello, I'm ${this.name}`);
+  },
+};
+
+user.greet();  // "Hello, I'm Colin" — this is the user object
+
+const fn = user.greet;
+fn();  // undefined (or crash in strict mode) — this is global/undefined
+```
+
+Arrow functions capture `this` lexically from their surrounding scope:
+
+```javascript
+class Timer {
+  count = 0;
+
+  start() {
+    setInterval(() => {
+      this.count++;  // this is the Timer instance — arrow captures lexically
+    }, 1000);
+  }
+}
+```
+
+In TypeScript, `noImplicitThis` (enabled by `strict`) catches cases where `this` would be `undefined`.
+
+## Inheritance basics
+
+JavaScript classes extend other classes with `extends` and `super`:
+
+```javascript
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+
+  speak() {
+    console.log(`${this.name} makes a sound`);
+  }
+}
+
+class Dog extends Animal {
+  speak() {
+    console.log(`${this.name} barks`);
+  }
+}
+```
+
+TypeScript requires `super()` to be called before accessing `this` in a subclass constructor.
+
+## What to carry forward
+
+- prototypes are JavaScript's underlying inheritance mechanism; classes abstract them
+- `this` is determined by how a function is called, not where it is defined
+- arrow functions capture `this` lexically
+- TypeScript's `noImplicitThis` catches unsafe `this` usage
+- `extends` and `super` handle subclass inheritance
+- in TypeScript, you work with classes and interfaces — prototypes are rarely visible
+
+The next module covers modeling real systems — the practical application of everything so far.
