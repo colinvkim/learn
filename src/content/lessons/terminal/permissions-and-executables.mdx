@@ -33,7 +33,7 @@ ls -l script.sh
 Output:
 
 ```text
--rwxr-xr--  1 colin  staff  1234  Jan 15 10:30  script.sh
+-rwxr-xr--  1 alex  staff  1234  Jan 15 10:30  script.sh
 ```
 
 Break this down:
@@ -48,7 +48,7 @@ Break this down:
 file type: - = regular file, d = directory
 ```
 
-The number `1` is the link count. `colin` is the owner. `staff` is the group. `1234` is the file size. The rest is the date and name.
+The number `1` is the link count. `alex` is the owner. `staff` is the group. `1234` is the file size. The rest is the date and name.
 
 ## Changing permissions — `chmod`
 
@@ -76,7 +76,7 @@ So `chmod 755` means: owner gets `rwx`, group gets `r-x`, other gets `r-x`.
 
 ```bash
 sudo chown root:wheel file.txt    # change owner to root, group to wheel
-sudo chown colin file.txt         # change owner to colin
+sudo chown jane file.txt         # change owner to jane
 ```
 
 `chown` usually requires `sudo` because only the superuser can change file ownership.
@@ -129,7 +129,11 @@ Output:
 Each directory is separated by `:`. The shell checks them in order. The first match wins.
 
 <Callout title="PowerShell equivalent">
-  PowerShell uses `$env:PATH` (semicolon-separated on Windows). Use `Get-Command` to find executables. Permission models differ significantly — Windows uses ACLs rather than Unix-style rwx. For most everyday work, PowerShell scripts require an execution policy change: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`.
+  PowerShell uses `$env:PATH` (semicolon-separated on Windows). Use
+  `Get-Command` to find executables. Permission models differ significantly —
+  Windows uses ACLs rather than Unix-style rwx. For most everyday work,
+  PowerShell scripts require an execution policy change: `Set-ExecutionPolicy
+  -ExecutionPolicy RemoteSigned -Scope CurrentUser`.
 </Callout>
 
 <Callout title="Command Prompt equivalent">
@@ -148,7 +152,9 @@ sudo rm /protected/file.txt    # delete a protected file
 Use `sudo` only when necessary. Running everyday commands with `sudo` is risky.
 
 <Callout title="Windows note">
-  Windows does not have `sudo` in Command Prompt or PowerShell in the same way. To run as administrator, open the terminal "as Administrator." PowerShell 7+ includes `sudo` on recent Windows builds when enabled.
+  Windows does not have `sudo` in Command Prompt or PowerShell in the same way.
+  To run as administrator, open the terminal "as Administrator." PowerShell 7+
+  includes `sudo` on recent Windows builds when enabled.
 </Callout>
 
 ## Directories and permissions

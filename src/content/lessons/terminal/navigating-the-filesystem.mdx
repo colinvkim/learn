@@ -22,11 +22,12 @@ pwd
 `pwd` prints the **present working directory** — the full path to where you currently are.
 
 ```bash
-/Users/colin/Programming/learn
+/Users/alex/Downloads/chess-game
 ```
 
 <Callout title="PowerShell equivalent">
-  Use `Get-Location` or the alias `pwd` (which PowerShell maps to `Get-Location`). The output looks the same.
+  Use `Get-Location` or the alias `pwd` (which PowerShell maps to
+  `Get-Location`). The output looks the same.
 </Callout>
 
 <Callout title="Command Prompt equivalent">
@@ -54,7 +55,8 @@ Common flags:
 - `-h` — human-readable file sizes (used with `-l`)
 
 <Callout title="PowerShell equivalent">
-  Use `Get-ChildItem` or the alias `ls` (PowerShell maps `ls` to `Get-ChildItem`). Flags differ: `Get-ChildItem -Force` shows hidden items.
+  Use `Get-ChildItem` or the alias `ls` (PowerShell maps `ls` to
+  `Get-ChildItem`). Flags differ: `Get-ChildItem -Force` shows hidden items.
 </Callout>
 
 <Callout title="Command Prompt equivalent">
@@ -78,7 +80,9 @@ cd -             # go back to the previous directory
 ```
 
 <Callout title="PowerShell and Command Prompt equivalents">
-  Both PowerShell and Command Prompt also use `cd`. The behavior is the same. `cd ..` goes up one level. `cd` alone prints the current directory in Command Prompt but does nothing in PowerShell (use `Get-Location` instead).
+  Both PowerShell and Command Prompt also use `cd`. The behavior is the same.
+  `cd ..` goes up one level. `cd` alone prints the current directory in Command
+  Prompt but does nothing in PowerShell (use `Get-Location` instead).
 </Callout>
 
 ## The root directory
@@ -88,8 +92,8 @@ On macOS and Linux, the top of the filesystem is `/`, called the **root director
 ```text
 /
 /Users/
-/Users/colin/
-/Users/colin/Programming/
+/Users/ezhang/
+/Users/ezhang/Library/
 ```
 
 On Windows, each drive has its own root. The root of the C drive is `C:\`.
@@ -110,8 +114,8 @@ cd ~/Desktop     # go to Desktop
 An **absolute path** starts from the root. It begins with `/` on Unix or a drive letter on Windows. It means the same thing no matter where you are.
 
 ```text
-/Users/colin/Programming/learn/src
-C:\Users\colin\Programming\learn\src
+/Users/jgreen7/learn/project/src
+C:\Users\emily\Programming\learn\src
 ```
 
 A **relative path** is interpreted from your current directory. It does not start with `/` or a drive letter.
@@ -120,7 +124,7 @@ A **relative path** is interpreted from your current directory. It does not star
 src/content/lessons
 ```
 
-If you are in `/Users/colin/Programming/learn`, then `src/content/lessons` resolves to `/Users/colin/Programming/learn/src/content/lessons`.
+If you are in `/Users/jgreen7/learn/project`, then `src/content/lessons` resolves to `/Users/jgreen7/learn/project/src/content/lessons`.
 
 ## `.` and `..`
 
