@@ -1,7 +1,7 @@
 ---
 title: TypeScript
 description: Learn how to model data, design APIs, and write more reliable code with TypeScript — from core type syntax to real-world application patterns.
-status: draft
+status: published
 sortOrder: 10
 topics:
   - TypeScript
