@@ -81,9 +81,8 @@ const canonical = Astro.site
         const toggleTheme = (event) => {
           const nextTheme = root.classList.contains("dark") ? "light" : "dark";
           const update = () => applyTheme(nextTheme);
-          const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-          if (typeof document.startViewTransition === "function" && !prefersReducedMotion) {
+          if (typeof document.startViewTransition === "function") {
             // Capture click position for circular reveal origin
             const x = event?.clientX ?? window.innerWidth / 2;
             const y = event?.clientY ?? window.innerHeight / 2;
@@ -127,12 +126,6 @@ const canonical = Astro.site
     </script>
   </head>
   <body class="min-h-screen bg-canvas text-ink">
-    <a
-      href="#main-content"
-      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-30 focus:rounded-lg focus:border focus:border-accent/30 focus:bg-panel focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-ink focus:shadow-soft focus:outline-none"
-    >
-      Skip to main content
-    </a>
     {
       showHeader && (
         <header class="sticky top-0 z-20 h-16 border-b border-line/80 bg-canvas/86 backdrop-blur-md">

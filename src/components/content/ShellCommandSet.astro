@@ -167,36 +167,6 @@ const groupId = `shell-set-${crypto.randomUUID()}`;
                 window.localStorage?.setItem(storageKey, shell);
               } catch {}
             });
-
-            tab.addEventListener("keydown", (event) => {
-              const currentIndex = tabs.indexOf(tab);
-              let nextIndex = -1;
-
-              if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-                event.preventDefault();
-                nextIndex = (currentIndex + 1) % tabs.length;
-              } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-                event.preventDefault();
-                nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-              } else if (event.key === "Home") {
-                event.preventDefault();
-                nextIndex = 0;
-              } else if (event.key === "End") {
-                event.preventDefault();
-                nextIndex = tabs.length - 1;
-              }
-
-              if (nextIndex >= 0) {
-                const nextTab = tabs[nextIndex];
-                if (nextTab instanceof HTMLButtonElement) {
-                  nextTab.focus();
-                  activateShell(root, nextTab.dataset.shellTab);
-                  try {
-                    window.localStorage?.setItem(storageKey, nextTab.dataset.shellTab);
-                  } catch {}
-                }
-              }
-            });
           });
         });
       };

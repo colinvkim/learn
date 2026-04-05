@@ -36,7 +36,6 @@ const { class: className } = Astro.props;
   ]}
 >
   <slot />
-  <p class="sr-only" data-copy-status aria-live="polite"></p>
 </article>
 
 <template data-copy-button-template>
@@ -62,10 +61,6 @@ const { class: className } = Astro.props;
       const setCopiedState = (button, copied) => {
         button.querySelector("[data-copy-icon]")?.classList.toggle("hidden", copied);
         button.querySelector("[data-copy-check]")?.classList.toggle("hidden", !copied);
-        const status = button.closest("[data-content-article]")?.querySelector("[data-copy-status]");
-        if (status instanceof HTMLElement) {
-          status.textContent = copied ? "Code copied" : "Copy failed";
-        }
       };
 
       const attachButtons = () => {
@@ -105,10 +100,6 @@ const { class: className } = Astro.props;
             button.setAttribute("aria-label", "Copy code to clipboard");
             button.setAttribute("title", "Copy code");
             setCopiedState(button, false);
-            const status = button.closest("[data-content-article]")?.querySelector("[data-copy-status]");
-            if (status instanceof HTMLElement) {
-              status.textContent = "";
-            }
           }, 1500);
         } catch {
           button.setAttribute("aria-label", "Copy failed");
@@ -117,10 +108,6 @@ const { class: className } = Astro.props;
             button.setAttribute("aria-label", "Copy code to clipboard");
             button.setAttribute("title", "Copy code");
             setCopiedState(button, false);
-            const status = button.closest("[data-content-article]")?.querySelector("[data-copy-status]");
-            if (status instanceof HTMLElement) {
-              status.textContent = "";
-            }
           }, 1500);
         }
       });
