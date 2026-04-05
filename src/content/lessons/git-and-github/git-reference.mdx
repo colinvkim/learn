@@ -42,6 +42,30 @@ git commit -m "feat: add login form"
 git commit -m "fix: correct button disabled state"
 ```
 
+## Sign a commit
+
+```bash
+git commit -S -m "Signed commit message"
+```
+
+`-S` signs the commit cryptographically. For this to work, Git must be configured with a signing key. See the signing lesson for setup.
+
+### Enable automatic signing
+
+```bash
+git config --global commit.gpgSign true
+```
+
+Once enabled, every commit is signed without needing `-S` explicitly.
+
+### Verify a signature locally
+
+```bash
+git log --show-signature -1
+```
+
+This shows the signature details for the most recent commit.
+
 ## Inspect changed content
 
 ```bash
@@ -157,6 +181,16 @@ git remote add origin https://github.com/user/repo.git
 ```
 
 `git remote` manages references to remote repositories. The name `origin` is the default name for the remote you cloned from.
+
+### Using GitHub CLI for auth and setup
+
+```bash
+gh auth login          # authenticate interactively (handles SSH key setup)
+gh repo create         # create a GitHub remote and push in one step
+gh auth status         # check current authentication status
+```
+
+GitHub CLI (`gh`) simplifies authentication, SSH key setup, and remote configuration compared to manual steps. See the connecting lesson for details.
 
 <Note title="Git works locally">
   <p>All of these commands work in a local repository. GitHub comes later, when you start sharing, syncing, and collaborating through a remote host.</p>

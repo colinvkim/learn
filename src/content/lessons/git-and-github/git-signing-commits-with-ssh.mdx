@@ -1,0 +1,123 @@
+---
+title: "Git: signing commits with SSH"
+description: Learn how to cryptographically sign your commits so GitHub can verify they actually came from you, using SSH keys you may already have.
+course: git-and-github
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+
+By default, anyone can make commits that look like they came from you — Git only records the name and email you configure. Commit signing adds cryptographic proof that the commit actually came from you.
+
+On GitHub, signed commits display a **"Verified"** badge next to them. This matters because it proves the commit was not tampered with and genuinely came from someone who holds the signing key.
+
+## SSH vs GPG signing
+
+Git supports two signing methods:
+
+- **SSH keys** — simpler to set up, can reuse existing authentication keys
+- **GPG keys** — more powerful (supports expiration and revocation) but harder to configure
+
+SSH signing is the easier starting point for most developers. This lesson covers SSH signing.
+
+## Generate a signing SSH key
+
+If you already have an SSH key you use for authentication, you can reuse it for signing. But creating a dedicated signing key is also fine:
+
+```bash
+ssh-keygen -t ed25519 -C "you@example.com"
+```
+
+This generates a key pair in your `~/.ssh/` directory:
+
+- `id_ed25519` — your private key (never share this)
+- `id_ed25519.pub` — your public key (you will upload this)
+
+## Tell Git to use SSH for signing
+
+Configure Git to use SSH signatures instead of GPG:
+
+```bash
+git config --global gpg.format ssh
+```
+
+Then point Git at your public key:
+
+```bash
+git config --global user.signingkey ~/.ssh/id_ed25519.pub
+```
+
+This tells Git which key to use when signing commits.
+
+## Enable automatic signing (optional)
+
+By default, you must explicitly sign each commit with `-S`. If you want every commit signed automatically:
+
+```bash
+git config --global commit.gpgSign true
+```
+
+If you prefer to sign selectively, skip this step and use `-S` when needed.
+
+## Add your SSH key to GitHub as a signing key
+
+For GitHub to show the "Verified" badge, you need to add your public key to your GitHub account.
+
+1. Copy your public key:
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+2. Go to **GitHub Settings > SSH and GPG keys > New SSH key**.
+3. Paste the key and set the key type to **"Signing Key"** (not "Authentication Key").
+
+You can upload the same SSH key for both authentication and signing — they serve different purposes.
+
+## Sign a commit
+
+If you have not enabled automatic signing, sign a commit explicitly with `-S`:
+
+```bash
+git commit -S -m "Add login form"
+```
+
+This creates a signed commit. You can verify the signature locally:
+
+```bash
+git log --show-signature -1
+```
+
+This shows the signature details for the most recent commit.
+
+## What happens on GitHub
+
+After you push a signed commit to GitHub:
+
+```bash
+git push
+```
+
+GitHub verifies the signature against the SSH keys registered to your account and displays a **"Verified"** badge:
+
+```
+abc1234 (Verified) Add login form
+```
+
+If the key is not registered on GitHub, the commit shows **"Unverified"** — the signature is valid but GitHub cannot confirm who owns the key.
+
+<Tip title="Verified status is permanent">
+  <p>Once GitHub shows a "Verified" badge for a commit, it stays verified in the repository even if you later delete or rotate the signing key. The badge proves the commit was signed at the time it was made.</p>
+</Tip>
+
+## What to carry forward
+
+- commit signing proves commits actually came from you and were not tampered with
+- SSH signing is easier to set up than GPG for most developers
+- configure Git with `gpg.format ssh` and `user.signingkey` pointing to your public key
+- add your public key to GitHub as a **"Signing Key"** for the "Verified" badge
+- sign commits with `git commit -S` or enable automatic signing with `commit.gpgSign true`
+- GitHub's web-based "Rebase and Merge" creates new unsigned commits — sign locally for full coverage
+
+Signing commits is not required to use Git well, but it is a good habit for projects where you want a verifiable history of who made what changes.

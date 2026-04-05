@@ -7,6 +7,7 @@ status: published
 
 import Note from "../../../components/content/Note.astro";
 import Steps from "../../../components/content/Steps.astro";
+import Tip from "../../../components/content/Tip.astro";
 
 After creating commits locally, the next step is connecting the repository to GitHub.
 
@@ -49,6 +50,59 @@ git remote add origin git@github.com:OWNER/REPO.git
 ```
 
 SSH is the recommended method for regular use because it avoids repeated credential prompts.
+
+## An easier way: GitHub CLI
+
+The GitHub CLI (`gh`) is an official command-line tool that handles authentication, SSH key setup, and Git configuration in a single interactive command.
+
+If you prefer not to manage SSH keys and Git remotes manually, `gh` does most of it for you.
+
+### Installing GitHub CLI
+
+On macOS, install with Homebrew:
+
+```bash
+brew install gh
+```
+
+On other platforms, see the [GitHub CLI installation guide](https://github.com/cli/cli#installation).
+
+### Authenticating with `gh auth login`
+
+Run:
+
+```bash
+gh auth login
+```
+
+This starts an interactive flow that:
+
+1. Asks you to choose a protocol (**SSH** or **HTTPS**)
+2. If you choose SSH, it detects existing SSH keys and offers to generate and upload a new one if none exist
+3. Opens your browser to authorize your GitHub account
+4. Configures Git to use the chosen protocol automatically
+
+After `gh auth login` completes:
+
+- Your GitHub account is authenticated in the terminal
+- Your SSH key (if you chose SSH) is generated, uploaded, and configured
+- Git is configured to use that key for pushes and pulls
+
+<Tip title="gh auth login replaces several manual steps">
+  <p>Without GitHub CLI, setting up Git auth involves generating an SSH key, adding it to GitHub, and configuring the remote URL manually. <code>gh auth login</code> does all of this interactively. If you have already set up SSH manually, you can skip <code>gh</code> — but it is useful for managing multiple accounts and checking your authentication status with <code>gh auth status</code>.</p>
+</Tip>
+
+### Connecting a repository with `gh repo create`
+
+If you have a local repository and want to create the GitHub remote and push in one step:
+
+```bash
+gh repo create
+```
+
+This interactively asks for the repository name, visibility, and whether to push an existing local repository. It creates the remote, pushes your commits, and even offers to open the repository in your browser.
+
+If you prefer the manual approach, the rest of this lesson covers how to connect and push without `gh`.
 
 ## `git push -u origin <branch>` sends the local branch to GitHub
 
