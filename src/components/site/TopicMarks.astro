@@ -39,7 +39,7 @@ const renderedTopics = visibleTopics.map((topic, index) => ({
           <div
             class:list={[
               "relative inline-flex items-center justify-center rounded-2xl border font-semibold uppercase tracking-[0.08em]",
-              "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
+              "border-line bg-panel text-muted dark:text-ink",
               size === "card" ? "h-14 w-14 p-2 shadow-soft ring-1 ring-white/60 dark:ring-white/6" : "h-8 w-8 p-1.5",
             ]}
             style={size === "card" ? `z-index:${zIndex}` : undefined}
