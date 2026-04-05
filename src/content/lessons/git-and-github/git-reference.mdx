@@ -185,12 +185,12 @@ git remote add origin https://github.com/user/repo.git
 ### Using GitHub CLI for auth and setup
 
 ```bash
-gh auth login          # authenticate interactively (handles SSH key setup)
-gh repo create         # create a GitHub remote and push in one step
+gh auth login          # authenticate interactively, handles SSH key setup
+gh repo create         # create a GitHub remote and push existing local commits
 gh auth status         # check current authentication status
 ```
 
-GitHub CLI (`gh`) simplifies authentication, SSH key setup, and remote configuration compared to manual steps. See the connecting lesson for details.
+GitHub CLI (`gh`) simplifies authentication, SSH key setup, and remote configuration in one interactive command. See the [connecting lesson](/courses/git-and-github/github-connecting-a-local-repository-to-github) for details.
 
 <Note title="Git works locally">
   <p>All of these commands work in a local repository. GitHub comes later, when you start sharing, syncing, and collaborating through a remote host.</p>

@@ -11,16 +11,19 @@ import Tip from "../../../components/content/Tip.astro";
 
 After creating commits locally, the next step is connecting the repository to GitHub.
 
+## Two paths to connecting
+
+You can connect a local repository to GitHub in two ways.
+
+The **easiest path** uses the GitHub CLI (`gh`), which handles authentication, SSH key setup, and remote configuration in a single interactive command. If you prefer an all-in-one tool, jump to the [GitHub CLI section](#an-easier-way-github-cli) below.
+
+The **manual path** uses plain Git commands and gives you full control over each step. That path comes first.
+
 ## Start by creating the repository on GitHub
 
-In the GitHub web UI, create a new repository.
+Create a new repository through the GitHub web UI. This gives your local repository a remote destination to push to.
 
-That gives GitHub a remote destination for your local repository.
-
-At this stage, you usually want:
-
-- the repository name
-- the remote URL GitHub provides
+Note the repository name and the remote URL GitHub provides — you will need them in a moment.
 
 ## `git remote add origin` connects the local repository to the remote
 
@@ -30,16 +33,16 @@ To add the GitHub repository as your main remote:
 git remote add origin https://github.com/OWNER/REPO.git
 ```
 
-This does not upload your commits yet. It only records the remote connection in the local repository configuration.
+This does not upload your commits yet. It only records the remote connection in your local Git configuration.
 
 ### SSH vs HTTPS URLs
 
 GitHub supports two authentication methods:
 
-- **HTTPS** (`https://github.com/OWNER/REPO.git`) — works everywhere but may require entering credentials each time unless you use a credential helper
-- **SSH** (`git@github.com:OWNER/REPO.git`) — uses SSH keys for authentication, recommended for regular contributors
+- **HTTPS** (`https://github.com/OWNER/REPO.git`) — works everywhere but may require entering credentials each time unless you have a credential helper configured
+- **SSH** (`git@github.com:OWNER/REPO.git`) — uses SSH keys for authentication and is recommended for regular contributors
 
-To set up SSH authentication:
+To set up SSH authentication manually:
 
 1. Generate an SSH key if you do not have one: `ssh-keygen -t ed25519 -C "you@example.com"`
 2. Add the public key to your GitHub account under Settings > SSH and GPG keys
@@ -53,9 +56,7 @@ SSH is the recommended method for regular use because it avoids repeated credent
 
 ## An easier way: GitHub CLI
 
-The GitHub CLI (`gh`) is an official command-line tool that handles authentication, SSH key setup, and Git configuration in a single interactive command.
-
-If you prefer not to manage SSH keys and Git remotes manually, `gh` does most of it for you.
+The GitHub CLI (`gh`) is an official command-line tool that handles authentication, SSH key setup, and remote configuration in a single interactive command. If you prefer not to manage SSH keys and Git remotes manually, `gh` does most of it for you.
 
 ### Installing GitHub CLI
 
@@ -75,21 +76,12 @@ Run:
 gh auth login
 ```
 
-This starts an interactive flow that:
+This starts an interactive flow that asks you to choose a protocol — **SSH** or **HTTPS**. If you choose SSH, it detects any existing SSH keys and offers to generate and upload a new one if none exist. It then opens your browser to authorize your GitHub account and configures Git to use the chosen protocol automatically.
 
-1. Asks you to choose a protocol (**SSH** or **HTTPS**)
-2. If you choose SSH, it detects existing SSH keys and offers to generate and upload a new one if none exist
-3. Opens your browser to authorize your GitHub account
-4. Configures Git to use the chosen protocol automatically
-
-After `gh auth login` completes:
-
-- Your GitHub account is authenticated in the terminal
-- Your SSH key (if you chose SSH) is generated, uploaded, and configured
-- Git is configured to use that key for pushes and pulls
+After `gh auth login` completes, your account is authenticated, your SSH key is configured, and Git is ready for pushes and pulls — all from one command.
 
 <Tip title="gh auth login replaces several manual steps">
-  <p>Without GitHub CLI, setting up Git auth involves generating an SSH key, adding it to GitHub, and configuring the remote URL manually. <code>gh auth login</code> does all of this interactively. If you have already set up SSH manually, you can skip <code>gh</code> — but it is useful for managing multiple accounts and checking your authentication status with <code>gh auth status</code>.</p>
+  <p>Without GitHub CLI, setting up Git authentication involves generating an SSH key, adding it to GitHub, and configuring the remote URL manually. <code>gh auth login</code> does all of this interactively. If you have already set up SSH manually, you can skip <code>gh</code> — but it is still useful for managing multiple accounts and checking your authentication status with <code>gh auth status</code>.</p>
 </Tip>
 
 ### Connecting a repository with `gh repo create`

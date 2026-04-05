@@ -31,15 +31,15 @@ It deliberately avoids history-rewriting steps such as rebasing or amending push
 
 ### Optional: signing commits
 
-If you have set up commit signing (covered in the signing lesson), add `-S` to sign commits:
+If you have configured commit signing (covered in the [signing lesson](/courses/git-and-github/git-signing-commits-with-ssh)), add `-S` to sign each commit:
 
 ```bash
 git commit -S -m "Add login form"
 ```
 
-Or enable automatic signing with `git config --global commit.gpgSign true` so every commit is signed without the extra flag.
+Or enable automatic signing once with `git config --global commit.gpgSign true` so every commit is signed without the extra flag.
 
-Signed commits display a **"Verified"** badge on GitHub, proving they came from you and were not tampered with. This is useful for projects where commit authenticity matters, but it is not required for everyday Git use.
+Signed commits display a **"Verified"** badge on GitHub. This is useful for projects where commit authenticity matters, but it is not required for everyday Git use.
 
 ## Why this workflow works well
 

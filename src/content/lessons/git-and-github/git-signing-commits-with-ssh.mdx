@@ -8,9 +8,9 @@ status: published
 import Note from "../../../components/content/Note.astro";
 import Tip from "../../../components/content/Tip.astro";
 
-By default, anyone can make commits that look like they came from you — Git only records the name and email you configure. Commit signing adds cryptographic proof that the commit actually came from you.
+By default, anyone can make commits that look like they came from you — Git only records the name and email you configure. Commit signing adds cryptographic proof that a commit genuinely came from someone who holds the signing key.
 
-On GitHub, signed commits display a **"Verified"** badge next to them. This matters because it proves the commit was not tampered with and genuinely came from someone who holds the signing key.
+On GitHub, signed commits display a **"Verified"** badge. This proves the commit was not tampered with and came from an authenticated contributor.
 
 ## SSH vs GPG signing
 
@@ -23,7 +23,7 @@ SSH signing is the easier starting point for most developers. This lesson covers
 
 ## Generate a signing SSH key
 
-If you already have an SSH key you use for authentication, you can reuse it for signing. But creating a dedicated signing key is also fine:
+If you already have an SSH key you use for authentication, you can reuse it for signing. Creating a dedicated signing key works too:
 
 ```bash
 ssh-keygen -t ed25519 -C "you@example.com"
@@ -32,7 +32,7 @@ ssh-keygen -t ed25519 -C "you@example.com"
 This generates a key pair in your `~/.ssh/` directory:
 
 - `id_ed25519` — your private key (never share this)
-- `id_ed25519.pub` — your public key (you will upload this)
+- `id_ed25519.pub` — your public key (you will upload this to GitHub)
 
 ## Tell Git to use SSH for signing
 
@@ -62,7 +62,7 @@ If you prefer to sign selectively, skip this step and use `-S` when needed.
 
 ## Add your SSH key to GitHub as a signing key
 
-For GitHub to show the "Verified" badge, you need to add your public key to your GitHub account.
+For GitHub to display the "Verified" badge, it needs to know your public key. Upload it as a signing key:
 
 1. Copy your public key:
 
@@ -73,42 +73,42 @@ cat ~/.ssh/id_ed25519.pub
 2. Go to **GitHub Settings > SSH and GPG keys > New SSH key**.
 3. Paste the key and set the key type to **"Signing Key"** (not "Authentication Key").
 
-You can upload the same SSH key for both authentication and signing — they serve different purposes.
+You can upload the same SSH key for both authentication and signing — they serve different purposes, and GitHub has no limit on signing keys per account.
 
 ## Sign a commit
 
-If you have not enabled automatic signing, sign a commit explicitly with `-S`:
+If you have not enabled automatic signing, sign a commit with `-S`:
 
 ```bash
 git commit -S -m "Add login form"
 ```
 
-This creates a signed commit. You can verify the signature locally:
+To verify the signature locally:
 
 ```bash
 git log --show-signature -1
 ```
 
-This shows the signature details for the most recent commit.
+This prints the signature details for the most recent commit.
 
 ## What happens on GitHub
 
-After you push a signed commit to GitHub:
+Push your signed commit to GitHub as usual:
 
 ```bash
 git push
 ```
 
-GitHub verifies the signature against the SSH keys registered to your account and displays a **"Verified"** badge:
+GitHub verifies the signature against the SSH keys registered to your account and displays a **"Verified"** badge next to the commit in the web interface:
 
 ```
 abc1234 (Verified) Add login form
 ```
 
-If the key is not registered on GitHub, the commit shows **"Unverified"** — the signature is valid but GitHub cannot confirm who owns the key.
+If your key is not registered on GitHub, the commit shows **"Unverified"** — the signature is cryptographically valid, but GitHub cannot confirm who owns the key.
 
 <Tip title="Verified status is permanent">
-  <p>Once GitHub shows a "Verified" badge for a commit, it stays verified in the repository even if you later delete or rotate the signing key. The badge proves the commit was signed at the time it was made.</p>
+  <p>Once GitHub shows a "Verified" badge for a commit, it stays verified even if you later delete or rotate the signing key. The badge proves the commit was signed at the time it was made.</p>
 </Tip>
 
 ## What to carry forward
