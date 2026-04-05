@@ -18,11 +18,11 @@ const { items } = Astro.props;
         <>
           <li>
             {item.href ? (
-              <a class="hover:text-accent focus-visible:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 rounded" href={item.href}>
+              <a class="hover:text-accent focus-visible:text-accent focus-ring rounded" href={item.href}>
                 {item.label}
               </a>
             ) : (
-              <span class="text-ink">{item.label}</span>
+              <span class="text-ink" aria-current="page">{item.label}</span>
             )}
           </li>
           {index < items.length - 1 && <li aria-hidden="true" class="text-muted/50">/</li>}

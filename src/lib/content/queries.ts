@@ -79,31 +79,39 @@ function groupLessonsByCourse(lessons: LessonEntry[]) {
   return lessonsByCourse;
 }
 
+let cachedContent: Promise<PublishedContent> | null = null;
+
 async function getPublishedContent(): Promise<PublishedContent> {
-  const [courses, lessons] = await Promise.all([
-    getCollection("courses", ({ data }) => data.status === "published"),
-    getCollection("lessons", ({ data }) => data.status === "published"),
-  ]);
+  if (!cachedContent) {
+    cachedContent = (async () => {
+      const [courses, lessons] = await Promise.all([
+        getCollection("courses", ({ data }) => data.status === "published"),
+        getCollection("lessons", ({ data }) => data.status === "published"),
+      ]);
 
-  courses.sort(compareCourses);
-  lessons.sort(compareLessons);
+      courses.sort(compareCourses);
+      lessons.sort(compareLessons);
 
-  for (const lesson of lessons) {
-    const { courseSlug } = parseLessonId(lesson);
+      for (const lesson of lessons) {
+        const { courseSlug } = parseLessonId(lesson);
 
-    if (courseSlug !== lesson.data.course.id) {
-      throw new Error(
-        `Lesson "${lesson.id}" must be stored inside a directory matching its course reference "${lesson.data.course.id}".`,
-      );
-    }
+        if (courseSlug !== lesson.data.course.id) {
+          throw new Error(
+            `Lesson "${lesson.id}" must be stored inside a directory matching its course reference "${lesson.data.course.id}".`,
+          );
+        }
+      }
+
+      return {
+        courses,
+        lessons,
+        courseById: new Map(courses.map((course) => [course.id, course])),
+        lessonsByCourse: groupLessonsByCourse(lessons),
+      };
+    })();
   }
 
-  return {
-    courses,
-    lessons,
-    courseById: new Map(courses.map((course) => [course.id, course])),
-    lessonsByCourse: groupLessonsByCourse(lessons),
-  };
+  return cachedContent;
 }
 
 export function getCourseHref(courseId: string) {

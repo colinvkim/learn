@@ -15,6 +15,10 @@ const { topics, size = "card" } = Astro.props;
 const safeTopics = Array.isArray(topics) ? topics : [];
 const visibleTopics = safeTopics.slice(0, 3);
 
+// Max z-index for the first topic mark, decreasing by 1 for each subsequent mark.
+// Keep in sync with visibleTopics.slice(0, 3) — if that changes, update 10 accordingly.
+const STARTING_Z_INDEX = 10;
+
 const iconMap = {
   git: GitIcon,
   github: GitHubIcon,
@@ -27,7 +31,7 @@ const iconMap = {
 const renderedTopics = visibleTopics.map((topic, index) => ({
   topic,
   Icon: iconMap[topic.toLowerCase() as keyof typeof iconMap],
-  zIndex: 10 - index,
+  zIndex: STARTING_Z_INDEX - index,
 }));
 ---
 
