@@ -1,0 +1,133 @@
+---
+title: "npm and pnpm: global tools vs local tools"
+description: Learn when to install packages globally and when to keep them local to a project.
+course: npm-and-pnpm
+order: 6.5
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+Most packages should be installed locally in a project. Some tools, however, are meant to be used across all projects on your system. Understanding the difference prevents confusion and keeps your projects reliable.
+
+## Local installs are the default
+
+When you run `npm install react` or `pnpm add react` in a project, the package installs locally. It:
+
+- Goes in that project's `node_modules`
+- Is recorded in that project's `package.json`
+- Is available only within that project
+
+This is what you want for nearly all dependencies. It keeps each project isolated and reproducible.
+
+Run this in a project directory:
+
+```bash
+npm install react
+```
+
+Or with pnpm:
+
+```bash
+pnpm add react
+```
+
+Now `react` is available to this project, but not to other projects.
+
+## When to use global installs
+
+Global packages are installed once for your entire system. They are available in your terminal from any directory.
+
+Install a package globally:
+
+```bash
+npm install --global create-vite
+```
+
+Or with pnpm:
+
+```bash
+pnpm add --global create-vite
+```
+
+Common global tools:
+
+- **Project scaffolding**: `create-vite`, `create-react-app`, `create-next-app`
+- **CLI utilities**: `vercel`, `netlify-cli`, `heroku`
+- **Development tools**: `typescript` (for tsc CLI), `eslint` (for global linting)
+- **Package managers**: `corepack` (for managing pnpm versions)
+
+The pattern is: global tools create, manage, or operate on projects, but are not used *within* project code.
+
+<Warning title="Avoid global project dependencies">
+<p>Installing regular dependencies (like React, Express, or utility libraries) globally causes problems:</p>
+<ul>
+<li>Projects aren't reproducible — other developers might not have the same global packages</li>
+<li>Version conflicts — different projects might need different versions</li>
+<li>Unclear requirements — your project's actual dependencies aren't tracked</li>
+</ul>
+</Warning>
+
+## Checking globally installed packages
+
+To see what packages are installed globally:
+
+```bash
+npm list --global --depth=0
+```
+
+pnpm:
+
+```bash
+pnpm list --global
+```
+
+This shows which global packages you have and their versions.
+
+## Removing global packages
+
+To remove a global package:
+
+```bash
+npm uninstall --global <package>
+```
+
+pnpm:
+
+```bash
+pnpm remove --global <package>
+```
+
+## Corepack and pnpm
+
+Corepack is a tool that ships with Node.js to manage package manager versions. It is meant to be installed globally:
+
+```bash
+npm install --global corepack@latest
+```
+
+Then enable pnpm:
+
+```bash
+corepack enable pnpm
+```
+
+This sets up pnpm as a global command. To pin a pnpm version in your project:
+
+```bash
+corepack use pnpm@latest-10
+```
+
+This adds `"packageManager": "pnpm@10.x.x"` to your `package.json`, which helps your team use the same pnpm version.
+
+<Note title="Global tools for developer productivity">
+<p>Think of global tools as part of your developer environment, not your project. Global tools help you work on any project. Local tools are the project's actual dependencies.</p>
+</Note>
+
+## A simple rule
+
+- Is the package required by your project's code? → Install it locally
+- Is the package a tool for creating or managing projects? → Install it globally
+
+Following this rule keeps your projects reproducible and avoids version conflicts.

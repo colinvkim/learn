@@ -51,6 +51,14 @@ To add several development dependencies in one step:
 pnpm add -D typescript eslint prettier
 ```
 
+To add an optional dependency:
+
+```bash
+pnpm add -O fsevents
+```
+
+Optional dependencies are packages that improve a project but are not critical. If they fail to install, pnpm continues instead of stopping.
+
 This is one of the clearest differences from npm. In pnpm, `add` is the main verb for introducing new dependencies.
 
 <Tip title="Use pnpm add for one package or many">
@@ -66,6 +74,10 @@ pnpm remove react
 ```
 
 This updates the project manifest, the lockfile, and the installed dependencies.
+
+## Global tools
+
+See the [global tools lesson](/courses/npm-and-pnpm/npm-and-pnpm-global-tools-vs-local-tools) for guidance on when to install packages globally vs locally.
 
 ## Running scripts
 

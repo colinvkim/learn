@@ -1,0 +1,294 @@
+---
+title: "npm and pnpm: troubleshooting common problems"
+description: Learn to diagnose and fix common package manager issues like peer dependency errors, lockfile conflicts, and installation failures.
+course: npm-and-pnpm
+order: 13
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+import Tip from "../../../components/content/Tip.astro";
+
+Package managers usually work smoothly. When they fail, the error messages can be confusing. This lesson helps you troubleshoot common issues and get back to productive work.
+
+## First step: read the error
+
+When something fails:
+
+1. Read the error message carefully
+2. Look for the specific package name
+3. Note the error type (peer dependency, version conflict, network, etc.)
+4. Check the last successful action before the error
+
+This gives you keywords to search and a starting point for fixing the issue.
+
+## Peer dependency errors
+
+**What they are:** A package lists another package as a "peer dependency" — meaning it expects that package to be provided by the consuming project, not installed as a direct dependency.
+
+**The error looks like:**
+```
+npm ERR! peer dep missing: react@^16.8.0, required by some-package@1.0.0
+```
+
+**What it means:** The package `some-package` expects `react@^16.8.0` to be available, but you have a different version (or it's not installed).
+
+**How to fix:**
+
+1. Install the required peer dependency:
+```bash
+npm install react@^16.8.0
+```
+
+2. If you need a different version, you might need to upgrade the package that has the peer dependency:
+```bash
+npm install some-package@latest
+```
+
+3. For pnpm, you might need to explicitly install peer dependencies:
+```bash
+pnpm add react@^16.8.0
+```
+
+**When it's okay:** Some peer dependency warnings are expected. If a package says it works with React 16, 17, and 18, and you have React 18, the warning might be overly broad. Test your application — if it works, the warning might be cosmetic.
+
+<note title="Peer dependencies are a contract">
+<p>When a package declares peer dependencies, it's saying "I need this package to be provided by the project using me." It's the project's responsibility to install compatible versions.</p>
+</note>
+
+## Lockfile conflicts
+
+**What they are:** Two branches updated dependencies independently, creating different lockfiles. When you merge, git can't automatically reconcile them.
+
+**The error looks like:**
+```
+CONFLICT (content): Merge conflict in package-lock.json
+```
+
+**What happens:** Git shows conflict markers in `package-lock.json` or `pnpm-lock.yaml`.
+
+**How to fix:**
+
+1. **Accept the lockfile from the branch you're merging into:**
+```bash
+git checkout --theirs package-lock.json
+git add package-lock.json
+git commit
+```
+
+2. **Then reinstall:**
+```bash
+npm install
+```
+
+3. **Test thoroughly** — the reinstallation resolved dependencies based on the "winning" lockfile
+
+Alternative approach:
+
+1. **Delete the lockfile:**
+```bash
+rm package-lock.json
+```
+
+2. **Reinstall:**
+```bash
+npm install
+```
+
+3. **Commit the new lockfile** — it's now based on both sets of changes
+
+<warning title="Don't casually delete lockfiles">
+<p>Deleting and regenerating a lockfile can cause unexpected version changes. Do this only when necessary, and review the diff carefully to ensure it makes sense.</p>
+</warning>
+
+## Package version conflicts
+
+**What they are:** Two packages need different versions of the same dependency, and they can't be reconciled.
+
+**The error looks like:**
+```
+npm ERR! Could not resolve dependency:
+npm ERR! peer react@"^16.0.0" from old-library@2.0.0
+npm ERR! node_modules/some-package/node_modules/react
+npm ERR!   peer react@"^18.0.0" from new-library@1.0.0
+```
+
+**What it means:** `old-library` needs React 16, but `new-library` needs React 18. They can't coexist.
+
+**How to fix:**
+
+1. **Upgrade the old package** if possible:
+```bash
+npm install old-library@latest
+```
+
+2. **Use a version that both packages can share** by finding a compatible version range
+
+3. **Use overrides** (last resort):
+```json
+{
+  "overrides": {
+    "react": "18.0.0"
+  }
+}
+```
+
+4. **The real solution:** Update or replace the incompatible package — not all version conflicts can be resolved
+
+## Installation failures
+
+**Network errors:**
+```
+npm ERR! network timeout at: https://registry.npmjs.org/some-package
+```
+
+**Fixes:**
+- Retry the installation
+- Check your internet connection
+- Check if npm registry is down (rare but possible)
+- Configure a different registry
+
+**Permission errors:**
+```
+npm ERR! EACCES: permission denied
+```
+
+**Fixes:**
+- Don't use `sudo` with npm (can cause permission issues)
+- Fix npm permissions: `npm config set prefix ~/.npm-global`
+- Reinstall Node.js using a version manager (nvm, n)
+
+**Disk space errors:**
+```
+npm ERR! ENOSPC: no space left on device
+```
+
+**Fixes:**
+- Free up disk space
+- Clear npm cache: `npm cache clean --force`
+- Check where packages are installed
+
+## "Cannot find module" errors
+
+**What they are:** A package expected to find a module but couldn't.
+
+**The error looks like:**
+```
+Error: Cannot find module 'some-package'
+```
+
+**Causes:**
+1. Package not installed: `npm install some-package`
+2. Lockfile out of sync: `rm package-lock.json && npm install`
+3. Incorrect import path: Check your import statement
+4. Package structure changed: Check package.json `main` field
+
+## When to delete node_modules and reinstall
+
+The classic troubleshooting step:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+**When it's reasonable:**
+- After switching branches with different dependencies
+- When builds fail mysteriously
+- When installations seemed to complete but had errors
+- When files are corrupted
+- When nothing else works
+
+**When it's overkill:**
+- Most errors have specific, less destructive fixes
+- It downloads all dependencies again (time consuming)
+- You lose the locked versions in package-lock.json
+
+<tip title="Try faster fixes first">
+<p>Before deleting everything:</p>
+<ul>
+<li>Read the actual error (peer dep, version conflict, etc.)</li>
+<li>Try the specific fix for that error type</li>
+<li>Only use the nuclear option when other fixes fail</li>
+</ul>
+</tip>
+
+## pnpm-specific issues
+
+**"Cannot find hoisted package" (pnpm):**
+
+In rare cases, a package might not work with pnpm's strict node_modules structure. If you get this error:
+
+1. Check pnpm's compatibility documentation for known issues
+2. Try installing in npm compatibility mode:
+
+```bash
+pnpm install --config.node-linker=hoisted
+```
+
+This makes pnpm use npm's flatter node_modules layout, which fixes some compatibility issues at the cost of some deduplication benefits.
+
+To make this permanent, add to `.npmrc`:
+
+```ini
+node-linker=hoisted
+```
+
+**Use this sparingly** — most packages work fine with pnpm's default structure. Only use it for packages that genuinely need the old layout.
+
+## Git issues
+
+**package.json in gitignore:**
+```bash
+# Don't do this!
+echo "package.json" >> .gitignore
+```
+
+This prevents collaborators from getting your dependencies. Never gitignore `package.json` or lockfiles.
+
+**node_modules in git:**
+```bash
+# This is already done automatically, don't override it
+echo "node_modules" >> .gitignore
+```
+
+npm packages frequently contain thousands of files. Committing `node_modules` bloats your repository. The lockfile is what makes builds reproducible — you don't need to commit the actual packages.
+
+## Reading versions and conflicts
+
+When you see version conflicts, understand what they mean:
+
+- `^1.2.3` — compatible with 1.2.3 up to (but not including) 2.0.0
+- `~1.2.3` — compatible with 1.2.3 up to (but not including) 1.3.0
+- `1.2.3` — exact match only
+- `1.2.3 - 1.5.0` — range inclusive
+- `>1.2.3` — greater than
+
+Version conflicts often mean finding a version that satisfies both requirements. Use `npm view <package> versions` to see what's available.
+
+## General troubleshooting flow
+
+When stuck, follow this order:
+
+1. **Read the error** — find the specific issue
+2. **Check if dependencies are installed** — run `npm install`
+3. **Check for peer dependency mismatches** — read the error carefully
+4. **Check for version conflicts** — `npm ls <package>`
+5. **Check lockfile conflicts** — `git status`
+6. **Search for the error message** — someone else has likely seen it
+7. **Check package issues** — some bugs are known and documented
+8. **Delete node_modules and reinstall** — nuclear option
+
+## Prevention
+
+Best practices that reduce troubleshooting:
+
+- ✅ Keep dependencies moderately current (old deps have more issues)
+- ✅ Use exact versions for critical production dependencies
+- ✅ Review lockfile changes in PRs
+- ✅ Test installations in CI
+- ✅ Pin package manager versions (npm or pnpm)
+- ✅ Document known issues and workarounds
+
+Troubleshooting is part of development. When package managers fail, the errors are usually fixable. Most issues fall into a few categories: peer dependencies, version conflicts, lockfiles, or corrupted installs. Learn to recognize the patterns, and you'll fix most issues quickly.

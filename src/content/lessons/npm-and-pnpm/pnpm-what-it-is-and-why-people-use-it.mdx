@@ -55,6 +55,33 @@ In practice, teams often choose pnpm because they want:
 
 Those benefits matter most as repositories grow, but the basic command set stays small even in simpler projects.
 
+## What makes pnpm efficient
+
+pnpm uses a content-addressable storage system that makes it more space-efficient than npm in multi-project setups.
+
+### The content-addressable store
+
+When pnpm installs a package, it stores the files in a central location on your disk called the content-addressable store. This store is usually located in your home directory at `~/.pnpm-store`.
+
+The key insight is that identical files across different packages and versions are stored only once. For example, if ten different projects all use the same version of `lodash`, the files are stored just once in the store, not ten times.
+
+### Hard links to node_modules
+
+Instead of copying files into each project's `node_modules`, pnpm creates hard links from the store to your project. A hard link is a way for multiple directory entries to point to the same file on disk.
+
+This has two practical benefits:
+
+1. **Disk space:** Multiple projects using the same dependencies consume far less disk space
+2. **Install speed:** Creating a hard link is much faster than copying files
+
+When you update a dependency, only the changed files are added to the store. The unchanged files are already there and get reused.
+
+### Why this matters for workspaces
+
+pnpm's storage model is especially valuable for workspaces and monorepos. In a typical monorepo, multiple packages often share many of the same dependencies.
+
+Instead of each workspace package storing its own copy of `react` or `typescript`, pnpm can share the files across all of them through hard links. This can result in dramatic disk space savings and faster installs in large codebases.
+
 ## What stays the same in a pnpm project
 
 A pnpm-based project still has the same broad structure as an npm project.
@@ -98,6 +125,10 @@ One practical setup flow is:
 </Steps>
 
 That last command adds a `packageManager` field to `package.json`, which helps the project declare which pnpm version it expects.
+
+## Installing pnpm
+
+See the [global tools lesson](/courses/npm-and-pnpm/npm-and-pnpm-global-tools-vs-local-tools) for detailed instructions on installing pnpm using Corepack.
 
 ## A good mental model for pnpm
 

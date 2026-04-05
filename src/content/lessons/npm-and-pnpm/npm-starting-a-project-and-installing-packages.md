@@ -112,6 +112,30 @@ For a beginner, a useful shortcut is this:
 - if the package is needed for the app to run, it is usually a dependency
 - if the package is only helping you build, check, test, or format the project, it is usually a dev dependency
 
+## `optionalDependencies`
+
+Some packages improve a project but are not critical if they fail to install. These can be listed as optional dependencies.
+
+When an optional dependency fails to install, npm continues the installation process instead of stopping. This is useful for packages that provide enhancements but are not essential.
+
+Examples:
+
+- A package with native code that might not compile on all platforms
+- An analytics package that improves the project but isn't required
+- A platform-specific optimization
+
+To add an optional dependency:
+
+```bash
+npm install -O fsevents
+```
+
+The package will be recorded in `optionalDependencies` in `package.json`. If installation succeeds, it behaves like a regular dependency. If it fails, npm logs a warning but continues.
+
+## Global tools
+
+Some tools are meant for your entire system, not just one project. For details on global vs local installation, see the [global tools lesson](/courses/npm-and-pnpm/npm-and-pnpm-global-tools-vs-local-tools).
+
 ## What actually changes when you install something
 
 When you add a package with npm, three parts of the project usually change:

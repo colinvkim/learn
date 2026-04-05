@@ -1,0 +1,211 @@
+---
+title: "npm and pnpm: registries, scopes, and publishing"
+description: Learn where packages come from, how scoped packages work, and the basics of publishing your own packages.
+course: npm-and-pnpm
+order: 11
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+
+When you run `npm install react`, where does `react` come from? By default, it comes from the public npm registry at `npmjs.com`. Understanding registries helps you understand how packages are distributed and how to control where your packages come from.
+
+## What is a registry?
+
+A registry is a server that hosts packages. When you install a package, npm or pnpm looks in the configured registry to find and download it.
+
+The default public registry:
+- URL: `https://registry.npmjs.org`
+- Maintained by npm, Inc.
+- Contains millions of open-source packages
+- Free to publish public packages
+- Paid plans for private packages
+
+## The public registry
+
+Most packages you use come from the public npm registry. When you install:
+
+```bash
+npm install react
+```
+
+npm looks up `react` in the public registry, finds the latest version matching your requirements, and downloads it.
+
+The public registry is the backbone of the JavaScript ecosystem. It's where:
+- framework authors publish updates
+- library maintainers release new features
+- security patches are distributed
+- open-source collaboration happens
+
+## Scoped packages
+
+A scope is like a namespace for packages. Scoped packages start with `@`:
+
+```
+@mycompany/utility-functions
+@sveltejs/kit
+@types/node
+```
+
+Two common scope patterns:
+
+1. **Company scopes**: Organizations use scopes to group their packages
+   - Example: `@microsoft`, `@google`, `@amazon`
+   - Prevents naming conflicts with other packages
+
+2. **Tool scopes**: Projects with multiple packages use scopes
+   - Example: `@sveltejs/kit`, `@sveltejs/vite-plugin-svelte`
+   - Shows packages belong together
+
+To install a scoped package:
+
+```bash
+npm install @types/node
+```
+
+Scoping doesn't change the command — you just include the `@` and scope name.
+
+## When scopes matter
+
+Scopes help with:
+
+- **Naming**: `@mycompany/button` can coexist with `button`
+- **Authorization**: You can control who publishes to `@mycompany/*`
+- **Organization**: Related packages are grouped visually
+- **Private packages**: Private packages must be scoped
+
+To publish a scoped package, you need to be logged in as a user or organization that owns that scope.
+
+## Private registries
+
+Sometimes packages need to be private — internal company code, proprietary libraries, or code not ready for public release.
+
+Private registries:
+- Host packages that should not be public
+- Control who can access packages
+- Often used for company-internal libraries
+
+Common private registry solutions:
+
+1. **npm Private Packages**: Paid plan for private scoped packages
+   ```bash
+   npm install @mycompany/private-lib
+   ```
+
+2. **GitHub Packages**: Ties packages to repositories
+   ```bash
+   npm install @scope/package
+   ```
+
+3. **Self-hosted registries**: Companies run their own registry servers
+   - Verdaccio (open-source)
+   - Nexus
+   - Artifactory
+
+## Configuring registries
+
+Your project can specify which registry to use via `.npmrc`:
+
+```ini
+// Public packages from npmjs.com
+registry=https://registry.npmjs.org
+
+// Private packages from GitHub
+@mycompany:registry=https://npm.pkg.github.com
+```
+
+When you install `@mycompany/*` packages, npm looks in the GitHub registry instead of the public registry.
+
+<tip title="Use .npmrc for private registries">
+<p>If your project uses private packages, commit an `.npmrc` file to make sure all developers and CI systems use the correct registry.</p>
+</tip>
+
+## Publishing packages
+
+To publish a package:
+
+1. Create a package:
+```json
+{
+  "name": "my-awesome-lib",
+  "version": "1.0.0",
+  "main": "index.js"
+}
+```
+
+2. Login (one time):
+```bash
+npm login
+```
+
+3. Publish:
+```bash
+npm publish
+```
+
+Your package is now public on npm for anyone to install:
+
+```bash
+npm install my-awesome-lib
+```
+
+For scoped packages:
+```json
+{
+  "name": "@mycompany/my-lib",
+  "version": "1.0.0",
+  "publishConfig": {
+    "access": "public"
+  }
+}
+```
+
+Then publish:
+```bash
+npm publish --access public
+```
+
+## When to publish
+
+Publish packages when:
+
+- You have reusable code for multiple projects
+- You want to share code with the community
+- You need version management for internal libraries
+- You want to split a monorepo into consumable packages
+
+Don't worry about publishing until you have code worth sharing. Most developers consume far more packages than they publish.
+
+<note title="You don't need to publish to share code">
+<p>For private or internal code, consider GitHub URLs, workspace packages, or private registries before publishing to the public registry.</p>
+</note>
+
+## Publishing best practices
+
+Before publishing:
+
+- ✅ Choose a clear, available name (or scoped name)
+- ✅ Update version following semver: `1.2.3` → `1.2.4` for fixes
+- ✅ Add proper `main` or `exports` field in `package.json`
+- ✅ Include a clear description and keywords
+- ✅ Add a README with usage examples
+- ✅ Consider adding a `LICENSE` file
+
+Test before publishing:
+
+```bash
+npm pack    # Create tarball without publishing
+npm publish --dry-run  # See what would happen without uploading
+```
+
+## Registry security
+
+When you `npm install`, you're running code from the registry. Consider:
+
+- **Security**: Packages can contain malicious code (see the security lesson)
+- **Lockfiles**: Always use lockfiles to lock exact versions
+- **Scoping**: Scopes help prevent typosquatting attacks
+- **Private code**: Keep truly private code in private registries
+
+Registries are infrastructure. The public npm registry powers most of the JavaScript ecosystem, but private registries and scopes help manage code at scale.

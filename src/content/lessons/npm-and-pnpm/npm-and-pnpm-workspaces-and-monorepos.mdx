@@ -1,0 +1,199 @@
+---
+title: "npm and pnpm: workspaces and monorepos"
+description: Learn how workspaces help manage multiple related projects and why pnpm is especially efficient for monorepos.
+course: npm-and-pnpm
+order: 10
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+
+As projects grow, developers often split them into multiple packages. A design system might have component packages. A large app might have shared libraries. Managing dependencies across these packages becomes complex. Workspaces solve this problem.
+
+## The problem workspaces solve
+
+Imagine you have three packages:
+
+```
+my-project/
+  shared-utils/
+    package.json (needs lodash)
+  ui-components/
+    package.json (needs shared-utils and react)
+  main-app/
+    package.json (needs shared-utils, ui-components, and express)
+```
+
+Without workspaces, each package manages dependencies independently:
+
+- `shared-utils` installs lodash
+- `ui-components` installs react and a separate copy of shared-utils
+- `main-app` installs express and separate copies of shared-utils and ui-components
+
+Each package has its own `node_modules`. Dependencies get duplicated across packages.
+
+Workspaces let you manage these packages together, sharing dependencies where possible.
+
+## Basic workspace configuration
+
+At the root of your project, create a `pnpm-workspace.yaml` file (for pnpm):
+
+```yaml
+packages:
+  - 'shared-utils'
+  - 'ui-components'
+  - 'main-app'
+```
+
+Or in `package.json` (for npm):
+
+```json
+{
+  "workspaces": [
+    "shared-utils",
+    "ui-components",
+    "main-app"
+  ]
+}
+```
+
+This tells the package manager which directories are part of the workspace.
+
+## How workspaces share dependencies
+
+With workspaces enabled, install dependencies from the root:
+
+```bash
+pnpm install
+```
+
+The package manager:
+- Installs all dependencies for all workspace packages
+- Shares common dependencies across packages
+- Creates a single `node_modules` at the root when possible
+- Links workspace packages to each other
+
+If both `ui-components` and `main-app` need `react`, they share the same installation instead of duplicating it.
+
+## Linking workspace packages
+
+In your workspace packages, you can reference other workspace packages using the `workspace:` protocol:
+
+```json
+{
+  "dependencies": {
+    "shared-utils": "workspace:*",
+    "react": "^18.0.0"
+  }
+}
+```
+
+The `workspace:*` means "use the version from this workspace." When you install, pnpm links the packages together instead of downloading from the registry.
+
+## Running commands in specific workspaces
+
+pnpm lets you run commands in specific workspace packages using filters:
+
+```bash
+pnpm --filter ui-components build
+```
+
+This runs `pnpm build` only in the `ui-components` package.
+
+To run a command in all packages:
+
+```bash
+pnpm -r build
+```
+
+The `-r` flag means "recursive" — run this command in every workspace package.
+
+To run in a subset of packages:
+
+```bash
+pnpm --filter "./packages/*" test
+```
+
+This runs tests in all packages matching the `packages/*` pattern.
+
+<tip title="Filters make monorepos manageable">
+<p>Filters let you focus on specific packages. During daily work, you can build, test, and develop packages independently while still sharing dependencies.</p>
+</tip>
+
+## Why pnpm excels at workspaces
+
+pnpm's content-addressable storage makes it especially efficient for workspaces:
+
+- Single store for all dependencies across all packages
+- Hard links from each package to the shared store
+- Minimal duplication even when packages use different versions
+- Fast installs because files are linked, not copied
+
+In a large monorepo with many packages sharing dependencies, pnpm can use significantly less disk space than npm.
+
+## Workspace scripts
+
+You can define scripts that operate on the workspace:
+
+```json
+{
+  "scripts": {
+    "build:all": "pnpm -r build",
+    "test:all": "pnpm -r test",
+    "dev:ui": "pnpm --filter ui-components dev"
+  }
+}
+```
+
+Then run from the root:
+
+```bash
+pnpm build:all
+```
+
+## When to use workspaces
+
+Use workspaces when:
+
+- Multiple packages share dependencies
+- You're building shared libraries alongside an app
+- You want to develop related packages together
+- You need to coordinate releases across packages
+
+For a single package, workspaces add complexity without benefit. For multiple related packages, workspaces reduce duplication and make coordination easier.
+
+<note title="Start simple, add workspace when needed">
+<p>Don't reach for workspaces immediately. Build your first package. When you need to split it into multiple coordinated packages, then add workspace configuration.</p>
+</note>
+
+## Common workspace patterns
+
+**Design system:**
+```
+packages/
+  design-tokens/
+  icons/
+  ui-components/
+  main-app/
+```
+
+**Shared libraries:**
+```
+packages/
+  api-client/
+  shared-types/
+  admin-app/
+  user-app/
+```
+
+**Micro-frontend:**
+```
+packages/
+  shell-app/
+  product-page/
+  checkout/
+  profile/
+```
+
+Workspaces reduce duplication and keep related code organized while maintaining clear boundaries between packages.

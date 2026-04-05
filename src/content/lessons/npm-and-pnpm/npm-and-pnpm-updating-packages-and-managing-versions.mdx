@@ -1,0 +1,133 @@
+---
+title: "npm and pnpm: updating packages and managing versions"
+description: Learn how to update dependencies and understand how package managers choose which versions to install.
+course: npm-and-pnpm
+order: 6
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+
+Dependencies are not static. Packages release new versions with bug fixes, features, and security patches. A project that never updates its dependencies gradually becomes outdated and potentially insecure.
+
+## The problem with fixed versions
+
+In `package.json`, you usually specify dependency ranges, not exact versions:
+
+```json
+{
+  "dependencies": {
+    "react": "^18.0.0"
+  }
+}
+```
+
+The `^` means "compatible versions" — npm can install any version from `18.0.0` up to (but not including) `19.0.0`.
+
+This flexibility helps you receive non-breaking updates automatically. But it also means your current install might not have the latest compatible versions.
+
+## Checking for outdated packages
+
+To see which packages have newer versions available:
+
+```bash
+npm outdated
+```
+
+This command shows:
+- Current version installed
+- Wanted version (latest match within your specified range)
+- Latest version (absolute latest in the registry)
+
+pnpm has the same command:
+
+```bash
+pnpm outdated
+```
+
+This output helps you decide what to update. Some packages might be outdated because they're pinned to an older version. Others might be outdated because newer versions exist.
+
+## Updating packages
+
+To update all packages to their latest versions within the ranges specified in `package.json`:
+
+```bash
+npm update
+```
+
+This command:
+- Checks for newer versions that match your version ranges
+- Installs them
+- Updates `package-lock.json` with the new resolved versions
+<pnpm also uses `pnpm update`:
+
+```bash
+pnpm update
+```
+
+After updating, always test your application. Updates can introduce changes that affect your code.
+
+## Understanding version ranges
+
+These prefixes control how updates work:
+
+- `^1.2.3` — compatible versions (1.2.3 to 2.0.0, but not 2.0.0)
+- `~1.2.3` — patch-level changes (1.2.3 to 1.3.0, but not 1.3.0)
+- `1.2.3` — exact version only
+- `latest` — always use the newest version
+
+When you run `npm install react`, npm defaults to prefixing the version with `^`. This is usually what you want — you get updates that should not break compatibility.
+
+## Updating to specific versions
+
+To update to a specific version:
+
+```bash
+npm install react@18.2.0
+```
+
+Or to update to the latest version regardless of your current range:
+
+```bash
+npm install react@latest
+```
+
+pnpm works the same way:
+
+```bash
+pnpm add react@18.2.0
+```
+
+This updates `package.json` to reflect the new version constraint.
+
+## When to be cautious
+
+<Tip title="Read changelogs before major updates">
+<p>Before updating across major versions (1.x to 2.x), read the package's changelog. Major versions can include breaking changes that require code updates.</p>
+</Tip>
+
+Some updates require careful testing:
+
+- Framework updates (React, Vue, Angular)
+- Build tool updates (webpack, vite, rollup)
+- TypeScript updates
+- Linting rule updates
+
+For these, update one package at a time, test thoroughly, then commit before updating the next.
+
+## Keeping dependencies current
+
+A good maintenance habit:
+
+1. Regularly run `npm outdated` to see what's available
+2. Review changelogs for important packages
+3. Update in small batches
+4. Test after each batch
+5. Commit with a clear message listing what was updated
+
+This approach prevents your project from falling far behind and makes updates manageable.
+
+<Note title="Security updates are different">
+<p>Security updates should be applied promptly. Tools like <code>npm audit</code> help identify vulnerable packages. A later lesson covers security practices in detail.</p>
+</Note>

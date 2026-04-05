@@ -1,0 +1,244 @@
+---
+title: "npm and pnpm: security and dependency hygiene"
+description: Learn to use npm audit, manage vulnerable dependencies, and understand supply chain risks in the JavaScript ecosystem.
+course: npm-and-pnpm
+order: 12
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+import Tip from "../../../components/content/Tip.astro";
+
+Every dependency you install is code running on your system or in your application. That code can have vulnerabilities. It can also be compromised directly. Understanding security helps you use packages responsibly.
+
+## Checking for vulnerabilities
+
+Run this command to check your installed packages for known security issues:
+
+```bash
+npm audit
+```
+
+This scans your dependency tree against a database of known vulnerabilities and reports:
+- Which packages are vulnerable
+- The severity level (low, moderate, high, critical)
+- A brief description of the vulnerability
+- Whether a fix is available
+
+pnpm has the same command:
+
+```bash
+pnpm audit
+```
+
+The output shows a detailed report. Review it carefully — not all findings require immediate action, but critical vulnerabilities should be addressed promptly.
+
+## Understanding audit output
+
+A typical audit finding looks like:
+
+```
+lodash  <=4.17.20
+Severity: high
+Remote code execution via template injection...
+
+Fix: Update to version 4.17.21
+```
+
+This tells you:
+- Package name: `lodash`
+- Affected range: `<=4.17.20`
+- Severity: `high`
+- Problem: template injection vulnerability
+- Solution: update to `4.17.21`
+
+<tip title="Severity matters">
+<p>Critical and high-severity vulnerabilities often need immediate attention. Low and moderate severity might be acceptable if they're in build tools or dev dependencies with limited exposure.</p>
+</tip>
+
+## When audit is useful vs noisy
+
+**Audit is useful for:**
+- Finding known vulnerabilities in dependencies
+- Checking before deploying to production
+- Regular maintenance checks
+- Meeting security compliance requirements
+
+**Audit can be noisy when:**
+- Vulnerabilities are in build tools or dev dependencies
+- The vulnerability is not exploitable in your application
+- You're in the middle of development and plan to update soon
+
+Use audit findings as information, not panic. Evaluate each based on:
+1. Severity level
+2. Whether the package runs in production
+3. Whether your code exercises the vulnerable part
+4. How difficult it is to upgrade
+
+## Transitive dependency risk
+
+Your dependencies have dependencies. This is called the **dependency tree** or **dependency graph**.
+
+If you run:
+```
+npm install express
+```
+
+Express might depend on:
+- accepts
+- array-flatten
+- body-parser
+- ...and those packages depend on more packages
+
+A vulnerability can be in a dependency many levels deep. You're responsible for your entire dependency tree, not just the packages you installed directly.
+
+This is why lockfiles are security-critical. Your lockfile locks down the *entire* dependency tree, not just your direct dependencies. Reviewing lockfile changes helps you spot unexpected transitive dependencies.
+
+## Fixing vulnerabilities
+
+To automatically fix vulnerabilities when possible:
+
+```bash
+npm audit fix
+```
+
+This updates packages to non-vulnerable versions within your version ranges. It might:
+- Update direct dependencies
+- Update transitive dependencies
+- Not be able to fix everything (if fixes aren't available)
+
+pnpm works the same way:
+
+```bash
+pnpm audit fix
+```
+
+Always test after running audit fix. Updates can change behavior.
+
+## Manual fixes with version overrides
+
+Sometimes a fix isn't available, or you need to force a specific version. Use **version overrides**:
+
+In npm, add to `package.json`:
+
+```json
+{
+  "overrides": {
+    "lodash": "4.17.21"
+  }
+}
+```
+
+In pnpm, use `pnpm.overrides`:
+
+```json
+{
+  "pnpm": {
+    "overrides": {
+      "lodash": "4.17.21"
+    }
+  }
+}
+```
+
+This forces *all* packages using lodash to use version `4.17.21`, even if they specify a different range. Use this carefully — it can break packages that aren't compatible with the forced version.
+
+Only use overrides when:
+- A vulnerability has no other fix
+- You're confident the forced version is compatible
+- You've tested thoroughly
+
+## Lockfile review habits
+
+Every time a lockfile changes, review it:
+
+```bash
+git diff package-lock.json
+```
+
+Look for:
+- Unexpected new packages (possible supply chain issue)
+- Large version jumps (might break something)
+- Packages you didn't knowingly add
+- Typosquatting attempts (packages with names similar to popular ones)
+
+This takes seconds but catches many issues early.
+
+<warning title="Always commit lockfiles">
+<p>Commit your lockfile to git. It locks your entire dependency tree. Without it, installs are not reproducible, and you lose the security benefit of knowing exactly what was installed.</p>
+</warning>
+
+## Supply chain caution
+
+Every package you install can run code during installation through:
+
+- `preinstall` scripts: run before package is installed
+- `postinstall` scripts: run after package is installed
+- `preuninstall` scripts: run before package is removed
+
+These scripts can do anything: download files, run commands, access your network. Most are legitimate (compiling native code, downloading assets), but they create risk.
+
+Package authors can be compromised. A maintainer's credentials might be stolen. A popular package might be transferred to a malicious maintainer.
+
+You are trusting:
+- The package author
+- The package author's security practices
+- The registry's security
+- Every maintainer who has publish access
+
+## Real example: axios incident (2026)
+
+In early 2026, the popular HTTP library `axios` was compromised. An attacker gained publish access and released a version with malicious code that stole credentials from environment variables.
+
+The attack:
+1. Attacker gained access to a maintainer's npm account
+2. Published a patch version (1.6.6) with the malicious code
+3. The malicious version was live for several hours before discovery
+4. Projects that auto-updated or ran `npm install` during that window were affected
+
+The clean-up:
+1. The malicious version was removed from npm
+2. A security advisory was issued
+3. Users were told to check if they installed the compromised version
+4. Those affected needed to rotate any exposed credentials
+
+<warning title="Why this matters">
+<p>The axios incident shows that even popular, well-maintained packages can be compromised. Regular security practices help limit damage:</p>
+<ul>
+<li>Lockfiles prevent silent updates</li>
+<li>Audit catches known vulnerabilities</li>
+<li>Environment variable hygiene limits credential exposure</li>
+</ul>
+</warning>
+
+## Package trust
+
+Before installing a package, consider:
+
+- **Download count**: Popular packages are more scrutinized
+- **Maintainer reputation**: Established maintainers are more trustworthy
+- **Recent activity**: Actively maintained packages fix vulnerabilities faster
+- **Scope packages**: `@company/package` is tied to that company
+- **Verification**: Some packages are verified by npm
+
+This isn't perfect — popular packages have been compromised — but it's a useful filter.
+
+## Practical security checklist
+
+- ✅ Run `npm audit` regularly
+- ✅ Review lockfile changes
+- ✅ Update dependencies frequently (old versions have more known vulnerabilities)
+- ✅ Use `npm ci` / `pnpm install --frozen-lockfile` in CI
+- ✅ Pin dependency versions in critical applications
+- ✅ Monitor for suspicious package behavior
+- ✅ Keep credentials out of environment variables when possible
+- ✅ Use private registries for truly private code
+- ✅ Read security advisories for critical vulnerabilities
+- ✅ Have a response plan for when a vulnerability is discovered
+
+## Security is ongoing
+
+Security isn't a one-time check. New vulnerabilities are discovered constantly. Keep dependencies updated, run audit regularly, and review changes carefully.
+
+The JavaScript ecosystem moves fast. Stay informed, but don't panic. Not every vulnerability affects your application. Use tools like audit for information, then make informed decisions about what to fix.
