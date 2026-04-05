@@ -1,0 +1,212 @@
+---
+title: "Scope and closures"
+description: "Learn how JavaScript controls variable access through scope, and how closures let functions remember the environment they were created in."
+course: javascript
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+Scope determines which variables are accessible from a given point in code. Closures are the result of functions retaining access to variables from their surrounding scope even after that scope has finished executing.
+
+These two concepts are deeply connected. Understanding them explains a lot of JavaScript behavior.
+
+## Scope controls variable access
+
+JavaScript has three scope levels:
+
+- **global scope** — variables declared at the top level of a file or script
+- **function scope** — variables declared inside a function
+- **block scope** — variables declared inside `{}` with `let` or `const`
+
+```javascript
+const globalVar = "I am global";  // global scope
+
+function example() {
+  const functionVar = "I am function-scoped";  // function scope
+
+  if (true) {
+    const blockVar = "I am block-scoped";  // block scope
+    console.log(globalVar);      // accessible
+    console.log(functionVar);    // accessible
+    console.log(blockVar);       // accessible
+  }
+
+  console.log(globalVar);        // accessible
+  console.log(functionVar);      // accessible
+  // console.log(blockVar);      // ReferenceError — out of scope
+}
+```
+
+Each scope can access variables from its own level and from any outer level. Outer scopes cannot access variables from inner scopes.
+
+## The scope chain
+
+When JavaScript looks up a variable, it starts in the current scope. If it does not find it there, it moves outward — scope by scope — until it reaches the global scope.
+
+```javascript
+const name = "Global";
+
+function outer() {
+  const name = "Outer";
+
+  function inner() {
+    const name = "Inner";
+    console.log(name);  // "Inner" — found in the innermost scope
+  }
+
+  inner();
+  console.log(name);    // "Outer" — found in outer's scope
+}
+
+outer();
+console.log(name);      // "Global" — found in global scope
+```
+
+This lookup chain is why inner functions can "see" outer variables. It is also why naming collisions in inner scopes shadow outer variables.
+
+## Closures
+
+A **closure** is a function that remembers the variables from its lexical scope — the scope where it was defined — even after that scope has finished executing.
+
+Every JavaScript function is a closure. It just is not always obvious because most functions are called while their scope is still active.
+
+```javascript
+function createCounter() {
+  let count = 0;
+
+  return function() {
+    count++;
+    return count;
+  };
+}
+
+const counter = createCounter();
+// createCounter has finished, but count is still accessible
+
+console.log(counter());  // 1
+console.log(counter());  // 2
+console.log(counter());  // 3
+```
+
+The returned function still has access to `count` even though `createCounter` finished running. The `count` variable is not destroyed because the inner function holds a reference to it.
+
+## Closures in practice
+
+Closures are how JavaScript enables private state, factory functions, and many common patterns.
+
+### Creating private-like state
+
+```javascript
+function createBankAccount(initialBalance) {
+  let balance = initialBalance;
+
+  return {
+    deposit(amount) {
+      balance += amount;
+      return balance;
+    },
+    withdraw(amount) {
+      balance -= amount;
+      return balance;
+    },
+    getBalance() {
+      return balance;
+    },
+  };
+}
+
+const account = createBankAccount(100);
+account.deposit(50);       // 150
+account.withdraw(30);      // 120
+account.getBalance();      // 120
+// account.balance          // undefined — no direct access
+```
+
+`balance` is not truly private — it is just inaccessible from outside the closure. This is the closest JavaScript gets to private fields without using class syntax.
+
+### Function factories
+
+```javascript
+function multiplyBy(factor) {
+  return (n) => n * factor;
+}
+
+const double = multiplyBy(2);
+const triple = multiplyBy(3);
+
+double(5);  // 10
+triple(5);  // 15
+```
+
+Each call to `multiplyBy` creates a new closure with its own `factor`.
+
+### Event handlers and callbacks
+
+Closures are why event handlers can access component state:
+
+```javascript
+function setupButton(button, message) {
+  button.addEventListener("click", () => {
+    alert(message);  // `message` is captured from the outer scope
+  });
+}
+```
+
+The callback is called later, but it still remembers `message` from when `setupButton` was called.
+
+## Common closure pitfalls
+
+### Stale values in loops
+
+When you create a function inside a loop with `var`, all closures share the same variable:
+
+```javascript
+// Problem with var
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => {
+    console.log(i);  // 3, 3, 3 — not 0, 1, 2
+  }, 100);
+}
+```
+
+All three callbacks share the same `i`, which is `3` by the time they run.
+
+With `let`, each iteration gets its own binding:
+
+```javascript
+// Fixed with let
+for (let i = 0; i < 3; i++) {
+  setTimeout(() => {
+    console.log(i);  // 0, 1, 2
+  }, 100);
+}
+```
+
+### Closures hold references, not copies
+
+```javascript
+function createLogger(obj) {
+  return () => console.log(obj.value);
+}
+
+const data = { value: 1 };
+const log = createLogger(data);
+
+data.value = 2;
+log();  // 2 — the closure sees the current value, not the value at creation
+```
+
+The closure holds a reference to `obj`, not a snapshot of `obj.value` at creation time.
+
+## What to carry forward
+
+- scope controls which variables are accessible from a given point
+- inner scopes can see outer variables; outer scopes cannot see inner variables
+- a closure is a function that retains access to its lexical scope
+- every JavaScript function is a closure
+- closures enable private state, factories, and stateful callbacks
+- `let` creates a new binding per loop iteration; `var` shares one binding across all iterations
+- closures hold references to outer variables, not copies
+
+Closures are one of the most important concepts in JavaScript. They connect directly to the next lesson — higher-order functions — which use closures as their primary mechanism.

@@ -1,0 +1,198 @@
+---
+title: "async / await"
+description: "Learn how async and await make asynchronous code read like synchronous code, and how to handle errors, parallel work, and sequential flows."
+course: javascript
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+`async/await` is syntactic sugar over promises. It does not add new capabilities — it makes existing patterns easier to read and write.
+
+## The `async` keyword
+
+`async` before a function means the function always returns a promise:
+
+```javascript
+async function getUser() {
+  return { name: "Ada" };
+}
+
+getUser().then((user) => console.log(user));  // { name: "Ada" }
+```
+
+Even though the function returns a plain object, `async` wraps it in a resolved promise automatically.
+
+If the function throws, the returned promise rejects:
+
+```javascript
+async function getUser() {
+  throw new Error("Not found");
+}
+
+getUser().catch((error) => console.error(error.message));  // "Not found"
+```
+
+## The `await` keyword
+
+`await` pauses the execution of an `async` function until a promise settles:
+
+```javascript
+async function displayUser() {
+  const user = await fetchUser(1);
+  console.log(user);
+}
+```
+
+`await` can only be used inside `async` functions (or at the top level of modules — covered below). It makes async code read top to bottom:
+
+```javascript
+// With promises
+function displayUser() {
+  fetchUser(1)
+    .then((user) => fetchOrders(user.id))
+    .then((orders) => console.log(orders))
+    .catch((error) => console.error(error));
+}
+
+// With async/await
+async function displayUser() {
+  try {
+    const user = await fetchUser(1);
+    const orders = await fetchOrders(user.id);
+    console.log(orders);
+  } catch (error) {
+    console.error(error);
+  }
+}
+```
+
+The async/await version reads like synchronous code. Each line waits for the previous one to complete.
+
+## Error handling with try/catch
+
+`await` throws a rejected promise as a regular error. Catch it with `try/catch`:
+
+```javascript
+async function displayUser() {
+  try {
+    const user = await fetchUser(-1);
+    console.log(user);
+  } catch (error) {
+    console.error("Failed to load user:", error.message);
+  }
+}
+```
+
+You can catch errors at different levels — wrap individual operations or the entire function:
+
+```javascript
+async function loadData() {
+  let user;
+
+  try {
+    user = await fetchUser(1);
+  } catch (error) {
+    console.error("User failed, using default");
+    user = { name: "Anonymous" };
+  }
+
+  const orders = await fetchOrders(user.id);
+  return { user, orders };
+}
+```
+
+## Sequential vs parallel async work
+
+### Sequential (one after another)
+
+When each operation depends on the previous one, `await` sequentially:
+
+```javascript
+async function getUserOrders(userId) {
+  const user = await fetchUser(userId);
+  const orders = await fetchOrders(user.id);
+  return orders;
+}
+```
+
+This waits for the user before fetching orders. Total time = time for user + time for orders.
+
+### Parallel (at the same time)
+
+When operations are independent, use `Promise.all` with `await`:
+
+```javascript
+async function getDashboardData() {
+  const [user, orders, products] = await Promise.all([
+    fetchUser(1),
+    fetchOrders(1),
+    fetchProducts(),
+  ]);
+
+  return { user, orders, products };
+}
+```
+
+This runs all three requests simultaneously. Total time = the slowest of the three, not the sum.
+
+<Warning title="Awaiting in a loop is sequential and slow">
+  <p>Awaiting inside a <code>for</code> loop processes one item at a time. If the items are independent, collect the promises first and await them all with <code>Promise.all</code>.</p>
+</Warning>
+
+```javascript
+// Slow — sequential
+async function loadUsersSequential(ids) {
+  const users = [];
+  for (const id of ids) {
+    const user = await fetchUser(id);
+    users.push(user);
+  }
+  return users;
+}
+
+// Fast — parallel
+async function loadUsersParallel(ids) {
+  const promises = ids.map((id) => fetchUser(id));
+  return await Promise.all(promises);
+}
+```
+
+## Top-level await
+
+In ES modules, you can use `await` at the top level without wrapping it in an async function:
+
+```javascript
+// config.js
+const config = await fetch("/api/config").then((r) => r.json());
+
+export default config;
+```
+
+Any module that imports from `config.js` will wait for the promise to resolve before its code runs. Top-level await is available in all modern browsers and Node.js.
+
+## `await` with non-promise values
+
+`await` works on any value. Non-promise values are wrapped in a resolved promise automatically:
+
+```javascript
+async function example() {
+  const value = await 42;
+  console.log(value);  // 42
+}
+```
+
+This is rarely useful directly but means you can `await` a function that might return a promise or a plain value without needing to check.
+
+## What to carry forward
+
+- `async` functions always return promises
+- `await` pauses execution until a promise settles — only usable inside `async` functions or at module top level
+- use `try/catch` to handle errors from awaited promises
+- sequential `await` is appropriate when operations depend on each other
+- use `Promise.all` with `await` for independent parallel operations
+- avoid awaiting in a loop for independent items — use `Promise.all` instead
+- top-level await lets modules wait for async initialization before exporting
+
+`async/await` is the dominant pattern for asynchronous JavaScript. Combined with the event loop understanding from the first lesson, it explains how async code behaves. The next lesson covers fetching data from APIs in practice.

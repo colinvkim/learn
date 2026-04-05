@@ -1,0 +1,204 @@
+---
+title: "import and export"
+description: "Learn how to share code between modules with named exports, default exports, and the various import syntaxes."
+course: javascript
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+Modules communicate through two mechanisms: `export` makes a value available, and `import` brings it in.
+
+## Named exports
+
+Named exports expose values by their declared name. A module can have any number of named exports:
+
+```javascript
+// math.js
+export function add(a, b) {
+  return a + b;
+}
+
+export function subtract(a, b) {
+  return a - b;
+}
+
+export const PI = 3.14159;
+```
+
+### Importing named exports
+
+Import uses the same names in curly braces:
+
+```javascript
+// app.js
+import { add, subtract } from "./math.js";
+
+add(2, 3);        // 5
+subtract(10, 4);  // 6
+```
+
+The names in the import must match the exported names:
+
+```javascript
+import { add, PI } from "./math.js";  // importing specific exports
+```
+
+### Renaming during import
+
+Rename imports to avoid conflicts:
+
+```javascript
+import { add as sum, PI as TAU } from "./math.js";
+// sum and TAU are now the local names
+```
+
+## Default exports
+
+A module can have one default export — a primary value that the module is "about":
+
+```javascript
+// logger.js
+export default function log(message) {
+  console.log(`[LOG] ${message}`);
+}
+```
+
+### Importing default exports
+
+Default imports do not use curly braces. You choose the name:
+
+```javascript
+import log from "./logger.js";
+
+log("Hello");  // [LOG] Hello
+```
+
+The name `log` is arbitrary — it is whatever you write after `import`. The default export is whatever was declared after `export default`.
+
+### Named and default exports together
+
+A module can combine both:
+
+```javascript
+// utils.js
+export function formatDate(date) {
+  return date.toISOString().split("T")[0];
+}
+
+export default function initialize() {
+  console.log("App initialized");
+}
+```
+
+```javascript
+import initialize, { formatDate } from "./utils.js";
+// default import first, then named imports in braces
+```
+
+## Re-exporting
+
+You can re-export from another module without importing it locally:
+
+```javascript
+// index.js — barrel file
+export { add, subtract } from "./math.js";
+export { formatDate } from "./dates.js";
+export { default as Logger } from "./logger.js";
+```
+
+This pattern is common in libraries that want to provide a single entry point for many modules.
+
+## Importing entire modules
+
+Import everything from a module as a namespace object:
+
+```javascript
+import * as math from "./math.js";
+
+math.add(1, 2);       // 3
+math.subtract(5, 3);  // 2
+math.PI;              // 3.14159
+```
+
+This is useful when you need many exports from a module and do not want to list each one.
+
+## Side-effect imports
+
+Import a module for its side effects without importing any values:
+
+```javascript
+import "./setup.js";  // runs setup.js but imports nothing
+```
+
+This is used when a module registers something globally — polyfills, global configurations, or initialization code.
+
+## File paths
+
+Relative imports use `./` and `../` paths:
+
+```javascript
+import { helper } from "./helper.js";       // same directory
+import { api } from "../api.js";            // parent directory
+import { config } from "../config/index.js"; // specific file in subdirectory
+```
+
+<Note title="Include the .js extension">
+  <p>In the browser and in many build tools, ES module imports require the file extension. <code>import { helper } from "./helper"</code> may not resolve. Always include <code>.js</code> (or <code>.mjs</code>) in browser imports.</p>
+</Note>
+
+## What can be exported
+
+Any top-level declaration can be exported:
+
+```javascript
+export const VERSION = "1.0";
+export let counter = 0;
+export function init() { ... }
+export class App { ... }
+```
+
+You cannot export things that are not declared:
+
+```javascript
+export 42;  // SyntaxError — not a declaration
+
+export default 42;  // works — default export accepts any value
+```
+
+## Live bindings
+
+Imports are **live bindings**, not copies. If the exported value changes, the import sees the new value:
+
+```javascript
+// counter.js
+export let count = 0;
+
+export function increment() {
+  count++;
+}
+```
+
+```javascript
+// app.js
+import { count, increment } from "./counter.js";
+
+console.log(count);  // 0
+increment();
+console.log(count);  // 1 — the binding updated
+```
+
+This is different from importing a primitive value in most other languages. The import is a reference to the exported variable, not a snapshot.
+
+## What to carry forward
+
+- named exports use `export` before a declaration and `import { name }` to bring it in
+- a module can have many named exports but only one default export
+- default imports use any name: `import anything from "./module.js"`
+- `import * as ns from "./module.js"` imports everything as a namespace object
+- re-exporting forwards exports through intermediate modules
+- side-effect imports (`import "./setup.js"`) run a module without importing values
+- imports are live bindings — changes to the exported variable are visible to importers
+- include file extensions in browser imports
+
+Export and import are the mechanism that lets modules communicate. The next lesson covers how to organize files and structure projects around modules.

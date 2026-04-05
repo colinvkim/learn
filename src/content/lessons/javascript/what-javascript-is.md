@@ -1,0 +1,102 @@
+---
+title: "What JavaScript is"
+description: "Learn what JavaScript does, where it runs, and why it became the default language of the web."
+course: javascript
+status: published
+---
+
+JavaScript is the language that runs in every browser and on most servers. It is the only programming language built into web browsers, which means any interactive feature you see on a website almost certainly uses JavaScript.
+
+## What JavaScript does
+
+JavaScript controls behavior on the web. That covers a wide range:
+
+- responding when a user clicks a button or submits a form
+- validating input before it is sent to a server
+- updating page content without reloading
+- animating transitions and visual effects
+- handling real-time communication like chat or live updates
+- running server-side code with Node.js, Bun, or Deno
+
+The same language powers all of these. The environment changes, but the core language does not.
+
+## JavaScript in the browser
+
+In the browser, JavaScript has access to the **DOM** (Document Object Model) — a programmatic representation of the page. Through the DOM, JavaScript can:
+
+- read and change text, styles, and attributes
+- add or remove elements
+- listen for user events like clicks, key presses, and scrolls
+- make network requests to fetch or send data
+
+The browser also provides APIs for storage, geolocation, canvas rendering, and more. JavaScript is the interface to all of them.
+
+## JavaScript on the server
+
+Outside the browser, JavaScript runs on servers through **runtimes** like Node.js. A runtime provides the JavaScript engine plus system-level APIs — reading files, starting network servers, accessing environment variables — that browsers do not expose.
+
+Server-side JavaScript uses the same syntax and core features as browser JavaScript. The difference is what is available: instead of the DOM, you get file system access, HTTP servers, and database drivers.
+
+## Interpreted vs compiled, at a useful level
+
+Languages are often described as either "interpreted" or "compiled." JavaScript is generally called interpreted, but the distinction is not as sharp as it sounds.
+
+A **compiled language** is translated to machine code before it runs. The output is a separate binary that the computer executes directly.
+
+An **interpreted language** is read and executed by another program — an interpreter — at runtime.
+
+JavaScript engines do both. Modern engines like V8 (Chrome, Node.js), SpiderMonkey (Firefox), and JavaScriptCore (Safari) **compile JavaScript just before it runs** — a technique called just-in-time (JIT) compilation. The code is not pre-compiled into a binary, but it is not simply read line by line either.
+
+For everyday purposes, the useful distinction is:
+
+- you write JavaScript as source code and run it directly
+- there is no separate compilation step you need to perform
+- the engine handles optimization at runtime
+
+This is different from languages like TypeScript, which require an explicit compile step before the code can run in a browser.
+
+## How JavaScript engines run code
+
+When a browser or runtime loads JavaScript, the engine goes through a few stages:
+
+1. **Parsing** — the engine reads the source code and builds an internal representation called an abstract syntax tree (AST)
+2. **Compilation** — the AST is turned into optimized machine code (JIT-compiled)
+3. **Execution** — the engine runs the compiled code
+4. **Optimization** — the engine watches how code behaves and recompiles hot paths for better performance
+
+You do not need to manage this process. The engine handles it automatically. Understanding that the engine parses, compiles, and optimizes helps explain why certain patterns are fast and why some code behaves unexpectedly.
+
+## Dynamic typing
+
+JavaScript is **dynamically typed**. Variable types are determined at runtime, not before the code runs.
+
+```javascript
+let value = 42;
+value = "hello";
+value = true;
+```
+
+Each reassignment is valid. The type follows the value, not the variable. This flexibility makes JavaScript easy to start with, but it also means type errors only appear when the code actually runs — not before.
+
+Dynamic typing is why practices like writing tests, being careful with data shapes, and checking assumptions matter in JavaScript. The language will not catch type mistakes ahead of time.
+
+## Where JavaScript is heading
+
+JavaScript evolves through a standards process called **ECMAScript**. Each year, a new edition of the specification adds features that engines implement. Recent additions include:
+
+- optional chaining (`?.`)
+- nullish coalescing (`??`)
+- top-level `await` in modules
+- array grouping methods
+
+Features are added gradually and conservatively. Code written to current standards runs in modern environments without change.
+
+## What to carry forward
+
+- JavaScript runs in browsers and on servers
+- it is the only language built into web browsers
+- engines parse, compile, and execute code automatically
+- dynamic typing means types are checked at runtime, not before
+- the language evolves through the ECMAScript specification
+
+These fundamentals set the stage for everything that follows. The next lesson looks at how values and types actually work in JavaScript.

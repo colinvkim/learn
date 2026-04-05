@@ -1,0 +1,194 @@
+---
+title: "Copying vs mutating data"
+description: "Learn the difference between changing data in place and creating new copies, and why immutability prevents a large class of bugs."
+course: javascript
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+JavaScript objects and arrays are reference types. When you pass an object to a function, assign it to a new variable, or store it in a collection, you are working with a reference to the same underlying data.
+
+This means that changes made through one reference are visible through all others. Understanding when you are mutating data versus creating a new copy is one of the most practical skills in JavaScript.
+
+## Mutation changes data in place
+
+Mutation modifies the existing object or array:
+
+```javascript
+const user = { name: "Ada", role: "engineer" };
+
+user.role = "senior engineer";  // mutation
+
+console.log(user.role);  // "senior engineer"
+```
+
+The object that `user` points to has changed. Any other variable referencing the same object sees the change:
+
+```javascript
+const user = { name: "Ada", role: "engineer" };
+const copy = user;  // same reference
+
+copy.role = "senior engineer";
+
+console.log(user.role);  // "senior engineer" — changed through copy
+```
+
+## Creating copies instead
+
+A copy is an independent object or array with the same data:
+
+```javascript
+const user = { name: "Ada", role: "engineer" };
+const copy = { ...user };  // spread creates a new object
+
+copy.role = "senior engineer";
+
+console.log(user.role);   // "engineer" — unchanged
+console.log(copy.role);   // "senior engineer"
+```
+
+### Copying arrays
+
+```javascript
+const original = [1, 2, 3];
+const copy = [...original];
+
+copy.push(4);
+
+console.log(original);  // [1, 2, 3]
+console.log(copy);      // [1, 2, 3, 4]
+```
+
+### Using `structuredClone` for deep copies
+
+Spread and the methods covered so far are **shallow** — they only copy the top level. Nested objects are still shared:
+
+```javascript
+const user = {
+  name: "Ada",
+  address: { city: "Portland", state: "OR" },
+};
+
+const copy = { ...user };
+
+copy.address.city = "Seattle";
+
+console.log(user.address.city);  // "Seattle" — nested object was shared
+```
+
+For deep copies, `structuredClone` creates a fully independent clone:
+
+```javascript
+const copy = structuredClone(user);
+
+copy.address.city = "Seattle";
+
+console.log(user.address.city);  // "Portland" — unchanged
+```
+
+`structuredClone` handles nested objects, arrays, Maps, Sets, Dates, and more. It does not clone functions or DOM nodes.
+
+<Note title="The old deep-copy hack">
+  <p>Before <code>structuredClone</code> existed, developers used <code>JSON.parse(JSON.stringify(obj))</code> to deep-copy objects. This works but loses functions, <code>undefined</code> values, Dates, and other non-JSON types. Use <code>structuredClone</code> instead when deep copying is needed.</p>
+</Note>
+
+## Array methods that avoid mutation
+
+Many array methods return new arrays instead of mutating:
+
+| Non-mutating | Mutating equivalent |
+|---|---|
+| `[...arr].concat(x)` | `arr.push(x)` |
+| `[...arr.slice(0, i), x, ...arr.slice(i + 1)]` | `arr[i] = x` |
+| `arr.filter(...)` | `arr.splice(...)` |
+| `[...arr].sort(...)` or `arr.toSorted(...)` | `arr.sort(...)` |
+| `[...arr].reverse()` or `arr.toReversed()` | `arr.reverse()` |
+
+`map`, `filter`, `find`, `some`, `every`, `slice`, `concat`, `flat`, and `flatMap` all return new arrays.
+
+Object methods that return new objects:
+
+- spread (`{ ...obj }`)
+- `Object.assign({}, obj)`
+- `Object.fromEntries(...)`
+
+## When mutation is fine
+
+Not all mutation is bad. Local mutation of data that no one else can see is perfectly fine:
+
+```javascript
+function buildReport(items) {
+  const result = [];  // local — no one else has a reference
+
+  for (const item of items) {
+    result.push(item.name);  // mutation of local array — fine
+  }
+
+  return result;
+}
+```
+
+The problem arises when data is shared and one part of the program mutates it unexpectedly.
+
+## Patterns that prevent mutation bugs
+
+### Return new objects from functions
+
+```javascript
+function updateUser(user, updates) {
+  return { ...user, ...updates };
+}
+
+const original = { name: "Ada", role: "engineer" };
+const updated = updateUser(original, { role: "senior engineer" });
+
+// original is unchanged
+```
+
+### Use `const` for references
+
+`const` does not prevent mutation — it prevents reassignment:
+
+```javascript
+const user = { name: "Ada" };
+user.name = "Grace";  // still works — object is mutated
+user = { name: "Ada" }; // TypeError — cannot reassign const
+```
+
+If you want to prevent mutation, you need to create copies explicitly or use `Object.freeze()`.
+
+### Avoid mutation in callbacks
+
+Mutating an object inside a `.map()` or `.forEach()` callback is a common source of bugs:
+
+```javascript
+// Bug: map is supposed to be non-mutating, but this mutates
+const processed = users.map((user) => {
+  user.processed = true;  // mutation!
+  return user;
+});
+
+// Correct: return new objects
+const processed = users.map((user) => ({
+  ...user,
+  processed: true,
+}));
+```
+
+<Warning title="Mutation bugs are hard to trace">
+  <p>When multiple parts of a program share references, a mutation in one place can cause unexpected behavior in a completely different place. The symptom appears far from the cause. Copying data instead of mutating it localizes changes and makes behavior predictable.</p>
+</Warning>
+
+## What to carry forward
+
+- mutation changes data in place — all references to the same object see the change
+- copying creates independent data — changes to the copy do not affect the original
+- spread (`{ ...obj }`, `[...arr]`) creates shallow copies
+- `structuredClone()` creates deep copies for nested data
+- prefer array methods that return new arrays (`map`, `filter`, `slice`)
+- mutation is fine for local data that no one else can see
+- mutation bugs are hard to trace because the symptom appears far from the cause
+
+Immutability as a practice makes code more predictable. The next unit covers objects at a deeper level — prototypes, constructors, and classes.

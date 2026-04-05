@@ -1,0 +1,144 @@
+---
+title: "The event loop at a practical level"
+description: "Learn how JavaScript handles operations that take time — the call stack, the task queue, and the event loop that coordinates them all."
+course: javascript
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+JavaScript is single-threaded. It does one thing at a time. When you make a network request, read a file, or set a timer, the operation does not happen inside JavaScript — it happens in the environment (the browser or Node.js) and JavaScript is notified when it is done.
+
+The event loop is the mechanism that coordinates this.
+
+## The call stack
+
+JavaScript tracks active function calls in a **call stack**. Each function call adds a frame. Each return removes one.
+
+```javascript
+function first() {
+  console.log("first");
+  second();
+}
+
+function second() {
+  console.log("second");
+}
+
+first();
+```
+
+Stack progression:
+1. `[global]`
+2. `[global, first]`
+3. `[global, first, console.log]` → pops
+4. `[global, first, second]`
+5. `[global, first, second, console.log]` → pops
+6. `[global, first, second]` → pops
+7. `[global, first]` → pops
+8. `[global]`
+
+The call stack must be empty before JavaScript can process the next task.
+
+## The problem with blocking operations
+
+If JavaScript is single-threaded, what happens during a slow operation like a network request? If JavaScript waited for it to complete, the entire program would freeze. No clicks, no animations, no other code would run.
+
+Instead, slow operations are **offloaded** to the environment. The browser handles the network request. JavaScript continues running other code. When the response arrives, the browser places a task in a queue for JavaScript to process.
+
+## The task queue
+
+The **task queue** (also called the callback queue or macrotask queue) holds callbacks that are ready to run but waiting for the call stack to be empty.
+
+When `setTimeout` is called:
+
+```javascript
+setTimeout(() => {
+  console.log("done");
+}, 1000);
+```
+
+1. JavaScript tells the browser: "set a timer for 1000ms and call this function when it expires"
+2. JavaScript continues executing the rest of the code
+3. After 1000ms, the browser places the callback in the task queue
+4. When the call stack is empty, the **event loop** checks the task queue
+5. If there is a task, it moves it to the call stack and runs it
+
+## The event loop
+
+The event loop is a simple loop with one job:
+
+```
+while (true) {
+  if (callStack.isEmpty() && taskQueue.isNotEmpty()) {
+    callStack.push(taskQueue.shift());
+  }
+}
+```
+
+It waits for the call stack to be empty, then moves the oldest task from the queue to the stack.
+
+## The microtask queue
+
+There are actually two queues. The **microtask queue** has higher priority than the task queue.
+
+- **macrotasks** (task queue): `setTimeout`, `setInterval`, I/O, UI rendering
+- **microtasks** (microtask queue): `Promise.then`, `queueMicrotask`, `MutationObserver`
+
+After each macrotask completes, the event loop processes **all** microtasks before moving to the next macrotask:
+
+```javascript
+console.log("1");
+
+setTimeout(() => console.log("2"), 0);
+
+Promise.resolve().then(() => console.log("3"));
+
+console.log("4");
+
+// Output: 1, 4, 3, 2
+```
+
+Why this order:
+
+1. `console.log("1")` — runs immediately
+2. `setTimeout` — schedules a macrotask
+3. `Promise.resolve().then(...)` — schedules a microtask
+4. `console.log("4")` — runs immediately
+5. Call stack is empty — event loop checks microtask queue
+6. `"3"` runs from the microtask queue
+7. Microtask queue is empty — event loop checks task queue
+8. `"2"` runs from the task queue
+
+<Tip title="Microtasks can starve the event loop">
+  <p>If microtasks keep being added to the microtask queue, macrotasks never run. This is rare in practice, but it means that <code>Promise.then</code> callbacks run before <code>setTimeout</code> callbacks even with zero delay.</p>
+</Tip>
+
+## Visualizing the event loop
+
+```
+┌─────────────┐    ┌──────────────┐    ┌──────────────┐
+│  Call Stack  │ ←─ │ Event Loop   │ ←─ │ Task Queue   │
+│             │    │              │    │ (macrotasks) │
+└─────────────┘    └──────────────┘    └──────────────┘
+                          ↑
+                          │
+                   ┌──────────────┐
+                   │ Microtask    │
+                   │ Queue        │
+                   └──────────────┘
+```
+
+The event loop checks the microtask queue after every macrotask. It drains all microtasks before taking the next macrotask.
+
+## What to carry forward
+
+- JavaScript is single-threaded — it runs one piece of code at a time
+- slow operations are offloaded to the environment, not handled by JavaScript itself
+- the call stack tracks active function calls
+- the task queue holds callbacks ready to run
+- the event loop moves tasks from the queue to the stack when the stack is empty
+- the microtask queue has priority over the task queue — promises run before setTimeout
+- `Promise.then` callbacks always run before `setTimeout` callbacks with the same delay
+
+The event loop explains when callbacks run. The next lesson covers the oldest async pattern — callbacks themselves.

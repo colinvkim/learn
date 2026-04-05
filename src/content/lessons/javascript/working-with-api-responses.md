@@ -1,0 +1,206 @@
+---
+title: "Working with API responses"
+description: "Learn how to handle the data that comes back from APIs — checking status, parsing responses, dealing with unexpected shapes, and building resilient data consumers."
+course: javascript
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+
+API responses are the most common source of external data in JavaScript applications. They are also the most unpredictable — APIs change, return unexpected formats, and fail without warning.
+
+## The raw response
+
+`fetch` returns a `Response` object, not the data itself:
+
+```javascript
+const response = await fetch("/api/users");
+
+response.status;       // 200, 404, 500, etc.
+response.ok;           // true if status is 200-299
+response.statusText;   // "OK", "Not Found", "Internal Server Error"
+response.headers;      // Headers object
+```
+
+## Parsing response bodies
+
+Different response methods return promises that resolve to the parsed body:
+
+```javascript
+const data = await response.json();  // parse as JSON
+const text = await response.text();  // get raw text
+const blob = await response.blob();  // get binary data (images, files)
+```
+
+Each can only be called once — the body stream is consumed:
+
+```javascript
+const response = await fetch("/api/data");
+
+const text = await response.text();
+const json = await response.json();  // TypeError — body already consumed
+```
+
+If you need the body twice, store the result:
+
+```javascript
+const text = await response.text();
+const json = JSON.parse(text);  // parse manually if you need the raw text too
+```
+
+## A resilient fetch pattern
+
+Always check status before parsing:
+
+```javascript
+async function apiGet(url) {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({ message: response.statusText }));
+    throw new Error(errorBody.message || `HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+```
+
+This pattern centralizes error handling and provides meaningful error messages instead of raw status codes.
+
+## API response shapes
+
+APIs return data in various structures. The most common:
+
+### Single object
+
+```json
+{
+  "id": 1,
+  "name": "Ada",
+  "email": "ada@example.com"
+}
+```
+
+### Paginated list
+
+```json
+{
+  "data": [
+    { "id": 1, "name": "Ada" },
+    { "id": 2, "name": "Grace" }
+  ],
+  "page": 1,
+  "totalPages": 5,
+  "totalItems": 47
+}
+```
+
+### Wrapped response
+
+```json
+{
+  "success": true,
+  "data": { "id": 1, "name": "Ada" },
+  "message": "User created"
+}
+```
+
+Do not assume the shape. Always check what you are working with:
+
+```javascript
+const response = await fetch("/api/users/1");
+const body = await response.json();
+
+// Check the shape before accessing nested data
+if (body.data && typeof body.data === "object") {
+  console.log(body.data.name);
+}
+```
+
+## Handling missing or unexpected fields
+
+APIs evolve. Fields get renamed, removed, or added. Defensive code handles this:
+
+```javascript
+function displayUser(user) {
+  const name = user?.name ?? "Unknown";
+  const role = user?.role ?? "user";
+  const avatar = user?.avatar ?? "/default-avatar.png";
+
+  return { name, role, avatar };
+}
+```
+
+Optional chaining (`?.`) and nullish coalescing (`??`) provide safe defaults for missing fields.
+
+<Tip title="Log unexpected data during development">
+  <p>When integrating with an API for the first time, log the full response to understand its actual shape:</p>
+</Tip>
+
+```javascript
+const response = await fetch("/api/users");
+const data = await response.json();
+console.log(data);  // inspect the actual structure before writing access code
+```
+
+## Type assertions in JavaScript
+
+JavaScript does not have compile-time type checking, so you validate data at runtime:
+
+```javascript
+function isValidUser(data) {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    typeof data.name === "string" &&
+    typeof data.email === "string" &&
+    Array.isArray(data.roles)
+  );
+}
+
+async function loadUser(id) {
+  const data = await apiGet(`/api/users/${id}`);
+
+  if (!isValidUser(data)) {
+    throw new Error("API returned invalid user data");
+  }
+
+  return data;
+}
+```
+
+Validation functions are the JavaScript equivalent of type checking at runtime.
+
+## Caching responses
+
+Avoid repeated identical requests with a simple cache:
+
+```javascript
+const cache = new Map();
+
+async function cachedFetch(url, options) {
+  if (cache.has(url)) {
+    return cache.get(url);
+  }
+
+  const response = await fetch(url, options);
+  const data = await response.json();
+  cache.set(url, data);
+  return data;
+}
+```
+
+For production applications, consider HTTP caching headers (`Cache-Control`, `ETag`) or a dedicated caching library.
+
+## What to carry forward
+
+- `fetch` returns a `Response` object — check `response.ok` before parsing
+- response body methods (`.json()`, `.text()`, `.blob()`) can only be called once
+- always validate or defensively access API response shapes — they can change
+- use `?.` and `??` to handle missing fields gracefully
+- write validation functions for critical data structures
+- log full API responses during development to understand actual shapes
+- cache responses to avoid redundant network requests
+
+API responses are the boundary between your code and the outside world. The next lesson covers defensive programming — checking assumptions in dynamic code.

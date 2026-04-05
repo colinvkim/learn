@@ -1,0 +1,181 @@
+---
+title: "Methods and this"
+description: "Learn how methods access the object they belong to, what the this keyword actually refers to, and the common scenarios where it causes confusion."
+course: javascript
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+Methods are functions stored as object properties. When you call a method, JavaScript sets the `this` keyword to the object the method was called on.
+
+Understanding `this` is one of the most confusing parts of JavaScript. It becomes simple once you learn the rules.
+
+## `this` in methods
+
+When a function is called as a method, `this` refers to the object before the dot:
+
+```javascript
+const counter = {
+  count: 0,
+  increment() {
+    this.count++;
+    return this.count;
+  },
+};
+
+counter.increment();  // 1
+counter.increment();  // 2
+```
+
+Inside `increment`, `this` refers to `counter` because the call was `counter.increment()`. The object before the dot becomes `this`.
+
+## `this` depends on how a function is called
+
+The same function can have different `this` values depending on how it is invoked:
+
+```javascript
+function showThis() {
+  console.log(this);
+}
+
+const obj = { showThis };
+
+showThis();       // global object (or undefined in strict mode)
+obj.showThis();   // obj
+```
+
+The function is the same. What changes is the call site. `this` is determined at call time, not at definition time.
+
+## Losing `this` in callbacks
+
+The most common `this` bug happens when you pass a method as a callback:
+
+```javascript
+const counter = {
+  count: 0,
+  increment() {
+    this.count++;
+  },
+};
+
+setTimeout(counter.increment, 100);
+// TypeError: Cannot read properties of undefined (reading 'count')
+```
+
+When `counter.increment` is passed to `setTimeout`, it is called as a plain function, not as a method. There is no object before the dot, so `this` is `undefined` (in strict mode) or the global object.
+
+### Fix 1: Use an arrow function wrapper
+
+```javascript
+setTimeout(() => counter.increment(), 100);
+// works — increment is called as counter.increment()
+```
+
+### Fix 2: Use `bind`
+
+`bind` creates a new function with `this` permanently set:
+
+```javascript
+setTimeout(counter.increment.bind(counter), 100);
+// works — this is bound to counter
+```
+
+### Fix 3: Use arrow function methods
+
+Arrow functions do not have their own `this` — they inherit it from the surrounding scope:
+
+```javascript
+const counter = {
+  count: 0,
+  increment: function() {
+    this.count++;
+  },
+};
+```
+
+This does not change anything because `increment` is a regular function. But when you use arrow functions in callbacks inside methods, `this` is preserved:
+
+```javascript
+const counter = {
+  count: 0,
+  start() {
+    setInterval(() => {
+      this.count++;  // arrow inherits `this` from start(), where this = counter
+    }, 1000);
+  },
+};
+```
+
+## `this` in the global context
+
+In the global context (code not inside a function), `this` refers to the global object:
+
+```javascript
+console.log(this);  // window in browsers, global in Node.js
+```
+
+In strict mode (which modules use by default), `this` is `undefined` in the global context:
+
+```javascript
+"use strict";
+console.log(this);  // undefined
+```
+
+## `this` in event handlers
+
+In DOM event handlers, `this` refers to the element that the listener is attached to:
+
+```javascript
+button.addEventListener("click", function() {
+  console.log(this);  // the button element
+});
+```
+
+If you use an arrow function for the event handler, `this` is inherited from the surrounding scope instead:
+
+```javascript
+button.addEventListener("click", () => {
+  console.log(this);  // whatever `this` was in the outer scope
+});
+```
+
+Use regular functions when you need `this` to be the element. Use arrow functions when you need `this` to be the component or object the handler belongs to.
+
+## Rules for determining `this`
+
+1. **Method call** (`obj.method()`) — `this` is the object before the dot
+2. **Plain function call** (`func()`) — `this` is `undefined` (strict mode) or the global object
+3. **Arrow function** — `this` is inherited from the enclosing scope
+4. **`bind`** — `this` is whatever you passed to `bind`
+5. **`call` / `apply`** — `this` is the first argument passed to the method
+6. **Event handler (regular function)** — `this` is the element the listener is on
+7. **Event handler (arrow function)** — `this` is inherited from the outer scope
+
+<Warning title="Arrow functions in object literals do not work as methods">
+  <p>Arrow functions in object literals inherit <code>this</code> from the surrounding scope, which is usually the global context or <code>undefined</code>:</p>
+</Warning>
+
+```javascript
+const counter = {
+  count: 0,
+  increment: () => {
+    this.count++;  // this is NOT counter — it is undefined or global
+  },
+};
+```
+
+Use regular function syntax for object methods. Use arrow functions for callbacks inside those methods.
+
+## What to carry forward
+
+- `this` refers to the object the method was called on — the object before the dot
+- `this` is determined at call time, not definition time
+- passing a method as a callback loses the `this` binding
+- fix lost `this` with arrow function wrappers, `bind`, or arrow function callbacks
+- arrow functions do not have their own `this` — they inherit from the enclosing scope
+- in event handlers, `this` is the element for regular functions, inherited for arrow functions
+- use regular functions for object methods; use arrow functions for callbacks
+
+Understanding `this` is essential for working with objects, classes, and DOM event handlers. The next lesson covers the prototype chain in more depth.

@@ -1,0 +1,162 @@
+---
+title: "Array methods: find, some, every, and sort"
+description: "Learn the array methods for searching, testing, and ordering data — when to use each one and the gotchas to avoid."
+course: javascript
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+`map`, `filter`, and `reduce` cover the broadest transformations. But you often need to find a single item, test whether any or all elements match a condition, or reorder an array. These methods handle those cases.
+
+## `find` returns the first matching element
+
+`find` searches through an array and returns the **first element** for which the callback returns a truthy value:
+
+```javascript
+const users = [
+  { id: 1, name: "Ada", active: true },
+  { id: 2, name: "Grace", active: false },
+  { id: 3, name: "Alan", active: true },
+];
+
+const user = users.find((u) => u.id === 2);
+// { id: 2, name: "Grace", active: false }
+```
+
+If no element matches, `find` returns `undefined`:
+
+```javascript
+const missing = users.find((u) => u.id === 99);
+// undefined
+```
+
+`find` stops searching as soon as it finds a match — it does not scan the entire array unnecessarily.
+
+### `findIndex` returns the position instead
+
+```javascript
+const index = users.findIndex((u) => u.id === 2);
+// 1
+```
+
+If you need to remove or replace an element, `findIndex` gives you its position.
+
+## `some` tests whether at least one element matches
+
+`some` returns `true` if the callback returns a truthy value for **any** element:
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+
+numbers.some((n) => n > 4);   // true
+numbers.some((n) => n > 10);  // false
+```
+
+Like `find`, `some` short-circuits — it stops as soon as it finds a match.
+
+## `every` tests whether all elements match
+
+`every` returns `true` only if the callback returns a truthy value for **every** element:
+
+```javascript
+const numbers = [2, 4, 6, 8];
+
+numbers.every((n) => n % 2 === 0);  // true — all even
+numbers.every((n) => n > 3);        // false — 2 is not > 3
+```
+
+`every` also short-circuits — it stops at the first failure.
+
+An empty array returns `true` for `every`. This is called a "vacuous truth" — there are no elements that fail the test, so the test passes:
+
+```javascript
+[].every(() => false);  // true
+```
+
+## `sort` reorders elements
+
+`sort` rearranges the array **in place** and returns a reference to the same array:
+
+```javascript
+const names = ["Charlie", "Alice", "Bob"];
+names.sort();
+// ["Alice", "Bob", "Charlie"]
+```
+
+### The default sort converts to strings
+
+Without a comparison function, `sort` converts elements to strings and compares them. This works for strings but produces wrong results for numbers:
+
+```javascript
+const numbers = [10, 2, 1, 20];
+numbers.sort();
+// [1, 10, 2, 20] — sorted as strings, not numbers
+```
+
+### Provide a comparison function for numbers
+
+The comparison function receives two elements and should return:
+
+- a **negative** number if the first should come before the second
+- a **positive** number if the first should come after the second
+- `0` if their order does not matter
+
+```javascript
+const numbers = [10, 2, 1, 20];
+numbers.sort((a, b) => a - b);
+// [1, 2, 10, 20] — correct numeric sort
+
+numbers.sort((a, b) => b - a);
+// [20, 10, 2, 1] — descending
+```
+
+### Sorting objects by property
+
+```javascript
+const products = [
+  { name: "Laptop", price: 999 },
+  { name: "Phone", price: 699 },
+  { name: "Book", price: 15 },
+];
+
+products.sort((a, b) => a.price - b.price);
+// [{ name: "Book", price: 15 }, { name: "Phone", price: 699 }, { name: "Laptop", price: 999 }]
+```
+
+<Tip title="sort mutates the original array">
+  <p>Unlike <code>map</code> and <code>filter</code>, <code>sort</code> modifies the array in place. If you need to keep the original order, make a copy first: <code>[...array].sort(...)</code>.</p>
+</Tip>
+
+## `toSorted` is a non-mutating alternative (ES2023)
+
+```javascript
+const numbers = [3, 1, 2];
+const sorted = numbers.toSorted((a, b) => a - b);
+// sorted: [1, 2, 3]
+// numbers: [3, 1, 2] — unchanged
+```
+
+`toSorted` is available in modern environments. Check your target platforms before relying on it.
+
+## When to use each method
+
+| Question | Method |
+|---|---|
+| Is at least one element matching? | `some` |
+| Are all elements matching? | `every` |
+| What is the first matching element? | `find` |
+| What is the index of the first match? | `findIndex` |
+| How do I reorder this array? | `sort` (mutates) or `toSorted` (copies) |
+
+## What to carry forward
+
+- `find` returns the first match or `undefined`
+- `some` returns `true` if any element matches — short-circuits
+- `every` returns `true` if all elements match — short-circuits on first failure
+- `sort` mutates the original array and sorts as strings by default
+- always provide a comparison function to `sort` for numbers
+- use `[...array].sort(...)` to sort without mutating the original
+- `toSorted` is a non-mutating alternative in modern JavaScript
+
+These methods complete the array toolkit. Combined with `map`, `filter`, and `reduce`, they cover essentially every array operation you will encounter.

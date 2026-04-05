@@ -57,4 +57,72 @@ export const courseLessonOrder: Record<string, string[]> = {
     "what-is-typescript",
     "the-type-system-in-practice",
   ],
+  javascript: [
+    // Unit 1: What is JavaScript
+    "what-javascript-is",
+    "how-javascript-engines-run-code",
+    "expressions-vs-statements-and-values-vs-references",
+    // Unit 2: Core syntax and control flow
+    "let-const-and-primitive-types",
+    "objects-and-arrays",
+    "operators-and-truthy-falsy",
+    "if-else-and-switch",
+    "loops-for-while-and-for-of",
+    // Unit 3: Functions
+    "function-declarations-and-expressions",
+    "arrow-functions",
+    "default-and-rest-parameters",
+    "scope-and-closures",
+    "higher-order-functions",
+    // Unit 4: Data manipulation
+    "array-methods-map-filter-reduce",
+    "array-methods-find-some-every-sort",
+    "object-operations-and-iteration",
+    "destructuring-and-spread-rest",
+    "copying-vs-mutating",
+    // Unit 5: Objects, prototypes, and classes
+    "how-objects-actually-work",
+    "methods-and-this",
+    "the-prototype-chain",
+    "constructor-functions",
+    "es6-classes-and-inheritance",
+    // Unit 6: Modules and code organization
+    "why-modules-matter",
+    "import-and-export",
+    "file-organization-and-project-structure",
+    "reusable-utility-modules",
+    // Unit 7: Asynchronous JavaScript
+    "the-event-loop",
+    "callbacks",
+    "promises",
+    "async-await",
+    "error-handling-with-async-code",
+    "fetching-data-from-apis",
+    // Unit 8: The browser and the DOM
+    "what-the-dom-is",
+    "selecting-elements",
+    "updating-text-attributes-and-styles",
+    "event-listeners",
+    "forms-and-input-handling",
+    // Unit 9: Error handling and debugging
+    "try-catch-and-throwing-errors",
+    "reading-stack-traces",
+    "debugging-with-console-and-devtools",
+    "common-javascript-mistakes",
+    // Unit 10: Working with external data
+    "json-parsing-and-serializing",
+    "working-with-api-responses",
+    "defensive-programming",
+    "checking-assumptions-in-dynamic-code",
+    // Unit 11: Tooling and modern workflow
+    "node-npm-and-running-scripts",
+    "project-structure",
+    "linting-and-formatting",
+    "bundlers-and-dev-servers",
+    // Unit 12: JavaScript design habits
+    "naming-and-small-functions",
+    "avoiding-duplication",
+    "immutability-as-a-practice",
+    "readable-code-over-clever-code",
+  ],
 };
