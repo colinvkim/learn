@@ -5,10 +5,6 @@ status: published
 sortOrder: 3
 topics:
   - JavaScript
-  - Programming fundamentals
-  - DOM
-  - Async
-  - Modules
 tags:
   - JavaScript
   - programming

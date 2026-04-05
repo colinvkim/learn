@@ -57,12 +57,20 @@ const groupId = `shell-set-${crypto.randomUUID()}`;
     >
       {(title || intro) && (
         <header class="border-b border-line bg-accent-soft/55 px-4 py-3 sm:px-5">
-          {title && <h3 class="m-0 text-base font-semibold tracking-[-0.01em] text-ink">{title}</h3>}
+          {title && (
+            <h3 class="m-0 text-base font-semibold tracking-[-0.01em] text-ink">
+              {title}
+            </h3>
+          )}
           {intro && <p class="mt-1 text-sm leading-6 text-muted">{intro}</p>}
         </header>
       )}
 
-      <div class="border-b border-line px-2 py-2 sm:px-3" role="tablist" aria-label={title ?? "Shell variants"}>
+      <div
+        class="border-b border-line px-2 py-2 sm:px-3"
+        role="tablist"
+        aria-label={title ?? "Shell variants"}
+      >
         <div class="flex flex-wrap gap-2">
           {variants.map((variant) => (
             <button
@@ -89,7 +97,11 @@ const groupId = `shell-set-${crypto.randomUUID()}`;
             data-shell-panel={variant.key}
             hidden
           >
-            <pre><code class={`language-${variant.language}`}>{variant.command}</code></pre>
+            <pre>
+              <code class={`language-${variant.language}`}>
+                {variant.command}
+              </code>
+            </pre>
           </div>
         ))}
       </div>
@@ -108,7 +120,8 @@ const groupId = `shell-set-${crypto.randomUUID()}`;
           if (stored && available.includes(stored)) return stored;
         } catch {}
 
-        const platform = navigator.userAgentData?.platform ?? navigator.userAgent ?? "";
+        const platform =
+          navigator.userAgentData?.platform ?? navigator.userAgent ?? "";
         const looksLikeWindows = /win(dows)?/i.test(platform);
 
         if (looksLikeWindows) {
@@ -139,71 +152,44 @@ const groupId = `shell-set-${crypto.randomUUID()}`;
       };
 
       const attachShellSets = () => {
-        document.querySelectorAll("[data-shell-command-set]").forEach((root) => {
-          if (!(root instanceof HTMLElement) || root.dataset.shellBound === "true") return;
-          root.dataset.shellBound = "true";
+        document
+          .querySelectorAll("[data-shell-command-set]")
+          .forEach((root) => {
+            if (
+              !(root instanceof HTMLElement) ||
+              root.dataset.shellBound === "true"
+            )
+              return;
+            root.dataset.shellBound = "true";
 
-          const tabs = [...root.querySelectorAll("[data-shell-tab]")].filter(
-            (tab) => tab instanceof HTMLButtonElement,
-          );
-          const available = tabs
-            .map((tab) => (tab instanceof HTMLButtonElement ? tab.dataset.shellTab : null))
-            .filter(Boolean);
+            const tabs = [...root.querySelectorAll("[data-shell-tab]")].filter(
+              (tab) => tab instanceof HTMLButtonElement,
+            );
+            const available = tabs
+              .map((tab) =>
+                tab instanceof HTMLButtonElement ? tab.dataset.shellTab : null,
+              )
+              .filter(Boolean);
 
-          if (!available.length) return;
+            if (!available.length) return;
 
-          const initialShell = getPreferredShell(available);
-          activateShell(root, initialShell);
+            const initialShell = getPreferredShell(available);
+            activateShell(root, initialShell);
 
-          tabs.forEach((tab) => {
-            if (!(tab instanceof HTMLButtonElement)) return;
-
-            tab.addEventListener("click", () => {
-              const shell = tab.dataset.shellTab;
-              if (!shell) return;
-              activateShell(root, shell);
-
-              try {
-                window.localStorage?.setItem(storageKey, shell);
-              } catch {}
-            });
-
-            tab.addEventListener("keydown", (event) => {
+            tabs.forEach((tab) => {
               if (!(tab instanceof HTMLButtonElement)) return;
 
-              const currentIndex = tabs.indexOf(tab);
-              let nextIndex = -1;
+              tab.addEventListener("click", () => {
+                const shell = tab.dataset.shellTab;
+                if (!shell) return;
+                activateShell(root, shell);
 
-              if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-                event.preventDefault();
-                nextIndex = (currentIndex + 1) % tabs.length;
-              } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-                event.preventDefault();
-                nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-              } else if (event.key === "Home") {
-                event.preventDefault();
-                nextIndex = 0;
-              } else if (event.key === "End") {
-                event.preventDefault();
-                nextIndex = tabs.length - 1;
-              }
-
-              if (nextIndex >= 0) {
-                const nextTab = tabs[nextIndex];
-                if (nextTab instanceof HTMLButtonElement) {
-                  const shell = nextTab.dataset.shellTab;
-                  if (shell) {
-                    activateShell(root, shell);
-                    nextTab.focus();
-                    try {
-                      window.localStorage?.setItem(storageKey, shell);
-                    } catch {}
-                  }
-                }
-              }
+                try {
+                  window.localStorage?.setItem(storageKey, shell);
+                } catch {}
+              });
             });
           });
-        });
       };
 
       document.addEventListener("astro:page-load", attachShellSets);
