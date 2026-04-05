@@ -72,7 +72,7 @@ const groupId = `shell-set-${crypto.randomUUID()}`;
               aria-controls={`${groupId}-${variant.key}-panel`}
               aria-selected="false"
               data-shell-tab={variant.key}
-              class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25"
+              class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle"
             >
               {variant.label}
             </button>
@@ -166,6 +166,41 @@ const groupId = `shell-set-${crypto.randomUUID()}`;
               try {
                 window.localStorage?.setItem(storageKey, shell);
               } catch {}
+            });
+
+            tab.addEventListener("keydown", (event) => {
+              if (!(tab instanceof HTMLButtonElement)) return;
+
+              const currentIndex = tabs.indexOf(tab);
+              let nextIndex = -1;
+
+              if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+                event.preventDefault();
+                nextIndex = (currentIndex + 1) % tabs.length;
+              } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+                event.preventDefault();
+                nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+              } else if (event.key === "Home") {
+                event.preventDefault();
+                nextIndex = 0;
+              } else if (event.key === "End") {
+                event.preventDefault();
+                nextIndex = tabs.length - 1;
+              }
+
+              if (nextIndex >= 0) {
+                const nextTab = tabs[nextIndex];
+                if (nextTab instanceof HTMLButtonElement) {
+                  const shell = nextTab.dataset.shellTab;
+                  if (shell) {
+                    activateShell(root, shell);
+                    nextTab.focus();
+                    try {
+                      window.localStorage?.setItem(storageKey, shell);
+                    } catch {}
+                  }
+                }
+              }
             });
           });
         });

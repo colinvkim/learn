@@ -16,7 +16,7 @@ const { courseId, previousLesson, nextLesson } = Astro.props;
     nextLesson && (
       <a
         href={getLessonHref(courseId, getLessonSlug(nextLesson))}
-        class="group block rounded-2xl border border-line/80 bg-panel/96 px-5 py-4 shadow-soft ring-1 ring-white/55 transition hover:border-accent/30 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_40px_rgba(15,23,42,0.07)] dark:ring-white/6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+        class="group block rounded-2xl border border-line/80 bg-panel/96 px-5 py-4 shadow-soft ring-1 ring-white/55 transition hover:border-accent/30 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_40px_rgba(15,23,42,0.07)] dark:ring-white/6 focus-ring"
       >
         <p class="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-muted">Next lesson</p>
         <div class="mt-2 flex items-center justify-between gap-4">
@@ -30,7 +30,7 @@ const { courseId, previousLesson, nextLesson } = Astro.props;
     previousLesson && (
       <a
         href={getLessonHref(courseId, getLessonSlug(previousLesson))}
-        class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 rounded-lg"
+        class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-accent focus-ring rounded-lg"
       >
         <span>Previous lesson</span>
         <span class="text-ink">{previousLesson.data.title}</span>
