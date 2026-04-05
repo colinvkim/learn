@@ -2,10 +2,11 @@
 title: A practical everyday workflow
 description: Learn one clean end-to-end Git and GitHub workflow that is safe, common, and useful for real projects.
 course: git-and-github
-order: 15
+order: 16
 status: published
 ---
 
+import Note from "../../../components/content/Note.astro";
 import Steps from "../../../components/content/Steps.astro";
 
 At this point, the pieces should be familiar enough to connect into one default workflow.
@@ -49,3 +50,41 @@ The important part is keeping the workflow internally consistent:
 - inspect before commit
 - push before review
 - review before merge
+
+## Stashing work in progress
+
+Sometimes you need to switch branches before your current work is ready to commit.
+
+Maybe you found a bug on `main` that needs a quick fix, or you need to pull the latest changes before continuing.
+
+That is where `git stash` helps:
+
+```bash
+git stash
+```
+
+This saves your uncommitted changes temporarily and gives you a clean working tree.
+
+After stashing, you can:
+
+- switch branches safely
+- pull updates
+- fix something else
+
+When you are ready to resume your stashed work:
+
+```bash
+git stash pop
+```
+
+This restores the most recent stash and removes it from the stash list. Use `git stash apply` if you want to keep the stash for reuse.
+
+In the everyday workflow, stashing is useful when:
+
+- you are interrupted mid-task and need to switch contexts quickly
+- you want to pull the latest changes before committing your incomplete work
+- you are experimenting and are not ready to commit yet
+
+<Note title="Stashing is optional">
+  <p>If your work is already in a commit, you do not need to stash. Stashing is only for uncommitted changes that you want to set aside temporarily.</p>
+</Note>

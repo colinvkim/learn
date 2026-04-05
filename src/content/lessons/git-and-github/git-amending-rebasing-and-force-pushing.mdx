@@ -86,7 +86,13 @@ A normal push is often rejected because Git sees that the remote history would b
 
 ## Force pushing updates the remote branch with rewritten history
 
-After rewriting history with `--amend` or `git rebase`, you may need:
+After rewriting history with `--amend` or `git rebase`, you may need to force push.
+
+<Note title="Force pushing requires a remote">
+  <p>Force pushing only matters once you have pushed to a remote. If you are still working locally, normal commits and resets are enough. Remote pushing and force pushing are covered in the GitHub lessons.</p>
+</Note>
+
+The command you may eventually need is:
 
 ```bash
 git push --force-with-lease

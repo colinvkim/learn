@@ -112,29 +112,6 @@ git restore .
 
 Use `git restore --staged file.txt` to unstage a file without discarding the changes.
 
-## Temporarily set aside work in progress
-
-```bash
-git stash
-git stash list
-git stash pop
-git stash apply
-```
-
-`git stash` saves uncommitted changes so you can switch branches or pull updates without committing incomplete work.
-
-`git stash pop` restores and removes the most recent stash entry. `git stash apply` restores it without removing it from the stash list.
-
-## Inspect a specific commit
-
-```bash
-git show
-git show abc1234
-git show --stat abc1234
-```
-
-`git show` displays the changes introduced by a specific commit. Without an argument, it shows the most recent commit.
-
 ## Apply a specific commit from another branch
 
 ```bash
@@ -150,18 +127,19 @@ This is useful when you need one specific fix from another branch without mergin
 ```bash
 git tag v1.0.0
 git tag -a v1.0.0 -m "Version 1.0.0"
-git tag
-git push origin v1.0.0
 ```
 
 Tags mark specific points in history, commonly used for releases. Lightweight tags (`git tag`) just label a commit. Annotated tags (`git tag -a`) store additional metadata including the tagger and message.
+
+<Note title="Reference-only commands">
+  <p>Cherry-pick and tags are useful to recognize, but you do not need them for everyday Git work. The core workflow commands cover most situations.</p>
+</Note>
 
 ## Work with remote repositories
 
 ```bash
 git remote -v
 git remote add origin https://github.com/user/repo.git
-git remote remove origin
 ```
 
 `git remote` manages references to remote repositories. The name `origin` is the default name for the remote you cloned from.

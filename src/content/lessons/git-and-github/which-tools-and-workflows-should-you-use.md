@@ -2,7 +2,7 @@
 title: Which tools and workflows should you use?
 description: Choose a beginner-safe default workflow instead of trying to optimize for every Git and GitHub tool at once.
 course: git-and-github
-order: 16
+order: 18
 status: published
 ---
 
