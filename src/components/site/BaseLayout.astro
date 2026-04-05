@@ -3,6 +3,7 @@ import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import "../../styles/global.css";
 import ThemeToggle from "./ThemeToggle.astro";
+import Analytics from "@vercel/analytics/astro";
 
 interface Props {
   title: string;
@@ -30,6 +31,7 @@ const canonical = Astro.site
     <Font cssVariable="--font-inter" preload />
     <Font cssVariable="--font-jetbrains-mono" preload />
     <ClientRouter />
+    <Analytics />
     <script is:inline>
       (() => {
         const storageKey = "learn-theme";
@@ -41,7 +43,8 @@ const canonical = Astro.site
           return stored === "light" || stored === "dark" ? stored : null;
         };
 
-        const getResolvedTheme = () => getStoredTheme() ?? (prefersDark.matches ? "dark" : "light");
+        const getResolvedTheme = () =>
+          getStoredTheme() ?? (prefersDark.matches ? "dark" : "light");
         const syncToggles = () => {
           const isDark = root.classList.contains("dark");
           const nextTheme = isDark ? "light" : "dark";
@@ -83,11 +86,11 @@ const canonical = Astro.site
             // Capture click position for circular reveal origin
             const x = event?.clientX ?? window.innerWidth / 2;
             const y = event?.clientY ?? window.innerHeight / 2;
-            
+
             root.dataset.themeTransition = "true";
             root.style.setProperty("--theme-transition-x", `${x}px`);
             root.style.setProperty("--theme-transition-y", `${y}px`);
-            
+
             const transition = document.startViewTransition(update);
             transition.finished.finally(() => {
               delete root.dataset.themeTransition;
