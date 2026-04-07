@@ -5,7 +5,7 @@ course: npm-and-pnpm
 status: published
 ---
 
-This lesson introduces the files and commands most beginners meet immediately in an npm project.
+This lesson covers the files and commands you will run when starting an npm project.
 
 ## `package.json` is the project manifest
 
@@ -39,7 +39,7 @@ npm init -y
 
 This is a common starting point for a new project that is not being scaffolded by another tool.
 
-In many real projects, you will not create `package.json` by hand. A starter command such as `create-astro`, `create-vite`, or `create-next-app` will usually create it for you. The important point is not how the file appears. The important point is that npm uses it as the project's manifest.
+In many real projects, you will not create `package.json` by hand. A starter command such as `create-astro`, `create-vite`, or `create-next-app` will usually create it for you. What matters is that npm uses this file as the project's manifest.
 
 ## The two meanings of `npm install`
 

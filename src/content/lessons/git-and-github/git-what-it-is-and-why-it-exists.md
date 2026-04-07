@@ -5,7 +5,7 @@ course: git-and-github
 status: published
 ---
 
-Before looking at Git commands, it helps to understand the problem Git solves.
+Before going further, it helps to understand the problem Git solves.
 
 ## Git is a version control system
 
@@ -21,19 +21,11 @@ That means it can help you:
 
 In practice, Git is the version control system most developers use for source code.
 
-## Start with the word repository
+## What a repository is
 
 A Git project lives inside a **repository**.
 
-A repository is the project plus the Git data that records its history.
-
-That history includes:
-
-- commits
-- branches
-- references to earlier states of the project
-
-When people say "repo," they usually mean the repository.
+A repository is the project files plus the Git data that records their history — commits, branches, and references to earlier states. When people say "repo," they mean this.
 
 ## What a commit is
 

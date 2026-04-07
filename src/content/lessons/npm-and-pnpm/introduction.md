@@ -5,21 +5,15 @@ course: npm-and-pnpm
 status: published
 ---
 
-If you are new to modern JavaScript tooling, `npm` and `pnpm` can seem more complicated than they really are.
+`npm install`, `pnpm add`, `pnpm dev` — these commands show up everywhere in JavaScript tutorials and project guides, often before it is clear what they actually do.
 
-They appear very early in tutorials, project setup guides, GitHub repositories, and terminal commands. It is common to see `npm install`, `pnpm add`, or `pnpm dev` before it is clear what those commands are actually doing.
-
-That confusion is normal. The names are specific, but the underlying job is straightforward.
-
-`npm` and `pnpm` are package managers for the Node.js ecosystem.
-
-Before going further, it helps to separate three related terms:
+`npm` and `pnpm` are package managers for the Node.js ecosystem. Their job is straightforward once you know the pieces:
 
 - a **package** is a reusable piece of code
 - a **package manager** is the tool that installs and tracks packages
 - a **registry** is the place packages are published and downloaded from
 
-The focus here is the package-manager side of that system.
+This course focuses on the package-manager side of that system.
 
 Their role is practical:
 
@@ -27,15 +21,6 @@ Their role is practical:
 - install those dependencies
 - keep installs reproducible with a lockfile
 - run project commands such as `dev`, `build`, and `test`
-
-In other words, they help a project answer a small set of recurring questions:
-
-- What packages does this project need?
-- Which exact versions are being used?
-- How should those packages be installed on another machine?
-- Which commands should a developer run to work on the project?
-
-Those are the questions package managers answer every day, even when the person using them is not thinking about the deeper mechanics.
 
 ## Why start with npm
 
@@ -64,42 +49,27 @@ The short answer is that many developers and teams want a different workflow for
 
 This is not about choosing a winner. It is about understanding the role of each tool well enough to make good decisions in real projects.
 
-## What to expect from the lessons
+## What this course covers
 
-The first part explains `npm` in slow, concrete terms.
+The first part explains `npm` in slow, concrete terms — what it is, what `package.json` does, what happens when you install a package, and how scripts and lockfiles fit in.
 
-That includes:
+The next part introduces `pnpm` with the same practical framing: what stays the same, which commands differ, and why teams adopt it.
 
-- what `npm` is
-- what `package.json` does
-- what happens when you install a package
-- how scripts and lockfiles fit into the workflow
+The final part compares them directly and ends with a recommendation.
 
-The next part introduces `pnpm` with the same kind of practical framing.
+## Reading advice for beginners
 
-That includes:
+If you are a complete beginner, move slowly. Focus on understanding what each command does before memorizing the commands themselves.
 
-- what stays the same between `npm` and `pnpm`
-- which commands are different
-- why teams adopt pnpm in the first place
-
-The final part compares them directly and ends with a practical recommendation.
-
-## A useful way to read this
-
-If you are a complete beginner, move slowly and focus on meaning before memorization.
-
-Try to keep asking:
+Useful questions to keep asking:
 
 - what file is this command changing?
-- is this command installing existing dependencies, or adding a new one?
+- is this installing existing dependencies, or adding a new one?
 - is this package needed for the app to run, or only for development?
 - what is the lockfile protecting me from?
 
-Those questions will do more for your understanding than memorizing a command list.
+Those will do more for your understanding than memorizing a command list.
 
-## The main idea to carry forward
+## The main idea
 
-`npm` and `pnpm` are tools for organizing dependency management in Node.js projects.
-
-They are not separate worlds. They are two ways of handling the same kind of project setup and workflow. Once that idea is clear, the rest of the material becomes much easier to follow.
+`npm` and `pnpm` are two ways of handling the same job: dependency management in Node.js projects. They are not separate worlds. Understanding what they do makes the rest of the material much easier to follow.

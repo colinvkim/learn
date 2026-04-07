@@ -5,21 +5,15 @@ course: npm-and-pnpm
 status: published
 ---
 
-Before looking at commands, it helps to understand the problem `npm` solves.
+Before going further, it helps to understand the problem `npm` solves.
 
-## Start with the word package
+## What a package is
 
-Most JavaScript projects are built from reusable pieces of code.
+Most JavaScript projects are built from reusable pieces of code — a framework like React or Astro, a tool like TypeScript or ESLint, a small library that solves one focused problem.
 
-Those pieces might be:
+In this ecosystem, those reusable pieces are called **packages**.
 
-- a framework such as React or Astro
-- a tool such as TypeScript or ESLint
-- a small library that solves one focused problem
-
-In this ecosystem, reusable code like this is usually called a **package**.
-
-A project rarely uses just one package. It usually depends on many of them.
+A project rarely uses just one. It usually depends on many.
 
 ## What npm is
 
@@ -125,7 +119,7 @@ The short version is:
 
 You do not need deep Node.js knowledge before learning `npm`. You only need to recognize that `npm` is part of the same environment.
 
-## A useful mental model
+## The short version
 
 > `npm` helps a project describe what it needs, install those things, and run common project tasks.
 

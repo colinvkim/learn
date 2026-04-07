@@ -37,34 +37,19 @@ Outside the browser, JavaScript runs on servers through **runtimes** like Node.j
 
 Server-side JavaScript uses the same syntax and core features as browser JavaScript. The difference is what is available: instead of the DOM, you get file system access, HTTP servers, and database drivers.
 
-## Interpreted vs compiled, at a useful level
+## Interpreted vs compiled, briefly
 
-Languages are often described as either "interpreted" or "compiled." JavaScript is generally called interpreted, but the distinction is not as sharp as it sounds.
+Languages are often described as either "interpreted" or "compiled." JavaScript is generally called interpreted, but the distinction is blurrier than it sounds.
 
-A **compiled language** is translated to machine code before it runs. The output is a separate binary that the computer executes directly.
+Modern JavaScript engines like V8 (Chrome, Node.js) **compile code just before it runs** — a technique called just-in-time (JIT) compilation. It is not pre-compiled into a binary, but it is not read line by line either.
 
-An **interpreted language** is read and executed by another program — an interpreter — at runtime.
+For everyday purposes, the practical takeaway is:
 
-JavaScript engines do both. Modern engines like V8 (Chrome, Node.js), SpiderMonkey (Firefox), and JavaScriptCore (Safari) **compile JavaScript just before it runs** — a technique called just-in-time (JIT) compilation. The code is not pre-compiled into a binary, but it is not simply read line by line either.
-
-For everyday purposes, the useful distinction is:
-
-- you write JavaScript as source code and run it directly
+- you write JavaScript and run it directly
 - there is no separate compilation step you need to perform
-- the engine handles optimization at runtime
+- the engine handles optimization automatically
 
-This is different from languages like TypeScript, which require an explicit compile step before the code can run in a browser.
-
-## How JavaScript engines run code
-
-When a browser or runtime loads JavaScript, the engine goes through a few stages:
-
-1. **Parsing** — the engine reads the source code and builds an internal representation called an abstract syntax tree (AST)
-2. **Compilation** — the AST is turned into optimized machine code (JIT-compiled)
-3. **Execution** — the engine runs the compiled code
-4. **Optimization** — the engine watches how code behaves and recompiles hot paths for better performance
-
-You do not need to manage this process. The engine handles it automatically. Understanding that the engine parses, compiles, and optimizes helps explain why certain patterns are fast and why some code behaves unexpectedly.
+This is different from TypeScript, which requires an explicit compile step before running in a browser.
 
 ## Dynamic typing
 
@@ -103,4 +88,4 @@ Features are added gradually and conservatively. Code written to current standar
 - dynamic typing means types are checked at runtime, not before
 - the language evolves through the ECMAScript specification
 
-These fundamentals set the stage for everything that follows. The next lesson looks at how values and types actually work in JavaScript.
+The next lesson looks at how values and types actually work in JavaScript.
