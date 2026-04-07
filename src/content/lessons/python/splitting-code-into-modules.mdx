@@ -1,0 +1,238 @@
+---
+title: "Splitting code into modules"
+description: "Learn how Python's import system works, how to organize code across multiple files, and how to write reusable utility modules."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+As programs grow, putting everything in one file becomes unmanageable. Python lets you split code across multiple files using **modules**. A module is simply a `.py` file that can be imported by other files.
+
+## What a module is
+
+Any `.py` file is a module. The filename (without `.py`) becomes the module name:
+
+```
+project/
+├── main.py
+├── utils.py
+└── config.py
+```
+
+```python
+# utils.py
+def format_name(first, last):
+    return f"{first} {last}"
+
+def is_valid_email(email):
+    return "@" in email
+```
+
+```python
+# main.py
+import utils
+
+name = utils.format_name("Ada", "Lovelace")
+print(name)    # Ada Lovelace
+```
+
+When Python sees `import utils`, it looks for a file called `utils.py` in the same directory (and in other locations on the module search path). It executes the file once and makes its contents available under the `utils` name.
+
+## Import styles
+
+There are several ways to import:
+
+```python
+import utils                    # access as utils.format_name()
+from utils import format_name   # access directly as format_name()
+from utils import format_name as fn  # access as fn()
+from utils import *             # imports everything — avoid this
+```
+
+<Tip title="Prefer explicit imports">
+  <p>Use <code>import module</code> or <code>from module import specific_name</code>. Avoid <code>from module import *</code> because it pollutes your namespace and makes it unclear where names come from. The Zen of Python says: "Explicit is better than implicit."</p>
+</Tip>
+
+## How import works
+
+When you import a module:
+
+1. Python checks if it has already been imported (in `sys.modules`)
+2. If not, it finds and executes the file top to bottom
+3. It creates a module object with all the module's names
+4. It binds the module (or selected names) in your file's namespace
+
+A module is executed **only once** per program run. Subsequent imports reuse the cached module:
+
+```python
+# config.py
+print("Loading config...")    # prints only once, no matter how many files import this
+DEBUG = True
+```
+
+This is why import statements can appear anywhere in your code — at the top, inside functions, or conditionally. The convention is to place them at the top of the file so dependencies are clear.
+
+## Packages
+
+A **package** is a directory with an `__init__.py` file. It groups related modules together:
+
+```
+project/
+├── main.py
+└── myapp/
+    ├── __init__.py
+    ├── utils.py
+    └── models.py
+```
+
+```python
+# main.py
+from myapp.utils import format_name
+from myapp import models
+```
+
+The `__init__.py` file can be empty. It tells Python that the directory is a package. It can also contain code that runs when the package is imported, or re-export names for convenience:
+
+```python
+# myapp/__init__.py
+from .utils import format_name
+from .models import User
+```
+
+This lets users write `from myapp import format_name` instead of `from myapp.utils import format_name`.
+
+## Relative imports
+
+Inside a package, you can use relative imports with dots:
+
+```python
+# myapp/handlers.py
+from .models import User       # . means "from this package"
+```
+
+When a package is nested inside another package, you can go up levels:
+
+```python
+# src/myproject/handlers.py — inside a larger package
+from ..utils import helper     # .. means "from the parent package"
+```
+
+Relative imports only work inside packages (directories with `__init__.py`). For simple scripts in a single directory, use absolute imports.
+
+## The module search path
+
+When you `import something`, Python looks for it in `sys.path`, which contains:
+
+1. the directory containing the script being run (or the current directory for `python -m`)
+2. directories from the `PYTHONPATH` environment variable
+3. the standard library directory
+4. the site-packages directory where installed packages live
+
+Built-in modules like `sys` and `math` are always available regardless of the search path.
+
+You can inspect the search path:
+
+```python
+import sys
+print(sys.path)
+```
+
+This matters when you get `ModuleNotFoundError`. Python cannot find the file in any of these locations. The most common causes:
+
+- the file is not in the same directory or on the path
+- you are running a script from a different working directory
+- there is a naming conflict with a standard library module
+
+## Writing a utility module
+
+A utility module is a file of helper functions that other parts of your program import:
+
+```python
+# fileutils.py
+"""Utility functions for file operations."""
+
+import os
+import json
+
+
+def read_json(path):
+    """Read and return parsed JSON from a file."""
+    with open(path) as f:
+        return json.load(f)
+
+
+def ensure_dir(path):
+    """Create a directory if it does not exist."""
+    os.makedirs(path, exist_ok=True)
+
+
+def list_files(directory, extension=".py"):
+    """Return a list of files with the given extension in the directory."""
+    return [
+        f for f in os.listdir(directory)
+        if f.endswith(extension)
+    ]
+```
+
+Other files import what they need:
+
+```python
+# main.py
+from fileutils import read_json, ensure_dir
+
+config = read_json("config.json")
+ensure_dir("output")
+```
+
+## What is executable vs what is importable
+
+Not every `.py` file should be imported. Some files are **scripts** — they are meant to be run directly:
+
+```python
+# migrate.py — a script to run, not import
+from fileutils import read_json
+
+data = read_json("data.json")
+process(data)
+```
+
+Other files are **modules** — they define functions and classes for other files to use:
+
+```python
+# fileutils.py — a module to import
+def read_json(path):
+    ...
+```
+
+A file can serve as both if you guard the executable part:
+
+```python
+# process.py
+from fileutils import read_json
+
+
+def main():
+    data = read_json("data.json")
+    print(data)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+`__name__` is set to `"__main__"` when the file is run directly, but to the module name when it is imported. This pattern lets a file work as both a script and a module.
+
+## What to carry forward
+
+- any `.py` file is a module
+- `import module` loads the file and gives access as `module.name`
+- `from module import name` imports a specific name directly
+- modules are executed once and cached
+- packages are directories with `__init__.py`
+- put imports at the top of your file
+- write utility modules with focused, reusable functions
+- use `if __name__ == "__main__"` to guard script-only code
+
+Modules are how real Python programs are organized. The next lesson tours the standard library — the modules Python ships with out of the box.

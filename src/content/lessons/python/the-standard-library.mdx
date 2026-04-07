@@ -1,0 +1,231 @@
+---
+title: "The standard library"
+description: "Learn about the most useful modules in Python's standard library and when to reach for them."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+Python ships with a large **standard library** — a collection of modules that handle common tasks without requiring any external packages. You can do a lot before you ever need `pip install`.
+
+## Core modules you will use often
+
+### os — operating system interface
+
+`os` provides functions for interacting with the operating system:
+
+```python
+import os
+
+os.getcwd()                # current working directory
+os.listdir(".")            # list files in directory
+os.path.exists("file.txt") # check if path exists
+os.path.isfile("file.txt") # check if path is a file
+os.path.isdir("src")       # check if path is a directory
+os.path.join("src", "lib", "main.py")  # "src/lib/main.py" on macOS/Linux — uses correct separator for your OS
+os.environ.get("HOME")     # read environment variable
+```
+
+<Tip title="os.path.join is cross-platform">
+  <p>Always use <code>os.path.join()</code> or <code>pathlib</code> to build file paths. It uses the correct separator for your operating system (<code>/</code> on macOS/Linux, <code>\\</code> on Windows). Never concatenate paths with <code>+</code>.</p>
+</Tip>
+
+### sys — system-specific parameters
+
+`sys` gives access to interpreter settings and command-line arguments:
+
+```python
+import sys
+
+sys.argv                   # list of command-line arguments
+sys.exit(0)                # exit the program with a status code
+sys.path                   # module search path
+sys.stdin                  # standard input stream
+sys.stdout                 # standard output stream
+sys.stderr                 # standard error stream
+```
+
+### json — JSON encoding and decoding
+
+```python
+import json
+
+data = {"name": "Ada", "age": 36}
+
+# Serialize to a string
+text = json.dumps(data)
+# '{"name": "Ada", "age": 36}'
+
+# Deserialize from a string
+parsed = json.loads(text)
+# {"name": "Ada", "age": 36}
+
+# Write directly to a file
+with open("data.json", "w") as f:
+    json.dump(data, f)
+
+# Read directly from a file
+with open("data.json") as f:
+    loaded = json.load(f)
+```
+
+### csv — reading and writing CSV files
+
+```python
+import csv
+
+# Reading
+with open("data.csv") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(row["name"], row["email"])
+
+# Writing
+with open("output.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["name", "email"])
+    writer.writeheader()
+    writer.writerow({"name": "Ada", "email": "ada@example.com"})
+```
+
+### pathlib — modern path handling (Python 3.4+)
+
+`pathlib` provides an object-oriented approach to file paths:
+
+```python
+from pathlib import Path
+
+path = Path("src") / "main.py"    # Path("src/main.py")
+path.exists()                      # True/False
+path.is_file()                     # True/False
+path.read_text()                   # returns file contents as string
+path.write_text("hello")           # writes to file
+path.parent                        # Path("src")
+path.name                          # "main.py"
+path.suffix                        # ".py"
+path.stem                          # "main"
+```
+
+`pathlib` is the modern way to work with paths. It replaces `os.path` for most tasks.
+
+## Collections and data handling
+
+### collections — specialized container types
+
+```python
+from collections import defaultdict, Counter, deque
+
+# defaultdict — auto-creates missing keys
+counts = defaultdict(int)
+counts["a"] += 1
+
+# Counter — count hashable items
+word_counts = Counter(["a", "b", "a", "c", "a"])
+word_counts.most_common(2)    # [("a", 3), ("b", 1)]
+
+# deque — efficient queue operations
+queue = deque([1, 2, 3])
+queue.append(4)          # add to right
+queue.popleft()          # remove from left — O(1)
+```
+
+### itertools — efficient iteration tools
+
+```python
+from itertools import chain, combinations, permutations, groupby
+
+# chain — iterate over multiple iterables as one
+for item in chain([1, 2], [3, 4]):
+    print(item)    # 1, 2, 3, 4
+
+# combinations — all combinations of length n
+list(combinations("ABC", 2))  # [("A", "B"), ("A", "C"), ("B", "C")]
+
+# groupby — group consecutive items by key
+# Note: groupby only groups consecutive items with the same key.
+# Sort the data first if you want all items with the same key grouped together.
+data = [("a", 1), ("a", 2), ("b", 3)]
+for key, group in groupby(data, key=lambda x: x[0]):
+    print(key, list(group))
+```
+
+## Text processing
+
+### re — regular expressions
+
+```python
+import re
+
+pattern = re.compile(r"\d{3}-\d{4}")
+pattern.findall("Call 123-4567 or 987-6543")  # ["123-4567", "987-6543"]
+pattern.search("Call 123-4567")               # Match object
+pattern.sub("XXX-XXXX", "Call 123-4567")      # "Call XXX-XXXX"
+```
+
+### string — string constants and utilities
+
+```python
+import string
+
+string.ascii_letters     # "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+string.digits            # "0123456789"
+string.punctuation       # '!"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~'
+```
+
+## Dates and times
+
+### datetime — date and time handling
+
+```python
+from datetime import datetime, timedelta
+
+now = datetime.now()
+formatted = now.strftime("%Y-%m-%d %H:%M")     # "2025-04-06 14:30"
+parsed = datetime.strptime("2025-04-06", "%Y-%m-%d")
+future = now + timedelta(days=7)
+```
+
+## Randomness
+
+### random — generating random values
+
+```python
+import random
+
+random.randint(1, 10)       # random integer from 1 to 10 (inclusive)
+random.choice(["a", "b", "c"])  # random item from list
+random.sample(range(100), 5)    # 5 unique random numbers
+
+items = [1, 2, 3, 4, 5]
+random.shuffle(items)       # shuffles the list in place — returns None
+```
+
+## When to use the standard library vs external packages
+
+Use the **standard library** when:
+
+- you need basic functionality that ships with Python
+- you want zero external dependencies
+- you are writing scripts or simple utilities
+
+Use **external packages** when:
+
+- you need features the standard library does not provide (HTTP requests with `requests`, data analysis with `pandas`)
+- you need better performance for heavy workloads
+- the ecosystem around a package is well established
+
+The standard library is your first stop for any task. Check it before installing external packages.
+
+## What to carry forward
+
+- the standard library is included with Python — no installation needed
+- `os` and `pathlib` handle file system operations
+- `json` and `csv` read and write common data formats
+- `collections` provides `defaultdict`, `Counter`, and `deque`
+- `itertools` has tools for efficient iteration
+- `re` handles regular expressions
+- `datetime` manages dates and times
+- always check the standard library before installing external packages
+
+The standard library covers a lot of everyday needs. The next lesson covers reading and writing files — one of the most common real-world tasks.

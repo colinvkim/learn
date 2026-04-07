@@ -1,0 +1,194 @@
+---
+title: "Defining and calling functions"
+description: "Learn how to define functions in Python, pass parameters, return values, and understand why functions are the primary unit of code organization."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+Functions are reusable blocks of code that perform a specific task. They let you give a name to a sequence of statements and run them whenever you need.
+
+## Defining a function
+
+Use `def` to define a function:
+
+```python
+def greet(name):
+    print(f"Hello, {name}")
+```
+
+The definition has four parts:
+
+1. `def` — the keyword that starts a function definition
+2. `greet` — the function name
+3. `(name)` — the parameters the function accepts
+4. `:` — followed by an indented body
+
+Defining a function does not run it. It creates a function object and binds it to the name `greet`. You must **call** the function to execute its body:
+
+```python
+greet("Ada")    # Hello, Ada
+greet("Bob")    # Hello, Bob
+```
+
+## Return values
+
+Functions produce a value using `return`. If a function does not use `return`, it returns `None` automatically:
+
+```python
+def add(a, b):
+    return a + b
+
+result = add(3, 4)    # 7
+```
+
+A function can return early:
+
+```python
+def divide(a, b):
+    if b == 0:
+        return None
+    return a / b
+```
+
+`return` exits the function immediately. Any code after a `return` in the same branch does not run:
+
+```python
+def check_age(age):
+    if age < 0:
+        return "Invalid age"
+    if age < 18:
+        return "Minor"
+    return "Adult"
+```
+
+<Tip title="Return early for guard conditions">
+  <p>Returning early when a condition fails — often called a "guard clause" — keeps your code flat and readable. Instead of nesting an <code>if/else</code> for the happy path, handle invalid cases first and return.</p>
+</Tip>
+
+## Parameters vs arguments
+
+The terms are often used interchangeably, but there is a distinction:
+
+- **parameters** are the names listed in the function definition
+- **arguments** are the actual values you pass when calling the function
+
+```python
+def greet(name):           # name is a parameter
+    print(f"Hello, {name}")
+
+greet("Ada")               # "Ada" is an argument
+```
+
+## Multiple parameters
+
+Functions can accept multiple parameters, separated by commas:
+
+```python
+def format_name(first, last):
+    return f"{first} {last}"
+
+full = format_name("Ada", "Lovelace")    # "Ada Lovelace"
+```
+
+Arguments are matched to parameters by position — the first argument goes to the first parameter, the second to the second, and so on.
+
+## None and functions that do not return
+
+When a function has no `return` statement, or uses `return` without a value, it returns `None`:
+
+```python
+def log(message):
+    print(f"[LOG] {message}")
+    # no return — implicitly returns None
+
+result = log("starting up")
+print(result)    # None
+```
+
+`None` is Python's way of representing "no value." It is the only value of the `NoneType` type. Many functions that perform actions — printing, writing files, making requests — return `None` because their purpose is the side effect, not a return value.
+
+## Docstrings
+
+A **docstring** is a string literal placed as the first statement in a function body. It documents what the function does:
+
+```python
+def calculate_total(prices, tax_rate):
+    """Calculate the total price including tax.
+
+    Args:
+        prices: A list of numeric prices.
+        tax_rate: The tax rate as a decimal (e.g., 0.08 for 8%).
+
+    Returns:
+        The total amount including tax.
+    """
+    subtotal = sum(prices)
+    return subtotal * (1 + tax_rate)
+```
+
+Docstrings are stored in the function's `__doc__` attribute and displayed by `help()`:
+
+```python
+help(calculate_total)
+```
+
+Good docstrings explain what a function does, what it expects, and what it returns. They matter especially when other people — or future you — need to use your code without reading its implementation.
+
+## Why functions exist
+
+Functions serve three purposes:
+
+**Reuse.** Write logic once, use it many times:
+
+```python
+def is_even(n):
+    return n % 2 == 0
+
+is_even(4)    # True
+is_even(7)    # False
+```
+
+**Abstraction.** Hide complexity behind a name:
+
+```python
+def load_user_config(path):
+    """Read and parse a JSON config file."""
+    with open(path) as f:
+        return json.load(f)
+```
+
+You do not need to think about file opening or JSON parsing every time you need config data.
+
+**Organization.** Break a large problem into small, testable pieces:
+
+```python
+def fetch_data(url):
+    ...
+
+def parse_data(raw):
+    ...
+
+def save_data(parsed):
+    ...
+
+# Main flow is clear at a glance
+raw = fetch_data("https://api.example.com/data")
+parsed = parse_data(raw)
+save_data(parsed)
+```
+
+Each function has one job. The main script orchestrates them.
+
+## What to carry forward
+
+- `def` defines a function; calling it with `()` runs it
+- parameters are names in the definition; arguments are values at call time
+- `return` sends a value back to the caller and exits the function
+- functions without `return` return `None`
+- docstrings document what a function does, its arguments, and its return value
+- functions enable reuse, abstraction, and organization
+
+Functions are the primary building block of Python programs. The next lesson covers default arguments and keyword arguments, which make functions more flexible.

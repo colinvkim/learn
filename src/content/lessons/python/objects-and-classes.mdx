@@ -1,0 +1,234 @@
+---
+title: "Objects and classes"
+description: "Learn how everything in Python is an object, how to define your own classes, and when to use classes vs simple dictionaries."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+import Note from "../../../components/content/Note.astro";
+
+
+Python is an object-oriented language. Every value — numbers, strings, lists, functions — is an **object**. An object bundles data (attributes) and behavior (methods). You have been using objects throughout this course. Now learn how to create your own.
+
+## Everything is an object
+
+Every value in Python is an object with a type:
+
+```python
+type(42)         # <class 'int'>
+type("hello")    # <class 'str'>
+type([1, 2])     # <class 'list'>
+```
+
+The word "class" here means the same thing as "type." An object is an **instance** of a class. The methods you call — `.upper()`, `.append()`, `.items()` — are functions defined on the class.
+
+## Defining a class
+
+Use the `class` keyword to define a new type:
+
+```python
+class User:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+
+    def greet(self):
+        return f"Hi, {self.name}"
+```
+
+A class has two key parts:
+
+- `__init__` — the **initializer**. It runs when you create a new instance and sets up the object's attributes. The first parameter, `self`, refers to the instance being created.
+- methods — functions defined on the class. They always take `self` as the first parameter, which refers to the instance the method is called on.
+
+## Creating instances
+
+Call the class like a function to create an instance:
+
+```python
+user = User("Ada", "ada@example.com")
+
+print(user.name)         # Ada
+print(user.email)        # ada@example.com
+print(user.greet())      # Hi, Ada
+```
+
+Each instance has its own attributes. Creating a second instance does not affect the first:
+
+```python
+alice = User("Alice", "alice@example.com")
+bob = User("Bob", "bob@example.com")
+
+print(alice.name)    # Alice
+print(bob.name)      # Bob
+```
+
+## self
+
+`self` is the convention for the first parameter of instance methods. It refers to the instance the method is called on:
+
+```python
+class Counter:
+    def __init__(self):
+        self.count = 0
+
+    def increment(self):
+        self.count = self.count + 1
+
+    def current(self):
+        return self.count
+```
+
+```python
+c = Counter()
+c.increment()
+c.increment()
+print(c.current())    # 2
+```
+
+When you call `c.increment()`, Python automatically passes `c` as the `self` argument. You never pass `self` yourself.
+
+## Adding attributes dynamically
+
+Attributes can be added to an instance at any time:
+
+```python
+user = User("Ada", "ada@example.com")
+user.role = "admin"    # added dynamically
+```
+
+But it is better practice to define all expected attributes in `__init__` so the object's structure is clear:
+
+```python
+class User:
+    def __init__(self, name, email, role="user"):
+        self.name = name
+        self.email = email
+        self.role = role
+```
+
+## String representation
+
+Define `__repr__` to control how an instance displays:
+
+```python
+class User:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+
+    def __repr__(self):
+        return f"User(name={self.name!r}, email={self.email!r})"
+```
+
+```python
+user = User("Ada", "ada@example.com")
+print(user)    # User(name='Ada', email='ada@example.com')
+```
+
+This is invaluable for debugging. Without `__repr__`, Python prints a generic `<__main__.User object at 0x...>`.
+
+<Note title="__repr__ vs __str__">
+  <p>Python actually has two string representation methods. <code>__repr__</code> is the official representation used by the REPL and debugging. <code>__str__</code> is meant for end-user display. When <code>__str__</code> is not defined, Python falls back to <code>__repr__</code>. For most purposes, defining <code>__repr__</code> is enough.</p>
+</Note>
+
+## Inheritance
+
+A class can **inherit** from another class, gaining its attributes and methods:
+
+```python
+class Admin(User):
+    def __init__(self, name, email, permissions=None):
+        super().__init__(name, email)
+        self.permissions = permissions or []
+
+    def can_edit(self, resource):
+        return resource in self.permissions
+```
+
+`super().__init__()` calls the parent class's initializer. The `Admin` class has everything `User` has, plus its own `permissions` attribute and `can_edit()` method.
+
+```python
+admin = Admin("Ada", "ada@example.com", ["users", "settings"])
+print(admin.greet())       # Hi, Ada (inherited from User)
+print(admin.can_edit("users"))   # True
+```
+
+<Tip title="Prefer composition over inheritance">
+  <p>Inheritance is powerful but creates tight coupling between classes. Often, composing an object from other objects is clearer and more flexible. Use inheritance when there is a genuine "is-a" relationship; use composition for "has-a" relationships.</p>
+</Tip>
+
+## When to use classes vs dictionaries
+
+You can model data with either approach:
+
+```python
+# Dictionary approach
+user = {"name": "Ada", "email": "ada@example.com"}
+print(user["name"])
+
+# Class approach
+class User:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+
+user = User("Ada", "ada@example.com")
+print(user.name)
+```
+
+Use **dictionaries** when:
+
+- you need simple data storage
+- the structure is dynamic or varies between instances
+- you are working with JSON or API responses
+- you do not need behavior, just data
+
+Use **classes** when:
+
+- you need both data and behavior together
+- you want to enforce a consistent structure
+- you need validation in `__init__`
+- you are building a system with clear domain entities (User, Order, Product)
+- you want IDE autocomplete and type checking support
+
+A good rule of thumb: start with dictionaries. Move to classes when you find yourself writing the same validation or transformation logic repeatedly.
+
+## dataclasses
+
+Python 3.7+ provides `dataclasses` for creating classes that primarily store data. They reduce boilerplate:
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class User:
+    name: str
+    email: str
+    role: str = "user"
+```
+
+The `name: str` syntax is a **type hint** — it documents the expected type but does not enforce it at runtime. You will learn about type hints in a later lesson.
+
+This `@dataclass` decorator automatically generates `__init__`, `__repr__`, and comparison methods:
+
+```python
+user = User("Ada", "ada@example.com")
+print(user)    # User(name='Ada', email='ada@example.com', role='user')
+```
+
+`dataclasses` are the recommended way to create simple data-holding classes in modern Python.
+
+## What to carry forward
+
+- every value in Python is an object — an instance of a class
+- classes define attributes (data) and methods (behavior)
+- `__init__` initializes new instances; `self` refers to the instance
+- each instance has its own independent attributes
+- inheritance lets a class extend another class
+- `__repr__` controls how objects display for debugging
+- use dictionaries for simple data; use classes when you need behavior, validation, or structure
+- `dataclasses` reduce boilerplate for data-holding classes
+
+Objects and classes organize code around data and behavior. The next lesson covers a more advanced but powerful topic: iterables, iterators, and generators — how Python handles lazy, on-demand computation.

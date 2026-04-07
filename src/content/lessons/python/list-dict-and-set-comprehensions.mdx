@@ -1,0 +1,167 @@
+---
+title: "List, dict, and set comprehensions"
+description: "Learn how comprehensions build and transform collections in a single readable expression."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+Comprehensions are a concise way to build new collections from existing ones. They replace the pattern of creating an empty collection, looping over data, and appending results.
+
+## List comprehensions
+
+A list comprehension builds a list in one expression:
+
+```python
+numbers = [1, 2, 3, 4, 5]
+squares = [n ** 2 for n in numbers]
+# [1, 4, 9, 16, 25]
+```
+
+This replaces:
+
+```python
+numbers = [1, 2, 3, 4, 5]
+squares = []
+
+for n in numbers:
+    squares.append(n ** 2)
+```
+
+The comprehension has three parts:
+
+1. the expression that produces each item — `n ** 2`
+2. the loop variable — `for n`
+3. the source collection — `in numbers`
+
+## Filtering with conditions
+
+Add an `if` clause to include only items that match:
+
+```python
+numbers = range(20)
+evens = [n for n in numbers if n % 2 == 0]
+# [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+```
+
+You can chain multiple conditions:
+
+```python
+valid = [n for n in numbers if n > 0 and n < 10]
+# [1, 2, 3, 4, 5, 6, 7, 8, 9]
+```
+
+Python also supports `if n > 0 if n < 10` (two separate `if` clauses), but this is rare and harder to read. Prefer `and` in a single condition.
+
+## Transforming with expressions
+
+The expression can be any valid Python expression, including function calls:
+
+```python
+names = ["ada", "BOB", "Cia"]
+cleaned = [name.strip().title() for name in names]
+# ["Ada", "Bob", "Cia"]
+```
+
+## Dict comprehensions
+
+Dict comprehensions build dictionaries. They use curly braces and a key-value expression:
+
+```python
+names = ["Ada", "Bob", "Cia"]
+name_lengths = {name: len(name) for name in names}
+# {"Ada": 3, "Bob": 3, "Cia": 3}
+```
+
+The syntax is `{key_expression: value_expression for item in source}`.
+
+Filtering works the same way:
+
+```python
+numbers = range(1, 11)
+squares = {n: n ** 2 for n in numbers if n % 2 == 0}
+# {2: 4, 4: 16, 6: 36, 8: 64, 10: 100}
+```
+
+## Set comprehensions
+
+Set comprehensions build sets. They look like list comprehensions but use curly braces:
+
+```python
+words = ["hello", "world", "hello", "python"]
+unique_lengths = {len(word) for word in words}
+# {5, 6}
+```
+
+Duplicates are removed automatically because sets only store unique items.
+
+## Nested comprehensions
+
+You can nest loops inside a comprehension:
+
+```python
+pairs = [(x, y) for x in range(3) for y in range(3)]
+# [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), ...]
+```
+
+The order of `for` clauses matches a nested `for` loop — the first `for` is the outer loop.
+
+A different pattern creates a list of lists (a matrix):
+
+```python
+# Clear with two levels — creates a 3x3 grid of zeros
+matrix = [[0 for _ in range(3)] for _ in range(3)]
+```
+
+This is not a "nested" loop in the same sense — the inner comprehension does not reference the outer loop variable. It is a comprehension inside another comprehension, producing independent rows.
+
+For readability, complex nested comprehensions with multiple `for` clauses are often better written as regular loops:
+
+<Tip title="Prefer readability over conciseness">
+  <p>Comprehensions should be readable at a glance. If a comprehension needs more than one <code>if</code> clause or nests more than two <code>for</code> clauses, consider writing it as a regular loop.</p>
+</Tip>
+
+## When comprehensions help
+
+Comprehensions are useful when:
+
+- transforming every item in a collection
+- filtering a collection
+- building a lookup dictionary from a list
+- collecting results from a loop into a single structure
+
+```python
+# Build a lookup
+users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Bob"}]
+by_id = {user["id"]: user for user in users}
+```
+
+## When to use a regular loop
+
+Use a regular loop when:
+
+- the transformation requires multiple statements
+- you need side effects (printing, logging, writing files)
+- the logic is complex enough that a comprehension becomes hard to read
+
+```python
+# This is clearer as a regular loop
+results = []
+
+for item in items:
+    processed = clean(item)
+    if validate(processed):
+        results.append(format(processed))
+```
+
+## What to carry forward
+
+- list comprehensions: `[expr for item in source if condition]`
+- dict comprehensions: `{key: val for item in source if condition}`
+- set comprehensions: `{expr for item in source if condition}`
+- comprehensions replace the create-loop-append pattern
+- they should be readable at a glance — use regular loops for complex logic
+
+Comprehensions are one of Python's most idiomatic ways to transform data. The next lesson covers a critical distinction — copying data vs mutating it — that causes many subtle bugs.

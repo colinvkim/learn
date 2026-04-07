@@ -1,0 +1,279 @@
+---
+title: "Handling API responses"
+description: "Learn how to parse, validate, and safely work with data from external APIs, and build patterns that handle missing fields and unexpected formats."
+course: python
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+
+Getting a response from an API is only half the work. APIs return data in formats that may include missing fields, unexpected types, or nested structures. Writing code that handles this safely prevents crashes and subtle data bugs.
+
+## The basic response flow
+
+A typical API interaction follows three steps:
+
+```python
+import requests
+
+response = requests.get("https://api.example.com/users/1", timeout=10)
+response.raise_for_status()    # raise on 4xx/5xx
+data = response.json()         # parse JSON
+```
+
+At this point, `data` is a Python dictionary. But you cannot trust its shape.
+
+## The problem with trusting APIs
+
+Consider this code:
+
+```python
+data = response.json()
+name = data["user"]["name"]    # KeyError if "user" or "name" is missing
+```
+
+This works when the API behaves as expected. It crashes if:
+
+- the response does not have a `"user"` key
+- `"user"` is `null`
+- `"name"` is missing from the user object
+
+Real APIs do all of these things. Fields get renamed, endpoints return errors in different formats, and rate limits produce HTML error pages instead of JSON.
+
+## Safe access with .get()
+
+Use `.get()` with defaults to access nested data safely:
+
+```python
+data = response.json()
+user = data.get("user") or {}
+name = user.get("name", "Unknown")
+```
+
+Or chain `.get()` calls:
+
+```python
+name = data.get("user", {}).get("name", "Unknown")
+```
+
+Each `.get()` returns a default if the key is missing, preventing `KeyError`.
+
+## Validating response structure
+
+For anything beyond a simple script, validate the response before using it:
+
+```python
+def parse_user(data):
+    """Parse and validate a user response. Returns a dict or raises ValueError."""
+    if not isinstance(data, dict):
+        raise ValueError("Expected a JSON object")
+
+    user = data.get("user")
+    if not isinstance(user, dict):
+        raise ValueError("Missing 'user' object in response")
+
+    name = user.get("name")
+    if not name or not isinstance(name, str):
+        raise ValueError("User name is missing or invalid")
+
+    return {
+        "id": user.get("id"),
+        "name": name.strip(),
+        "email": user.get("email", "").lower(),
+        "active": bool(user.get("active", False)),
+    }
+```
+
+This function:
+
+1. checks the top-level type
+2. checks for required nested objects
+3. validates individual fields
+4. returns a clean, consistent dictionary
+
+The rest of your code can trust the output of `parse_user()` without further checks.
+
+## Handling error responses
+
+APIs return error responses in many formats. Check the content type before parsing JSON:
+
+```python
+response = requests.get("https://api.example.com/data", timeout=10)
+
+if response.status_code == 404:
+    return None
+
+if response.status_code == 429:
+    raise RuntimeError("Rate limited. Try again later.")
+
+if response.status_code >= 400:
+    # Could be HTML error page, not JSON
+    raise RuntimeError(f"HTTP {response.status_code}: {response.text[:200]}")
+
+data = response.json()
+```
+
+Do not call `.json()` on an error response unless you know the API returns JSON for errors.
+
+## Pagination
+
+Many APIs split results across pages:
+
+```python
+def fetch_all_users(base_url):
+    """Fetch all users from a paginated API."""
+    users = []
+    page = 1
+
+    while True:
+        response = requests.get(
+            f"{base_url}/users",
+            params={"page": page, "per_page": 100},
+            timeout=10,
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        page_users = data.get("users", [])
+        if not page_users:
+            break    # no more results
+
+        users.extend(page_users)
+
+        # Check if there are more pages
+        if len(page_users) < 100:
+            break    # last page
+
+        page = page + 1
+
+    return users
+```
+
+Some APIs include pagination info in headers or a `next` URL. Adapt to the API's convention.
+
+## Rate limiting and retries
+
+Handle rate limiting with exponential backoff:
+
+```python
+import time
+
+
+def fetch_with_retry(url, max_retries=3):
+    """Fetch a URL with automatic retries on failure."""
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            if attempt == max_retries - 1:
+                raise    # last attempt — re-raise
+            wait = 2 ** attempt    # 1s, 2s, 4s
+            time.sleep(wait)
+```
+
+This retries on any request exception (network error, timeout, 5xx). It waits longer between each attempt, which is respectful to the server and increases the chance of success.
+
+<Note title="Rate limiting (429)">
+  <p>A 429 status code means "rate limited." <code>raise_for_status()</code> raises an exception for 429, so this retry function handles it. In practice, APIs often include a <code>Retry-After</code> header telling you how long to wait. Check for that header and use its value instead of the exponential backoff when available.</p>
+</Note>
+
+## A complete API fetching example
+
+This example combines everything: pagination, lenient normalization (rather than strict validation), error handling, and persistence. Lenient normalization is appropriate when you want to process data that may have missing fields and still produce usable results — as opposed to the strict validation approach above, which is better when missing data means the response is unusable.
+
+```python
+import requests
+from pathlib import Path
+import json
+
+
+def fetch_and_save_users(base_url, output_path):
+    """Fetch all users from a paginated API and save to JSON."""
+    users = []
+    page = 1
+
+    while True:
+        print(f"Fetching page {page}...")
+        response = requests.get(
+            f"{base_url}/users",
+            params={"page": page, "per_page": 100},
+            timeout=10,
+        )
+
+        if response.status_code == 404:
+            print("No more pages.")
+            break
+
+        response.raise_for_status()
+        data = response.json()
+
+        page_users = data.get("users", [])
+        if not page_users:
+            break
+
+        for raw in page_users:
+            user = normalize_user(raw)
+            users.append(user)
+
+        if len(page_users) < 100:
+            break
+
+        page += 1
+
+    Path(output_path).write_text(json.dumps(users, indent=2))
+    print(f"Saved {len(users)} users to {output_path}")
+    return users
+
+
+def normalize_user(raw):
+    """Leniently normalize a raw user dict from the API."""
+    return {
+        "id": raw.get("id"),
+        "name": (raw.get("name") or "").strip().title(),
+        "email": (raw.get("email") or "").lower(),
+        "active": bool(raw.get("active")),
+    }
+```
+
+This is a realistic, production-style script. It paginates, validates, normalizes, handles errors, and persists results.
+
+## When to use a validation library
+
+For complex APIs, consider using a validation library like `pydantic`:
+
+```python
+from pydantic import BaseModel, EmailStr
+
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    active: bool = False
+
+
+# Parse and validate in one line
+user = User.model_validate(api_response["user"])
+```
+
+<Note title="EmailStr requires an extra dependency">
+  <p><code>EmailStr</code> requires the <code>email-validator</code> package. Install it with <code>pip install pydantic[email]</code>. For simple validation without extras, use the built-in <code>str</code> type for email fields and validate the format yourself.</p>
+</Note>
+
+`pydantic` enforces types, provides clear error messages, and generates documentation. It is the standard choice for API validation in modern Python.
+
+## What to carry forward
+
+- never trust an API's response shape — always validate
+- use `.get()` with defaults for safe nested access
+- validate structure and types before using data
+- check content type before calling `.json()` on error responses
+- handle pagination according to the API's convention
+- retry failed requests with exponential backoff
+- normalize data into consistent dictionaries or dataclasses
+- use `pydantic` for complex API validation
+
+Working with external data safely is a critical skill. The next lesson covers building command-line tools — making your scripts usable by others.

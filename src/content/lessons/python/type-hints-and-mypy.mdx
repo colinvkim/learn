@@ -1,0 +1,258 @@
+---
+title: "Type hints and mypy"
+description: "Learn how to add optional type annotations to Python code, how to check them with mypy, and when type hints are worth the effort."
+course: python
+status: published
+---
+
+Python is dynamically typed — types are determined at runtime. Type hints let you **optionally** declare the types of variables, parameters, and return values. They do not change how your code runs. They are documentation that tools can check.
+
+## Basic type hints
+
+Add type hints to function parameters and return values:
+
+```python
+def greet(name: str) -> str:
+    return f"Hello, {name}"
+
+
+def add(a: int, b: int) -> int:
+    return a + b
+```
+
+The `: str` after `name` says `name` should be a string. The `-> str` says the function returns a string.
+
+These are **hints only**. Python ignores them at runtime:
+
+```python
+greet(42)    # "Hello, 42" — works fine, no error
+```
+
+To actually check types, you need a tool like `mypy`.
+
+## Type hinting common types
+
+```python
+def process_items(items: list[str]) -> int:
+    """Process a list of strings and return the count."""
+    return len(items)
+
+
+def get_user(user_id: int) -> dict[str, str]:
+    """Return a user dictionary."""
+    return {"id": str(user_id), "name": "Ada"}
+
+
+def find_user(users: list[dict], user_id: int) -> dict | None:
+    """Find a user or return None."""
+    for user in users:
+        if user.get("id") == user_id:
+            return user
+    return None
+
+
+def parse_value(value: str) -> int | float | str:
+    """Parse a string into the most appropriate type."""
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            return value
+```
+
+In Python 3.9+, you can use `list[str]` and `dict[str, str]` directly instead of `List[str]` and `Dict[str, str]` from the `typing` module. In Python 3.10+, use `X | Y` instead of `Union[X, Y]`. Older codebases may still use the `typing` module imports.
+
+## Optional types
+
+`X | None` (or `Optional[X]`) means the value can be `X` or `None`:
+
+```python
+def get_config(key: str) -> str | None:
+    """Return a config value or None if not found."""
+    return CONFIG.get(key)
+```
+
+This tells callers to handle the possibility of `None`.
+
+## Type hints for variables
+
+You can annotate variables without assigning them:
+
+```python
+count: int
+count = 0
+```
+
+This is useful when the initial value does not clearly convey the type:
+
+```python
+users: list[dict] = []
+```
+
+## Type aliases
+
+Create aliases for complex types:
+
+```python
+UserId = int
+UserRecord = dict[str, str | int | bool]
+
+def get_user(user_id: UserId) -> UserRecord:
+    ...
+```
+
+Aliases make signatures more readable and communicate domain concepts.
+
+## Checking types with mypy
+
+`mypy` is the standard type checker for Python:
+
+```bash
+pip install mypy
+mypy mycode.py
+```
+
+It reads your type hints and reports mismatches:
+
+```python
+def add(a: int, b: int) -> int:
+    return a + b
+
+result = add("hello", "world")    # mypy error: Argument 1 has incompatible type "str"
+```
+
+mypy catches type errors before runtime:
+
+```
+error: Argument 1 to "add" has incompatible type "str"; expected "int"
+Found 1 error in 1 file
+```
+
+## What mypy catches
+
+- passing wrong types to functions
+- returning wrong types
+- accessing attributes that do not exist
+- using `None` where a concrete type is expected
+- mismatched dictionary or list types
+
+```python
+def process(data: list[int]) -> int:
+    return sum(data)
+
+process("not a list")     # error: incompatible type
+process([1, 2, "three"])  # error: list item has incompatible type
+```
+
+## What mypy does not catch
+
+- runtime type changes (Python is still dynamic)
+- code paths mypy cannot analyze
+- anything you did not annotate (unannotated functions are not checked)
+
+## Gradual typing
+
+You do not need to annotate an entire project. mypy checks only what is annotated:
+
+```python
+def untyped(x):           # not checked
+    return x + 1
+
+def typed(x: int) -> int: # checked
+    return x + 1
+```
+
+Add type hints incrementally to the parts of your codebase that benefit most — public APIs, complex logic, and shared utilities.
+
+## When type hints help
+
+Type hints are worth the effort when:
+
+- **Building libraries** — users see expected types in their editor
+- **Working on large codebases** — types clarify what each function expects
+- **Handling complex data** — a hint like `dict[str, list[int]]` is clearer than a comment
+- **Catching bugs early** — mypy finds type mismatches before runtime
+- **Improving IDE support** — autocomplete and inline documentation improve with hints
+
+## When to skip type hints
+
+Skip type hints when:
+
+- writing a quick script
+- the types are obvious and the function is trivial
+- you are prototyping and speed matters more than correctness
+
+You can always add hints later. They are backward-compatible.
+
+## Type hints in classes
+
+```python
+class User:
+    def __init__(self, name: str, email: str, age: int) -> None:
+        self.name = name
+        self.email = email
+        self.age = age
+
+    def greet(self) -> str:
+        return f"Hi, {self.name}"
+
+    @classmethod
+    def from_dict(cls, data: dict[str, str]) -> "User":
+        return cls(
+            name=data["name"],
+            email=data["email"],
+            age=int(data.get("age", 0)),
+        )
+```
+
+Use `"User"` (a string) for forward references when the class name is not yet defined. In Python 3.7+, `from __future__ import annotations` lets you use `User` directly.
+
+## A typed real-world function
+
+```python
+from pathlib import Path
+import json
+
+
+def load_users(path: Path) -> list[dict[str, str | int | bool]]:
+    """Load users from a JSON file.
+
+    Returns:
+        A list of user dictionaries with consistent keys.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        ValueError: If the file contains invalid JSON.
+    """
+    text = path.read_text(encoding="utf-8")
+    data = json.loads(text)
+
+    if not isinstance(data, list):
+        raise ValueError("Expected a JSON array")
+
+    return [
+        {
+            "id": int(user.get("id", 0)),
+            "name": str(user.get("name", "")).strip(),
+            "email": str(user.get("email", "")).lower(),
+            "active": bool(user.get("active", False)),
+        }
+        for user in data
+    ]
+```
+
+The type hints tell callers and tools exactly what to expect. The docstring explains the exceptions. Together, they make this function easy to use correctly.
+
+## What to carry forward
+
+- type hints are optional annotations — they do not affect runtime behavior
+- add hints to parameters with `: type` and to return values with `-> type`
+- use `X | None` for optional values; use `X | Y` for unions (Python 3.10+)
+- `mypy` checks type hints and reports mismatches
+- adopt type hints graduallyically — annotate what matters most
+- type hints improve IDE support, documentation, and early bug detection
+- they are most valuable for libraries, large codebases, and complex data
+
+Type hints are an optional but increasingly standard part of Python development. The final lesson brings everything together into a small real-world project.

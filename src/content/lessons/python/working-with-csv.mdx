@@ -1,0 +1,226 @@
+---
+title: "Working with CSV"
+description: "Learn how to read and write CSV files in Python, handle headers and delimiters, and transform tabular data."
+course: python
+status: published
+---
+
+CSV (Comma-Separated Values) is the simplest format for tabular data. Spreadsheets export to CSV, databases export to CSV, and many tools accept CSV as input. Python's `csv` module handles reading and writing CSV files correctly, including edge cases like quoted fields that contain commas.
+
+## What CSV is
+
+CSV is a plain-text format for tabular data. Each line is a row, and fields are separated by a delimiter (usually a comma):
+
+```csv
+name,age,role
+Ada,36,admin
+Bob,28,user
+Cia,42,moderator
+```
+
+The first row is typically a header that names each column.
+
+## Reading CSV with DictReader
+
+The most useful way to read CSV is with `DictReader`, which returns each row as a dictionary keyed by the header names:
+
+```python
+import csv
+
+with open("users.csv", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(row["name"], row["age"])
+```
+
+Each row is a dictionary with string values:
+
+```python
+{"name": "Ada", "age": "36", "role": "admin"}
+```
+
+Note that all values are strings. You need to convert types explicitly:
+
+```python
+name = row["name"]
+age = int(row["age"])
+```
+
+## Reading CSV with reader
+
+`csv.reader` returns each row as a list instead of a dictionary. Use it when the file has no headers or when you prefer positional access:
+
+```python
+import csv
+
+with open("users.csv", encoding="utf-8") as f:
+    reader = csv.reader(f)
+    next(reader)    # skip the header row
+    for row in reader:
+        print(row[0], row[1])    # name, age
+```
+
+`next(reader)` advances past the first row. Without it, you would process the header row as data.
+
+## Writing CSV
+
+Use `DictWriter` to write dictionaries to a CSV:
+
+```python
+import csv
+
+users = [
+    {"name": "Ada", "age": 36, "role": "admin"},
+    {"name": "Bob", "age": 28, "role": "user"},
+]
+
+with open("output.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["name", "age", "role"])
+    writer.writeheader()
+    writer.writerows(users)
+```
+
+The `newline=""` argument is important. Without it, you may get blank lines between rows on Windows.
+
+`fieldnames` specifies the column order and which keys to write. `writeheader()` writes the header row. `writerows()` writes all rows at once. Use `writerow()` for a single row.
+
+## Custom delimiters
+
+CSV files sometimes use tabs, semicolons, or pipes instead of commas. Specify the delimiter:
+
+```python
+with open("data.tsv") as f:
+    reader = csv.DictReader(f, delimiter="\t")
+    for row in reader:
+        print(row["name"])
+```
+
+Common delimiters:
+
+- `","` — comma (default)
+- `"\t"` — tab (TSV files)
+- `";"` — semicolon (common in Europe where comma is a decimal separator)
+- `"|"` — pipe
+
+## Handling real-world CSV issues
+
+Real CSV files are often messy. Here are common issues and how to handle them.
+
+### Missing values
+
+Empty fields become empty strings:
+
+```python
+with open("data.csv") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        age = int(row["age"]) if row["age"] else None
+```
+
+### Extra whitespace
+
+Strip whitespace from values:
+
+```python
+for row in reader:
+    cleaned = {k: v.strip() for k, v in row.items()}
+```
+
+### Type conversion
+
+Convert types as you read:
+
+```python
+def parse_user(row):
+    return {
+        "name": row["name"],
+        "age": int(row["age"]) if row["age"] else 0,
+        "score": float(row["score"]) if row["score"] else 0.0,
+        "active": row["active"].lower() == "true",
+    }
+
+with open("users.csv") as f:
+    reader = csv.DictReader(f)
+    users = [parse_user(row) for row in reader]
+```
+
+This approach — parsing each row into a clean dictionary — is a good habit. It centralizes type conversion and makes the rest of your code work with consistent data.
+
+### Large files
+
+For very large CSV files, process rows one at a time instead of loading everything into a list:
+
+```python
+def count_active_users(path):
+    count = 0
+
+    with open(path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row.get("active", "").lower() == "true":
+                count += 1
+
+    return count
+```
+
+This uses minimal memory regardless of file size.
+
+## A real-world example: CSV to JSON converter
+
+```python
+import csv
+import json
+from pathlib import Path
+
+
+def csv_to_json(input_path, output_path):
+    """Convert a CSV file to a JSON file with type conversion."""
+    rows = []
+
+    with open(input_path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            rows.append({
+                "name": row["name"].strip(),
+                "age": int(row["age"]),
+                "email": row["email"].strip().lower(),
+                "score": float(row["score"]) if row["score"] else 0.0,
+            })
+
+    with open(output_path, "w") as f:
+        json.dump(rows, f, indent=2)
+
+    return len(rows)
+
+
+count = csv_to_json(Path("users.csv"), Path("users.json"))
+print(f"Converted {count} rows.")
+```
+
+This is a practical utility you will actually use. It reads CSV, cleans and converts types, and writes JSON.
+
+## When to use CSV vs JSON
+
+Use **CSV** when:
+
+- the data is flat and tabular
+- you are working with spreadsheets or databases
+- you need a format that non-programmers can open in Excel
+
+Use **JSON** when:
+
+- the data has nested structures
+- you are working with APIs
+- you need to preserve types (numbers, booleans, null)
+
+## What to carry forward
+
+- use `csv.DictReader` to read CSV files as dictionaries
+- use `csv.DictWriter` to write dictionaries to CSV
+- all CSV values are strings — convert types explicitly
+- use `newline=""` when writing CSV to avoid blank lines
+- specify `delimiter` for non-comma-separated files
+- process large CSV files row by row, not all at once
+- parse each row into a clean dictionary with consistent types
+
+CSV and JSON together handle most everyday data tasks. The next lesson covers error handling — how to deal with things going wrong in your programs.

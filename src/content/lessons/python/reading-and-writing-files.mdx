@@ -1,0 +1,236 @@
+---
+title: "Reading and writing files"
+description: "Learn how to read and write files in Python, work with file paths safely, and handle text and binary data."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+Programs often need to persist data, read configuration, or process files on disk. Python makes this straightforward with built-in file handling.
+
+## Opening and reading a file
+
+The `open()` function opens a file and returns a file object:
+
+```python
+f = open("hello.txt")
+content = f.read()
+f.close()
+```
+
+This works but is error-prone. If an error occurs between `open()` and `close()`, the file stays open. The standard approach uses a **context manager**:
+
+```python
+with open("hello.txt") as f:
+    content = f.read()
+```
+
+The `with` statement ensures the file is closed automatically when the block exits — whether normally or due to an error. Always use `with` when working with files.
+
+## Reading modes
+
+```python
+with open("hello.txt") as f:           # "r" is the default — read text
+    content = f.read()                  # read entire file as one string
+
+with open("hello.txt") as f:
+    lines = f.readlines()               # read all lines into a list
+
+with open("hello.txt") as f:
+    for line in f:                      # iterate line by line — memory efficient
+        print(line.strip())
+```
+
+<Tip title="Read line by line for large files">
+  <p><code>read()</code> loads the entire file into memory. <code>readlines()</code> does the same. Iterating over the file object reads one line at a time and is efficient for large files.</p>
+</Tip>
+
+## Writing to a file
+
+Use mode `"w"` to write (creates or overwrites):
+
+```python
+with open("output.txt", "w") as f:
+    f.write("Hello, world.\n")
+    f.write("Second line.\n")
+```
+
+Use mode `"a"` to append:
+
+```python
+with open("log.txt", "a") as f:
+    f.write("New log entry\n")
+```
+
+Use mode `"x"` to create a new file (fails if it already exists):
+
+```python
+with open("new_file.txt", "x") as f:
+    f.write("Created only once\n")
+```
+
+## File modes summary
+
+| Mode | Purpose |
+|------|---------|
+| `"r"` | Read text (default) |
+| `"w"` | Write text (creates or truncates) |
+| `"a"` | Append text |
+| `"x"` | Create text (fails if exists) |
+| `"rb"` | Read binary |
+| `"wb"` | Write binary |
+
+Add `"b"` for binary mode when working with non-text data like images or serialized data.
+
+## Working with paths
+
+Use `pathlib` to build and inspect paths safely:
+
+```python
+from pathlib import Path
+
+base = Path("data")
+file = base / "users.csv"    # Path("data/users.csv")
+
+file.exists()                 # True/False
+file.is_file()                # True/False
+file.parent.mkdir(exist_ok=True)  # create directory if needed
+```
+
+Create the output directory before writing:
+
+```python
+from pathlib import Path
+
+output_dir = Path("output")
+output_dir.mkdir(exist_ok=True)
+
+with open(output_dir / "result.txt", "w") as f:
+    f.write("Results\n")
+```
+
+## Reading and writing with pathlib
+
+`pathlib` provides shortcuts for simple file operations:
+
+```python
+from pathlib import Path
+
+path = Path("hello.txt")
+
+# Read
+text = path.read_text()
+lines = path.read_text().splitlines()
+
+# Write
+path.write_text("Hello, world.\n")
+
+# Append
+path.write_text("More data\n", mode="a")
+```
+
+These are convenient for quick scripts. For large files or when you need fine control over encoding and buffering, use `open()`.
+
+## Encoding
+
+Text files are encoded as bytes. Python defaults to UTF-8, but you can specify an encoding explicitly:
+
+```python
+with open("data.txt", encoding="utf-8") as f:
+    content = f.read()
+```
+
+Always specify encoding when working with files that may contain non-ASCII characters. This makes your code portable across systems with different default encodings.
+
+## Processing a file line by line
+
+A common pattern is reading and processing each line:
+
+```python
+def load_users(path):
+    """Load users from a file of 'name,email' lines."""
+    users = []
+
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue    # skip empty lines and comments
+            parts = line.split(",", 1)
+            if len(parts) != 2:
+                continue    # skip malformed lines
+            name, email = parts
+            users.append({"name": name, "email": email})
+
+    return users
+```
+
+This approach:
+
+- reads one line at a time (memory efficient)
+- skips blank lines and comments
+- splits each line into fields
+- returns a list of dictionaries
+
+## Error handling with files
+
+File operations commonly fail. The next lesson covers exceptions in detail, but here is a preview of common file errors:
+
+```python
+try:
+    with open("missing.txt") as f:
+        content = f.read()
+except FileNotFoundError:
+    print("File does not exist.")
+except PermissionError:
+    print("No permission to read this file.")
+```
+
+Common file-related exceptions:
+
+- `FileNotFoundError` — the file or directory does not exist
+- `PermissionError` — you do not have access
+- `IsADirectoryError` — you tried to read a directory as a file
+- `UnicodeDecodeError` — the file encoding does not match
+
+## A real-world example: log file analyzer
+
+```python
+from pathlib import Path
+from collections import Counter
+
+
+def analyze_log(log_path):
+    """Count HTTP status codes from a log file."""
+    status_codes = Counter()
+
+    with open(log_path) as f:
+        for line in f:
+            parts = line.split()
+            if len(parts) >= 9:
+                code = parts[8]
+                if code.isdigit():
+                    status_codes[code] += 1
+
+    return status_codes
+
+
+codes = analyze_log(Path("logs/access.log"))
+for code, count in codes.most_common():
+    print(f"{code}: {count}")
+```
+
+This reads a web server log, extracts the HTTP status code from each line, and counts occurrences. It handles large files efficiently because it processes one line at a time.
+
+## What to carry forward
+
+- always use `with open(...)` to ensure files are closed
+- `"r"` reads, `"w"` writes (overwrites), `"a"` appends
+- iterate over the file object to read line by line efficiently
+- use `pathlib` to build paths safely across operating systems
+- specify `encoding="utf-8"` for text files
+- handle `FileNotFoundError` and other file-related exceptions
+
+Files are how programs persist and exchange data. The next two lessons cover the two most common data formats you will encounter: JSON and CSV.

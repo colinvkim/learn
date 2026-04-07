@@ -1,0 +1,250 @@
+---
+title: "Project structure and organization"
+description: "Learn how to organize Python projects with clear directory structures, separate concerns, and build maintainable programs."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+Small scripts can live in a single file. Real projects need structure. Good organization makes code easier to find, test, and change without breaking other parts of the system.
+
+## Single-file scripts
+
+For simple automation tasks, a single file is fine:
+
+```
+scripts/
+├── rename_photos.py
+├── fetch_weather.py
+└── clean_csv.py
+```
+
+These do not need packages or complex structure. Each file runs independently.
+
+## Small projects with modules
+
+When a program grows beyond one file, split it into modules:
+
+```
+myproject/
+├── .venv/
+├── src/
+│   ├── main.py
+│   ├── utils.py
+│   ├── config.py
+│   └── models.py
+├── data/
+│   └── input.csv
+├── requirements.txt
+└── README.md
+```
+
+- `main.py` — entry point; runs the program
+- `utils.py` — helper functions used across the project
+- `config.py` — configuration values and settings
+- `models.py` — data classes or domain entities
+
+Each module has a clear responsibility. `main.py` imports from the others:
+
+```python
+# main.py
+from utils import load_data, format_report
+from config import SETTINGS
+from models import User
+
+def main():
+    data = load_data(SETTINGS["input_path"])
+    users = [User(**row) for row in data]
+    print(format_report(users))
+
+if __name__ == "__main__":
+    main()
+```
+
+## Package-based projects
+
+For larger projects or anything you might distribute, use a package layout:
+
+```
+myproject/
+├── .venv/
+├── src/
+│   └── myproject/
+│       ├── __init__.py
+│       ├── __main__.py
+│       ├── cli.py
+│       ├── core.py
+│       └── utils.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_core.py
+│   └── test_cli.py
+├── data/
+├── requirements.txt
+├── pyproject.toml          # or setup.py
+└── README.md
+```
+
+Key differences:
+
+- `src/myproject/` is a **package** — a directory with `__init__.py`
+- `__main__.py` lets you run the package with `python -m myproject`
+- `tests/` mirrors the package structure
+- `pyproject.toml` defines metadata and dependencies
+
+<Tip title="Running a package-based project">
+  <p>Files inside a package cannot be run directly as scripts. Use <code>python -m myproject</code> from the project root, or install the package in development mode with <code>pip install -e .</code> so Python can find it. Relative imports (like <code>from .core import ...</code>) only work inside packages, not in standalone files.</p>
+</Tip>
+
+## Separating concerns
+
+Organize code by **what it does**, not by what type of file it is:
+
+```
+# Good — organized by concern
+myproject/
+├── database.py     # all database operations
+├── api.py          # all API client code
+├── models.py       # data classes
+├── cli.py          # command-line interface
+└── config.py       # configuration
+```
+
+```
+# Bad — organized by file type
+myproject/
+├── classes/
+├── functions/
+├── scripts/
+└── config/
+```
+
+The first layout makes it clear where to find code. When you need to change how the API works, you know to look in `api.py`.
+
+## Configuration management
+
+Keep configuration separate from logic:
+
+```python
+# config.py
+import os
+from pathlib import Path
+
+# Defaults
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///data.db")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+DATA_DIR = Path(os.getenv("DATA_DIR", "data"))
+```
+
+```python
+# main.py
+from config import DATABASE_URL, DATA_DIR
+
+def main():
+    print(f"Using database: {DATABASE_URL}")
+    print(f"Data directory: {DATA_DIR}")
+```
+
+Read environment variables at the top level. Do not scatter `os.getenv()` calls throughout your business logic.
+
+## The entry point pattern
+
+Every program should have a clear entry point:
+
+```python
+# main.py
+from .core import process_data
+from .config import load_config
+
+
+def main():
+    config = load_config()
+    process_data(config)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+The `if __name__ == "__main__"` guard means:
+
+- running `python main.py` executes `main()`
+- importing `main` from another file does not execute anything
+
+This makes your code testable and importable.
+
+## A real-world project example
+
+```
+csvtool/
+├── .venv/
+├── src/
+│   └── csvtool/
+│       ├── __init__.py
+│       ├── __main__.py
+│       ├── cli.py          # argument parsing
+│       ├── commands.py     # subcommands (convert, validate, stats)
+│       ├── io.py           # file reading/writing
+│       └── models.py       # data classes
+├── tests/
+│   ├── test_commands.py
+│   └── test_io.py
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
+
+Each module has one job:
+
+- `cli.py` parses command-line arguments
+- `commands.py` implements each subcommand
+- `io.py` handles file operations
+- `models.py` defines data classes
+
+The entry point delegates to the right command:
+
+```python
+# __main__.py
+from csvtool.cli import parse_args
+from csvtool import commands
+
+
+def main():
+    args = parse_args()
+    command = args.command
+
+    if command == "convert":
+        commands.convert(args.input, args.output)
+    elif command == "validate":
+        commands.validate(args.input)
+    elif command == "stats":
+        commands.stats(args.input)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+To run this project, install it in development mode from the project root:
+
+```bash
+pip install -e .
+python -m csvtool convert input.csv output.json
+```
+
+The `-e` flag installs the package in "editable" mode — changes to the source files take effect immediately without reinstalling.
+
+## What to carry forward
+
+- single files are fine for simple scripts
+- split into modules when a file grows beyond ~200 lines
+- use package layout (`src/package/`) for larger projects
+- organize by concern, not by file type
+- keep configuration separate from logic
+- use `if __name__ == "__main__"` for entry points
+- put tests in a separate `tests/` directory
+- read environment variables at the top level
+
+Good structure pays off as your project grows. The next lesson covers calling external APIs, one of the most common real-world Python tasks.

@@ -1,0 +1,128 @@
+---
+title: "Variables and assignment"
+description: "Learn how variables work in Python, how assignment creates names that refer to values, and the rules for naming variables."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+Variables are how you give names to values so you can work with them later. In Python, a variable is simply a **name that refers to a value**.
+
+## Assignment
+
+The `=` operator assigns a value to a name:
+
+```python
+name = "Ada"
+age = 36
+```
+
+This does not mean "put `Ada` inside `name`." It means "make the name `name` refer to the value `Ada`." The variable is a label pointing to data that lives elsewhere in memory.
+
+You can reassign a variable to point to a different value:
+
+```python
+count = 0
+count = 1
+count = 2
+```
+
+Each reassignment makes `count` point to a new value. The old values are not modified — they are simply no longer referenced by `count`.
+
+## Naming rules
+
+Variable names in Python must follow these rules:
+
+- can contain letters, digits, and underscores
+- cannot start with a digit
+- are case-sensitive (`name` and `Name` are different)
+- cannot be a reserved keyword (`if`, `for`, `def`, `class`, etc.)
+
+```python
+user_name = "Ada"       # valid
+_private = True         # valid — leading underscore is allowed
+count2 = 10             # valid
+2nd_count = 5           # invalid — cannot start with a digit
+class = "Python 101"    # invalid — class is a keyword
+```
+
+<Tip title="Naming convention">
+  <p>Python uses <code>snake_case</code> for variable names: lowercase words separated by underscores. This is a convention, not a rule — the language allows <code>camelCase</code> too — but <code>snake_case</code> is the standard you should follow.</p>
+</Tip>
+
+## Multiple assignment
+
+You can assign multiple variables in one line:
+
+```python
+x, y, z = 1, 2, 3
+```
+
+This is equivalent to:
+
+```python
+x = 1
+y = 2
+z = 3
+```
+
+You can also assign the same value to multiple variables:
+
+```python
+a = b = c = 0
+```
+
+This is fine for immutable values like numbers. Be more careful when the shared value is mutable (like a list or dictionary), since all names would refer to the same object. You will see a concrete example of this in the lesson on copying vs mutating data.
+
+## Dynamic typing
+
+Python does not require you to declare the type of a variable. The type follows the value:
+
+```python
+value = 42       # value is an int
+value = "hello"  # value is now a str
+value = True     # value is now a bool
+```
+
+Each reassignment is valid. The variable name does not have a type — the value does.
+
+This is called **dynamic typing**. The language determines types at runtime, not when you write the code.
+
+## Values vs references
+
+Understanding how Python handles values is important for avoiding bugs.
+
+**Immutable values** (numbers, strings, booleans, tuples) cannot be changed after they are created. An immutable value is one that has no methods or operations that modify it in place — any "change" produces a new value. Reassigning a variable that holds an immutable value simply points it to a new value:
+
+```python
+a = "hello"
+b = a        # b refers to the same string as a
+b = "world"  # b now refers to a different string; a is unchanged
+print(a)     # "hello"
+```
+
+**Mutable values** (lists, dictionaries, sets) can be changed in place. This distinction matters when multiple names refer to the same object:
+
+```python
+a = [1, 2, 3]
+b = a           # b refers to the same list as a
+b.append(4)     # modifies the list in place
+print(a)        # [1, 2, 3, 4] — a sees the change too
+```
+
+Both `a` and `b` point to the same list. Modifying the list through one name is visible through the other. This is not a bug — it is how Python works — but it surprises many beginners.
+
+You will learn more about copying vs mutating in a later lesson. For now, the key idea is: **variables are names for values, not containers that hold values**.
+
+## What to carry forward
+
+- a variable is a name that refers to a value
+- `=` assigns a value to a name; it does not copy the value into the variable
+- names must follow naming rules and use `snake_case` convention
+- Python is dynamically typed — types follow values, not variables
+- immutable values cannot be changed; mutable values can be modified in place
+- multiple names can refer to the same mutable object
+
+Names and values are the basic building blocks of every program. The next lesson covers the primitive types that values can have.

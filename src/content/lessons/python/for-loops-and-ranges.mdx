@@ -1,0 +1,179 @@
+---
+title: "for loops and ranges"
+description: "Learn how for loops iterate over collections in Python, how range() generates sequences of numbers, and when to use for vs while."
+course: python
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+
+A `for` loop iterates over a collection — a list, a string, a range of numbers, or any other **iterable**. Use it when you want to process each item in a sequence.
+
+## Iterating over a collection
+
+The basic form takes each item from a collection one at a time:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+for fruit in fruits:
+    print(fruit)
+```
+
+This prints each fruit on its own line. The variable `fruit` takes on the value of each item in turn.
+
+You can iterate over any iterable:
+
+```python
+# Over a string
+for char in "hello":
+    print(char)
+
+# Over a tuple
+for item in (1, 2, 3):
+    print(item)
+```
+
+## The range() function
+
+`range()` generates a sequence of numbers. It is the most common way to loop a specific number of times:
+
+```python
+for i in range(5):
+    print(i)    # 0, 1, 2, 3, 4
+```
+
+`range(5)` produces the numbers 0 through 4. The upper bound is **exclusive** — it stops before reaching 5.
+
+`range()` has three forms:
+
+```python
+range(5)          # 0, 1, 2, 3, 4       — stop
+range(1, 5)       # 1, 2, 3, 4           — start, stop
+range(0, 10, 2)   # 0, 2, 4, 6, 8        — start, stop, step
+```
+
+The step can be negative to count backwards:
+
+```python
+for i in range(5, 0, -1):
+    print(i)    # 5, 4, 3, 2, 1
+```
+
+<Note title="range does not create a list">
+  <p>In Python 3, <code>range()</code> does not build a list in memory. It produces numbers on demand as you iterate. This makes it efficient even for large ranges like <code>range(1_000_000)</code>.</p>
+</Note>
+
+## Looping with index
+
+When you need both the index and the value, use `enumerate()`:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+for index, fruit in enumerate(fruits):
+    print(f"{index}: {fruit}")
+```
+
+This prints:
+
+```
+0: apple
+1: banana
+2: cherry
+```
+
+`enumerate()` pairs each item with its index, starting from 0. You can change the starting index:
+
+```python
+for index, fruit in enumerate(fruits, start=1):
+    print(f"{index}. {fruit}")
+```
+
+## Looping over multiple collections
+
+Use `zip()` to iterate over two or more collections in parallel:
+
+```python
+names = ["Ada", "Bob", "Cia"]
+ages = [36, 28, 42]
+
+for name, age in zip(names, ages):
+    print(f"{name} is {age}")
+```
+
+`zip()` stops when the shortest collection is exhausted. If the collections differ in length and you need to handle that, use `zip(names, ages, strict=True)` in Python 3.10+ to raise an error on mismatched lengths.
+
+## Breaking and continuing
+
+`break` and `continue` work in `for` loops just like in `while` loops:
+
+```python
+for n in range(10):
+    if n == 3:
+        continue    # skip 3
+    if n == 7:
+        break       # stop at 7
+    print(n)
+```
+
+This prints `0, 1, 2, 4, 5, 6` — it skips 3 and stops before 7.
+
+## The else clause
+
+Like `while` loops, `for` loops can have an `else` clause that runs when the loop completes without `break`:
+
+```python
+for n in range(5):
+    if n == 10:
+        break
+else:
+    print("No break occurred.")    # this runs
+```
+
+As with `while`, this is rarely used in practice.
+
+## Nested loops
+
+You can nest `for` loops inside each other:
+
+```python
+for row in range(3):
+    for col in range(3):
+        # end=" " replaces the default newline with a space
+        print(f"({row}, {col})", end=" ")
+    print()    # newline after each row
+```
+
+By default, `print()` adds a newline at the end of its output. The `end` parameter lets you change this. Here, `end=" "` keeps all coordinates on one row, and the bare `print()` at the end of the outer loop moves to the next line.
+
+This prints a 3×3 grid of coordinates. The inner loop runs completely for each iteration of the outer loop.
+
+## for vs while
+
+Use a `for` loop when:
+
+- you are iterating over a known collection
+- you want to run code a fixed number of times
+- you are processing items one by one
+
+Use a `while` loop when:
+
+- you do not know how many iterations are needed
+- the loop depends on a condition that changes unpredictably
+- you are reading input until a sentinel value appears
+
+In practice, `for` loops are more common in Python. Many tasks that use `while` in other languages use `for` with `range()` or direct iteration in Python.
+
+## What to carry forward
+
+- `for` iterates over any iterable — lists, strings, ranges, etc.
+- `range(n)` produces numbers from 0 to n-1
+- `range(start, stop, step)` gives full control over the sequence
+- `enumerate()` gives you both index and value
+- `zip()` iterates over multiple collections in parallel
+- `break` exits the loop; `continue` skips to the next iteration
+- prefer `for` when iterating over known collections; use `while` for condition-driven loops
+
+Loops let you repeat actions over data. Combined with conditionals from the previous lesson, you can now write programs that make decisions and process collections. The next lesson introduces functions, which are how you organize code into reusable blocks.

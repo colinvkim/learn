@@ -1,0 +1,225 @@
+---
+title: "Calling APIs with requests"
+description: "Learn how to make HTTP requests to external APIs using the requests library, handle responses, and build robust API clients."
+course: python
+status: published
+---
+
+Interacting with web APIs is one of the most common Python tasks. Whether you are fetching weather data, posting to a database, or automating a service, you will need to make HTTP requests. Python's standard library has `urllib`, but the `requests` library is the standard choice for its simplicity and clarity.
+
+## Installing requests
+
+```bash
+pip install requests
+```
+
+## Making a GET request
+
+The most common operation is fetching data from an API:
+
+```python
+import requests
+
+response = requests.get("https://api.example.com/users")
+print(response.status_code)    # 200
+print(response.json())         # parsed JSON body
+```
+
+`requests.get()` sends a GET request and returns a `Response` object. The request blocks until the server responds or times out.
+
+## The Response object
+
+A `Response` object contains everything about the server's reply:
+
+```python
+response = requests.get("https://api.example.com/users/1")
+
+response.status_code      # 200, 404, 500, etc.
+response.text             # raw response body as string
+response.json()           # parsed JSON (calls json.loads internally)
+response.headers          # response headers as a dict-like object
+response.url              # final URL (after redirects)
+response.elapsed          # time taken (timedelta)
+```
+
+## Checking for errors
+
+Use `raise_for_status()` to raise an exception for HTTP errors (4xx and 5xx):
+
+```python
+response = requests.get("https://api.example.com/users/999")
+
+try:
+    response.raise_for_status()
+except requests.HTTPError as e:
+    print(f"HTTP error: {e}")    # 404 Client Error: Not Found
+```
+
+Or check the status code manually:
+
+```python
+if response.status_code == 200:
+    data = response.json()
+elif response.status_code == 404:
+    print("Resource not found.")
+else:
+    print(f"Unexpected error: {response.status_code}")
+```
+
+## Sending data with POST
+
+To create or update resources, send data in the request body:
+
+```python
+import requests
+
+user = {"name": "Ada", "email": "ada@example.com"}
+
+response = requests.post(
+    "https://api.example.com/users",
+    json=user,    # automatically sets Content-Type: application/json
+)
+
+print(response.status_code)    # 201
+print(response.json())         # {"id": 42, "name": "Ada", ...}
+```
+
+The `json=` parameter serializes the dictionary to JSON and sets the correct headers. You can also send form data with `data=` or files with `files=`.
+
+## Query parameters
+
+Build URLs with query parameters using the `params` argument:
+
+```python
+response = requests.get(
+    "https://api.example.com/search",
+    params={"q": "python", "page": 2, "limit": 10},
+)
+
+# GETs: https://api.example.com/search?q=python&page=2&limit=10
+print(response.url)
+```
+
+Do not concatenate query strings manually. `params` handles encoding and escaping correctly.
+
+## Headers and authentication
+
+Add custom headers for authentication or API versioning:
+
+```python
+response = requests.get(
+    "https://api.example.com/data",
+    headers={
+        "Authorization": "Bearer my-token-here",
+        "Accept": "application/json",
+    },
+)
+```
+
+Many APIs use API keys in headers:
+
+```python
+response = requests.get(
+    "https://api.example.com/data",
+    headers={"X-API-Key": "your-api-key"},
+)
+```
+
+## Timeouts
+
+Always set a timeout. Without one, your program can hang indefinitely:
+
+```python
+response = requests.get("https://api.example.com/data", timeout=10)
+```
+
+The timeout is in seconds. If the server does not respond within that time, `requests.Timeout` is raised:
+
+```python
+try:
+    response = requests.get("https://api.example.com/data", timeout=10)
+except requests.Timeout:
+    print("Request timed out.")
+```
+
+## Building a reusable API client
+
+Wrap API interaction in a class for reuse:
+
+```python
+import requests
+
+
+class APIClient:
+    """Simple client for a JSON API."""
+
+    def __init__(self, base_url, api_key=None, timeout=10):
+        self.base_url = base_url.rstrip("/")
+        self.timeout = timeout
+        self.headers = {}
+        if api_key:
+            self.headers["Authorization"] = f"Bearer {api_key}"
+
+    def _url(self, path):
+        return f"{self.base_url}/{path.lstrip('/')}"
+
+    def get(self, path, params=None):
+        response = requests.get(
+            self._url(path),
+            params=params,
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def post(self, path, data=None):
+        response = requests.post(
+            self._url(path),
+            json=data,        # send as JSON body
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        response.raise_for_status()
+        return response.json()
+```
+
+Note that the `data` parameter here is just a local name — it is passed to `requests.post(json=...)`, which serializes it as JSON. This is different from `requests.post(data=...)`, which sends form-encoded data.
+
+```python
+client = APIClient("https://api.example.com", api_key="my-key")
+
+users = client.get("/users", params={"active": True})
+new_user = client.post("/users", {"name": "Ada", "email": "ada@example.com"})
+```
+
+This encapsulates URL building, headers, timeouts, and error handling in one place. Business logic uses the clean `client.get()` and `client.post()` methods.
+
+## Using a Session
+
+A `Session` reuses the underlying connection and persists settings across requests:
+
+```python
+import requests
+
+session = requests.Session()
+session.headers.update({"Authorization": "Bearer my-token"})
+
+response1 = session.get("https://api.example.com/users", timeout=10)
+response2 = session.get("https://api.example.com/posts", timeout=10)
+```
+
+Sessions are more efficient for making multiple requests to the same host because they reuse the TCP connection. Note that `timeout` must be passed to each request call — `Session` does not have a default timeout attribute.
+
+## What to carry forward
+
+- install `requests` with `pip install requests`
+- `requests.get()` fetches data; `requests.post()` sends data
+- always check `response.raise_for_status()` or the status code
+- use `params=` for query strings — do not concatenate URLs manually
+- use `json=` to send JSON data
+- always set a `timeout` to prevent hanging requests
+- wrap API interaction in a client class for reuse
+- use `Session` for multiple requests to the same host
+
+Calling APIs is a foundational skill. The next lesson covers how to handle the responses you get back — parsing, validating, and transforming API data safely.

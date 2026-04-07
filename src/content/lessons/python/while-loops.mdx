@@ -1,0 +1,174 @@
+---
+title: "while loops"
+description: "Learn how while loops repeat code while a condition is true, and how to use break and continue to control loop execution."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+import Note from "../../../components/content/Note.astro";
+
+
+A `while` loop repeats a block of code as long as a condition remains true. Use it when you do not know in advance how many times the loop needs to run.
+
+## The basic while loop
+
+A `while` loop checks a condition before each iteration:
+
+```python
+count = 0
+
+while count < 5:
+    print(count)
+    count = count + 1
+```
+
+This prints `0` through `4`. The loop:
+
+1. checks if `count < 5`
+2. if true, runs the body
+3. increments `count`
+4. repeats from step 1
+
+When the condition becomes false, the loop stops and execution continues after the loop.
+
+<Tip title="Always ensure the condition becomes false">
+  <p>A <code>while</code> loop runs forever if its condition never becomes false. Make sure the loop body changes something that affects the condition, or use <code>break</code> to exit explicitly.</p>
+</Tip>
+
+## Infinite loops
+
+A loop whose condition is always true runs forever — or until you stop it:
+
+```python
+while True:
+    command = input("> ")    # input() reads a line from the user
+    if command == "quit":
+        break
+    print(f"You typed: {command}")
+```
+
+`input()` displays a prompt and waits for the user to type a line of text. It returns whatever the user types as a string.
+
+This is a common pattern for interactive programs. The loop runs until the user types a specific command, which triggers a `break`.
+
+## break
+
+The `break` statement exits the loop immediately:
+
+```python
+attempts = 0
+
+while attempts < 3:
+    password = input("Enter password: ")
+    if password == "secret":
+        print("Access granted.")
+        break
+    attempts = attempts + 1
+else:
+    print("Too many attempts.")
+```
+
+When `break` executes, the loop ends and any `else` clause is skipped.
+
+## continue
+
+The `continue` statement skips the rest of the current iteration and jumps back to the condition check:
+
+```python
+total = 0
+
+while True:
+    line = input("Enter a number (or 'done'): ")
+    if line == "done":
+        break
+    if not line:
+        continue        # skip empty lines
+    total = total + int(line)
+
+print(f"Total: {total}")
+```
+
+`continue` does not exit the loop — it just skips to the next iteration.
+
+## The else clause on loops
+
+Python allows an `else` block on loops. It runs when the loop finishes **normally** — that is, the condition became false — but **not** when the loop exits via `break`:
+
+```python
+n = 2
+
+while n < 10:
+    if n == 5:
+        print("Found 5.")
+        break
+    n = n + 1
+else:
+    print("Loop completed without break.")
+```
+
+This prints `"Found 5."` and the `else` block does not run. If you remove the `break`, the `else` block runs after the loop finishes.
+
+In practice, `else` on loops is rarely used. `break` with a flag variable or a function with `return` is often clearer. It is worth learning because you will encounter it in other people's code, and understanding it helps you read Python more broadly.
+
+## Common while loop patterns
+
+### Reading until a condition
+
+```python
+line = input("Enter text (empty line to stop): ")
+
+while line:
+    print(f"Got: {line}")
+    line = input("Enter text (empty line to stop): ")
+```
+
+This pattern duplicates the `input()` call — once before the loop and once inside it. The `while True` / `break` pattern you saw earlier avoids this duplication and is generally preferred for interactive input.
+
+### Retry with a limit
+
+```python
+import random
+
+max_retries = 3
+attempt = 0
+
+while attempt < max_retries:
+    # Simulate an operation that might fail (50% success rate)
+    success = random.random() > 0.5
+    if success:
+        print("Succeeded.")
+        break
+    attempt = attempt + 1
+    print(f"Attempt {attempt} failed, retrying...")
+```
+
+### Running total
+
+```python
+total = 0
+
+while True:
+    value = int(input("Enter a number (0 to stop): "))
+    if value == 0:
+        break
+    total = total + value
+
+print(f"Sum: {total}")
+```
+
+<Note title="This example assumes valid input">
+  <p>If the user types something that is not a number, <code>int()</code> raises a <code>ValueError</code> and the program crashes. You will learn to handle this gracefully with <code>try/except</code> in a later lesson.</p>
+</Note>
+
+## What to carry forward
+
+- `while` repeats a block as long as its condition is true
+- the condition is checked before each iteration
+- always ensure the loop can terminate — change the condition or use `break`
+- `break` exits the loop immediately
+- `continue` skips to the next iteration
+- `else` on a loop runs only if the loop finishes without `break`
+- `while` is best when you do not know the number of iterations in advance
+
+When you do know how many times to iterate — or when you want to iterate over a collection — a `for` loop is the better tool. The next lesson covers `for` loops and the `range()` function.

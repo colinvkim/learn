@@ -1,0 +1,297 @@
+---
+title: "Building CLI tools"
+description: "Learn how to turn Python scripts into command-line tools with argument parsing, help text, and proper exit codes."
+course: python
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+
+Scripts are great when you run them yourself. CLI tools are what you give to other people — or to future you who has forgotten how the script works. Good CLI tools accept arguments, display help, and exit cleanly.
+
+## sys.argv — the raw approach
+
+Every Python script receives command-line arguments in `sys.argv`:
+
+```python
+import sys
+
+print(sys.argv)
+```
+
+```bash
+$ python greet.py Ada --loud
+['greet.py', 'Ada', '--loud']
+```
+
+`sys.argv[0]` is the script name. The rest are arguments. You could parse these manually:
+
+```python
+import sys
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: greet.py <name>")
+        sys.exit(1)
+
+    name = sys.argv[1]
+    loud = "--loud" in sys.argv
+
+    message = f"Hello, {name}!"
+    if loud:
+        message = message.upper()
+    print(message)
+
+if __name__ == "__main__":
+    main()
+```
+
+This works for simple cases but gets messy quickly. Use a proper argument parser.
+
+## argparse — the standard library approach
+
+`argparse` is Python's built-in CLI parser:
+
+```python
+import argparse
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Greet a user.")
+    parser.add_argument("name", help="Name of the user to greet")
+    parser.add_argument(
+        "--loud",
+        action="store_true",
+        help="Print the greeting in uppercase",
+    )
+    parser.add_argument(
+        "--count",
+        type=int,
+        default=1,
+        help="Number of times to greet (default: 1)",
+    )
+
+    args = parser.parse_args()
+
+    message = f"Hello, {args.name}!"
+    if args.loud:
+        message = message.upper()
+
+    for _ in range(args.count):
+        print(message)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+This gives you:
+
+```bash
+$ python greet.py --help
+usage: greet.py [-h] [--loud] [--count COUNT] name
+
+Greet a user.
+
+positional arguments:
+  name           Name of the user to greet
+
+options:
+  -h, --help     show this help message and exit
+  --loud         Print the greeting in uppercase
+  --count COUNT  Number of times to greet (default: 1)
+
+$ python greet.py Ada --loud --count 3
+HELLO, ADA!
+HELLO, ADA!
+HELLO, ADA!
+```
+
+`argparse` handles:
+
+- required and optional arguments
+- type conversion (`--count` is automatically converted to `int`)
+- help text generation
+- error messages for invalid input
+- exit codes
+
+## argparse argument types
+
+Common argument patterns:
+
+```python
+# Positional (required) argument
+parser.add_argument("input_file", help="Input file path")
+
+# Optional flag (boolean)
+parser.add_argument("--verbose", "-v", action="store_true")
+
+# Optional with default
+parser.add_argument("--output", "-o", default="output.txt", help="Output file")
+
+# Choice restriction
+parser.add_argument("--format", choices=["json", "csv", "yaml"], default="json")
+
+# Multiple values
+parser.add_argument("--exclude", action="append", default=[])
+
+# Existing file check
+parser.add_argument("config", type=argparse.FileType("r"))
+```
+
+<Note title="FileType caveat">
+  <p><code>argparse.FileType</code> opens the file automatically but does not close it on error. For production tools, accept the file path as a string argument and open it yourself inside a <code>with</code> block.</p>
+</Note>
+
+## Exit codes
+
+Signal success or failure with exit codes:
+
+```python
+import sys
+
+
+def main():
+    try:
+        process()
+    except FileNotFoundError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(2)
+
+    sys.exit(0)    # success (this is the default — usually unnecessary)
+```
+
+Exit code 0 means success. Non-zero means failure. Different non-zero codes can indicate different error types. Print errors to `sys.stderr`, not `sys.stdout`, so they can be separated from normal output.
+
+## A real CLI tool: CSV statistics
+
+```python
+import argparse
+import csv
+import sys
+from collections import Counter
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Show statistics from a CSV file.")
+    parser.add_argument("input", help="Input CSV file")
+    parser.add_argument(
+        "--column", "-c",
+        required=True,
+        help="Column to analyze",
+    )
+    parser.add_argument(
+        "--format", "-f",
+        choices=["text", "json"],
+        default="text",
+        help="Output format",
+    )
+
+    args = parser.parse_args()
+    analyze(args.input, args.column, args.format)
+
+
+def analyze(path, column, output_format):
+    """Read the CSV and display stats for the given column."""
+    try:
+        with open(path) as f:
+            reader = csv.DictReader(f)
+            values = [row[column] for row in reader]
+    except FileNotFoundError:
+        print(f"Error: file not found: {path}", file=sys.stderr)
+        sys.exit(1)
+    except KeyError:
+        print(f"Error: column '{column}' not found in file", file=sys.stderr)
+        sys.exit(1)
+
+    total = len(values)
+    unique = len(set(values))
+    counts = Counter(values)
+
+    if output_format == "json":
+        import json
+        print(json.dumps({
+            "column": column,
+            "total": total,
+            "unique": unique,
+            "top_values": dict(counts.most_common(10)),
+        }, indent=2))
+    else:
+        print(f"Column: {column}")
+        print(f"Total rows: {total}")
+        print(f"Unique values: {unique}")
+        print("\nTop values:")
+        for value, count in counts.most_common(10):
+            bar = "█" * count
+            print(f"  {value:>15} | {count:>5} {bar}")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+This tool:
+
+- requires an input file and column
+- validates both before processing
+- supports two output formats
+- produces clear error messages
+- exits with appropriate codes
+
+```bash
+$ python csvstats.py data.csv --column role
+Column: role
+Total rows: 150
+Unique values: 4
+
+Top values:
+           user |    85 █████████████████████████████████████████████
+          admin |    40 █████████████████████
+      moderator |    20 ██████████
+         viewer |     5 █████
+```
+
+## When to use click or typer
+
+For more complex CLI tools, consider external libraries:
+
+- **click** — popular, powerful, supports nested commands
+- **typer** — builds CLI tools using type hints; less boilerplate
+
+```python
+# Example with typer
+import typer
+
+app = typer.Typer()
+
+
+@app.command()
+def greet(name: str, loud: bool = False, count: int = 1):
+    """Greet a user."""
+    message = f"Hello, {name}!"
+    if loud:
+        message = message.upper()
+    for _ in range(count):
+        print(message)
+
+
+if __name__ == "__main__":
+    app()
+```
+
+`typer` infers arguments from type hints, reducing boilerplate. Install with `pip install typer`.
+
+## What to carry forward
+
+- `sys.argv` gives raw arguments but is tedious to parse
+- `argparse` is the standard library CLI parser — use it for anything beyond trivial scripts
+- always provide `--help` text via `description` and `help=` arguments
+- print errors to `sys.stderr`, not `sys.stdout`
+- use exit codes to signal success (0) or failure (non-zero)
+- `typer` and `click` are good external alternatives for complex tools
+
+CLI tools make your Python programs shareable and reusable. The next two lessons cover string processing and working with dates — two common manipulation tasks.

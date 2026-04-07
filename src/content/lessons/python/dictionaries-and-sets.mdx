@@ -1,0 +1,222 @@
+---
+title: "Dictionaries and sets"
+description: "Learn how dictionaries store key-value pairs and how sets track unique items, and understand when to use each data structure."
+course: python
+status: published
+---
+
+Dictionaries and sets organize data differently from lists. Instead of accessing items by position, you access them by key. This makes lookups fast and your code more expressive.
+
+## Creating dictionaries
+
+A dictionary stores **key-value pairs**. Keys must be unique and immutable; values can be anything:
+
+```python
+user = {
+    "name": "Ada",
+    "age": 36,
+    "role": "admin",
+}
+
+empty = {}                  # empty dict
+config = dict(host="localhost", port=8080)  # alternative syntax
+```
+
+The keys are strings in most everyday code, but any immutable type works:
+
+```python
+point_labels = {(0, 0): "origin", (1, 2): "point A"}
+```
+
+## Accessing values
+
+Use square brackets with a key to access a value:
+
+```python
+user["name"]    # "Ada"
+user["age"]     # 36
+```
+
+Accessing a key that does not exist raises a `KeyError`:
+
+```python
+user["email"]    # KeyError: 'email'
+```
+
+Use `.get()` to safely access a key with a fallback:
+
+```python
+user.get("email")              # None — no error
+user.get("email", "N/A")       # "N/A" — custom default
+```
+
+## Modifying dictionaries
+
+Dictionaries are mutable — you can add, change, and remove entries:
+
+```python
+user = {"name": "Ada", "age": 36}
+
+user["email"] = "ada@example.com"    # add a new key
+user["age"] = 37                      # update an existing key
+del user["role"]                      # remove a key
+removed = user.pop("age")             # remove and return value
+```
+
+Common dictionary methods:
+
+```python
+user.keys()       # dict_keys(['name', 'age', 'email'])
+user.values()     # dict_values(['Ada', 37, 'ada@example.com'])
+user.items()      # dict_items([('name', 'Ada'), ('age', 37), ...])
+user.get("name")  # "Ada" — safe access
+user.setdefault("role", "user")  # returns existing or sets default
+user.update({"city": "London"})  # merge another dict
+```
+
+## Iterating over dictionaries
+
+Iterating directly yields keys:
+
+```python
+for key in user:
+    print(key, user[key])
+```
+
+Iterating over items is more common and clearer:
+
+```python
+for key, value in user.items():
+    print(f"{key}: {value}")
+```
+
+## Checking for keys
+
+Use `in` to check if a key exists:
+
+```python
+if "email" in user:
+    print(user["email"])
+```
+
+This checks keys, not values. To check values, use `in` on `.values()`:
+
+```python
+if "admin" in user.values():
+    print("User is an admin.")
+```
+
+## Dictionary merging
+
+In Python 3.9+, use `|` to merge dictionaries:
+
+```python
+defaults = {"theme": "light", "lang": "en"}
+overrides = {"theme": "dark"}
+
+config = defaults | overrides
+# {"theme": "dark", "lang": "en"}
+```
+
+The right side wins for duplicate keys. Use `|=` to update in place:
+
+```python
+defaults |= overrides
+# defaults is now {"theme": "dark", "lang": "en"}
+```
+
+In older versions, use `.update()` or `{**defaults, **overrides}`.
+
+## Sets
+
+A set is an unordered collection of **unique** items:
+
+```python
+colors = {"red", "green", "blue"}
+numbers = set([1, 2, 2, 3, 3])    # {1, 2, 3} — duplicates removed
+empty = set()                      # empty set — {} creates an empty dict, not a set
+```
+
+Sets are useful for:
+
+- removing duplicates from a collection
+- membership testing (faster than lists for large collections)
+- mathematical set operations like union and intersection
+
+## Set operations
+
+```python
+a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+
+a | b      # {1, 2, 3, 4, 5, 6} — union
+a & b      # {3, 4}             — intersection
+a - b      # {1, 2}             — difference (in a but not b)
+a ^ b      # {1, 2, 5, 6}       — symmetric difference (in either, not both)
+```
+
+Common set methods:
+
+```python
+a.add(5)          # add an item
+a.remove(3)       # remove an item (KeyError if missing)
+a.discard(99)     # remove an item (no error if missing)
+a.pop()           # remove and return an arbitrary item
+a.clear()         # remove all items
+```
+
+## When to use each data structure
+
+Use a **list** when:
+
+- order matters
+- you need to access items by position
+- duplicates are meaningful
+
+```python
+log_entries = ["error", "warning", "error", "info"]
+```
+
+Use a **tuple** when:
+
+- you have a fixed structure with a known number of fields
+- each position means something specific
+
+```python
+user_record = ("Ada", 36, "admin")
+```
+
+Use a **dictionary** when:
+
+- you need to look up values by name or key
+- you are modeling a thing with named attributes
+- you need fast lookups
+
+```python
+user = {"name": "Ada", "age": 36, "role": "admin"}
+```
+
+Use a **set** when:
+
+- you need to track unique items
+- you need to test membership efficiently
+- you need to find overlaps or differences between collections
+
+```python
+seen_ids = set()         # track which IDs we have processed
+active_users = {1, 3, 5}
+banned_users = {3, 7}
+at_risk = active_users & banned_users    # {3} — overlap
+```
+
+## What to carry forward
+
+- dictionaries store key-value pairs — `{"key": "value"}`
+- use `dict[key]` for direct access; use `.get()` for safe access
+- dictionaries are mutable — add, update, and remove entries
+- iterate with `.items()` to get key-value pairs
+- sets store unique items and support union, intersection, difference
+- use `set()` (not `{}`) to create an empty set
+- choose the data structure based on how you will access and use the data
+
+These four structures — lists, tuples, dictionaries, and sets — are the foundation for organizing data in Python. The next lesson covers comprehensions, a concise way to build and transform collections.

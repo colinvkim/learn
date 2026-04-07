@@ -1,0 +1,218 @@
+---
+title: "Transforming data patterns"
+description: "Learn common patterns for filtering, mapping, reducing, and grouping data in Python."
+course: python
+status: published
+---
+
+Real programs spend a lot of time transforming data — filtering out invalid items, reshaping structures, computing summaries, and grouping records. Python provides several tools for these tasks.
+
+## Filtering data
+
+Use a comprehension with an `if` clause to keep only items that match a condition:
+
+```python
+users = [
+    {"name": "Ada", "active": True},
+    {"name": "Bob", "active": False},
+    {"name": "Cia", "active": True},
+]
+
+active_users = [u for u in users if u["active"]]
+# [{"name": "Ada", "active": True}, {"name": "Cia", "active": True}]
+```
+
+The `filter()` function does the same thing with a function:
+
+```python
+def is_active(user):
+    return user["active"]
+
+active_users = list(filter(is_active, users))
+```
+
+Comprehensions are more idiomatic in modern Python. Use `filter()` only when you already have a named function that does the check.
+
+## Mapping data
+
+Transform each item in a collection:
+
+```python
+user_names = [user["name"] for user in users]
+# ["Ada", "Bob", "Cia"]
+```
+
+This is often called "mapping" — applying a function to each item. The `map()` function does the same:
+
+```python
+user_names = list(map(lambda u: u["name"], users))
+```
+
+`lambda` creates an anonymous function inline — `lambda u: u["name"]` is equivalent to `def f(u): return u["name"]`. Lambdas are convenient for short, one-off functions passed to `map()`, `sorted()`, and other functions that accept a callable.
+
+Comprehensions are more idiomatic in modern Python. Use `map()` only when you already have a named function.
+
+## Reducing data to a single value
+
+Use `sum()`, `min()`, `max()`, or `len()` for common reductions:
+
+```python
+prices = [10, 20, 30]
+
+sum(prices)      # 60
+min(prices)      # 10
+max(prices)      # 30
+len(prices)      # 3
+```
+
+For custom reductions, use `sum()` with a generator expression:
+
+```python
+ages = [36, 28, 42]
+total = sum(ages)    # 106
+```
+
+For more complex folding, use `functools.reduce()`:
+
+```python
+from functools import reduce
+
+numbers = [1, 2, 3, 4]
+product = reduce(lambda acc, n: acc * n, numbers, 1)
+# 24
+```
+
+`reduce()` takes a function, an iterable, and an initial value. It is powerful but often less readable than a simple loop:
+
+```python
+product = 1
+
+for n in numbers:
+    product *= n
+```
+
+Use whichever is clearer for your specific case.
+
+## Grouping data
+
+Grouping items by a key is a common task. The `itertools.groupby()` function works but requires sorted data. A simpler approach uses a dictionary:
+
+```python
+from collections import defaultdict
+
+users = [
+    {"name": "Ada", "role": "admin"},
+    {"name": "Bob", "role": "user"},
+    {"name": "Cia", "role": "admin"},
+]
+
+by_role = defaultdict(list)
+
+for user in users:
+    by_role[user["role"]].append(user)
+
+# defaultdict(<class 'list'>, {
+#     "admin": [{"name": "Ada", ...}, {"name": "Cia", ...}],
+#     "user": [{"name": "Bob", ...}],
+# })
+```
+
+`defaultdict(list)` creates a new empty list automatically for any key that does not exist yet. This avoids the need to check and initialize keys manually. `defaultdict` is from Python's `collections` module in the standard library — you will see it covered in more detail in the standard library lesson.
+
+## Counting items
+
+Use a dict or `collections.Counter` to count occurrences:
+
+```python
+from collections import Counter
+
+roles = [u["role"] for u in users]
+role_counts = Counter(roles)
+# Counter({"admin": 2, "user": 1})
+
+role_counts.most_common()    # [("admin", 2), ("user", 1)]
+```
+
+`Counter` is the cleanest approach when you need frequencies.
+
+## Finding items
+
+Use `next()` with a generator expression to find the first match:
+
+```python
+first_admin = next((u for u in users if u["role"] == "admin"), None)
+```
+
+The second argument to `next()` is a default returned when no match is found. Without it, `next()` raises `StopIteration` — the built-in exception that signals the end of an iterator.
+
+To find all matches, use a list comprehension:
+
+```python
+admins = [u for u in users if u["role"] == "admin"]
+```
+
+## Sorting with keys
+
+`sorted()` and `list.sort()` accept a `key` function that determines the sort value:
+
+```python
+users = [
+    {"name": "Cia", "age": 42},
+    {"name": "Ada", "age": 36},
+    {"name": "Bob", "age": 28},
+]
+
+by_name = sorted(users, key=lambda u: u["name"])
+by_age = sorted(users, key=lambda u: u["age"])
+```
+
+Sort by multiple fields with a tuple key:
+
+```python
+by_role_then_name = sorted(users, key=lambda u: (u["role"], u["name"]))
+```
+
+Python's sort is **stable** — items with equal keys keep their original order. This makes multi-pass sorting predictable.
+
+## Chaining transformations
+
+Comprehensions and generator expressions let you chain operations cleanly:
+
+```python
+def process_users(users):
+    return sorted(
+        [
+            {"name": u["name"].title(), "email": u["email"].lower()}
+            for u in users
+            if u.get("active")
+        ],
+        key=lambda u: u["name"],
+    )
+```
+
+This filters, transforms, and sorts in one readable expression. For more complex pipelines, break it into named steps:
+
+```python
+def process_users(users):
+    active = [u for u in users if u.get("active")]
+    cleaned = [
+        {"name": u["name"].title(), "email": u["email"].lower()}
+        for u in active
+    ]
+    return sorted(cleaned, key=lambda u: u["name"])
+```
+
+Each step has a name and a clear purpose. This is easier to debug — you can inspect any intermediate variable.
+
+## What to carry forward
+
+- filter with `[x for x in items if condition]`
+- map with `[transform(x) for x in items]`
+- reduce with `sum()`, `min()`, `max()`, or a loop
+- group with `defaultdict(list)`
+- count with `collections.Counter`
+- find with `next((x for x in items if condition), default)`
+- sort with `key=` functions
+- break complex transformations into named steps for clarity
+
+These patterns cover most data transformation tasks. The next lesson covers how to split code across multiple files using modules.

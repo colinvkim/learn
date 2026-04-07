@@ -1,0 +1,210 @@
+---
+title: "Scope and why it matters"
+description: "Learn how Python determines where variable names are accessible, the difference between local and global scope, and why scope discipline prevents bugs."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+Scope determines where a variable name is accessible in your code. Not every name you create is available everywhere. Understanding scope prevents confusing bugs where the wrong value gets used or a name is not found.
+
+## Local scope
+
+Variables created inside a function are **local** to that function. They exist only while the function runs and cannot be accessed from outside:
+
+```python
+def greet(name):
+    message = f"Hello, {name}"    # message is local
+    print(message)
+
+greet("Ada")
+print(message)    # NameError — message does not exist outside greet
+```
+
+Each function call creates its own local scope. Variables in one function do not interfere with variables in another:
+
+```python
+def add(a, b):
+    result = a + b    # this result is local to add()
+    return result
+
+def multiply(a, b):
+    result = a * b    # this result is local to multiply()
+    return result
+```
+
+Both functions use a name called `result`, but they are completely separate variables.
+
+## Parameters are local
+
+Function parameters are local variables. They exist only inside the function:
+
+```python
+def process(data):
+    # data is local to process()
+    return len(data)
+
+process([1, 2, 3])
+print(data)    # NameError — data only exists inside process()
+```
+
+## Global scope
+
+Variables created at the top level of a file — outside any function — are **global**. They are accessible from anywhere in that file:
+
+```python
+VERSION = "1.0.0"    # global
+
+def show_version():
+    print(VERSION)    # accessible — Python looks in local, then global
+
+show_version()        # 1.0.0
+print(VERSION)        # 1.0.0
+```
+
+Python resolves names using the **LEGB rule**: it checks **L**ocal scope first, then **E**nclosing scope (for nested functions), then **G**lobal scope, then **B**uilt-in scope (functions like `print()`, `len()`).
+
+## Reading vs modifying globals
+
+You can **read** a global variable from inside a function without any special syntax:
+
+```python
+count = 0
+
+def show_count():
+    print(count)    # reads the global count — works fine
+
+show_count()        # 0
+```
+
+But you cannot **reassign** a global variable without declaring it:
+
+```python
+count = 0
+
+def increment():
+    count = count + 1    # UnboundLocalError
+
+increment()
+```
+
+Python sees the assignment to `count` and treats `count` as local throughout the function. But the right side tries to read the local `count` before it exists. The fix is the `global` keyword:
+
+```python
+count = 0
+
+def increment():
+    global count
+    count = count + 1
+
+increment()
+print(count)    # 1
+```
+
+<Tip title="Avoid global when possible">
+  <p>Using <code>global</code> works but makes code harder to reason about. Any function can modify the global state, which means any function can affect the behavior of any other function. Prefer passing values as parameters and returning results.</p>
+</Tip>
+
+## The better approach: pass and return
+
+Instead of relying on globals, pass values in and return results:
+
+```python
+# Avoid this:
+count = 0
+
+def increment():
+    global count
+    count = count + 1
+
+increment()
+
+# Prefer this:
+def increment(count):
+    return count + 1
+
+count = 0
+count = increment(count)
+```
+
+The second version is testable, predictable, and has no hidden dependencies. You can see exactly what it needs and what it produces by looking at its parameters and return value.
+
+## Enclosing scope (nested functions)
+
+When you define a function inside another function, the inner function can see names from the outer function:
+
+```python
+def outer():
+    message = "hello"
+
+    def inner():
+        print(message)    # reads from enclosing scope — works
+
+    inner()
+
+outer()    # hello
+```
+
+To modify a variable from an enclosing scope, use `nonlocal`:
+
+```python
+def counter():
+    count = 0
+
+    def increment():
+        nonlocal count
+        count = count + 1
+        return count
+
+    return increment
+
+c = counter()
+print(c())    # 1
+print(c())    # 2
+```
+
+This pattern — returning an inner function that remembers values from its enclosing scope — is called a **closure**. It is useful for creating stateful utilities without using classes.
+
+## Scope and loops
+
+Variables created inside a loop are **not** scoped to the loop. They remain accessible after the loop ends:
+
+```python
+for i in range(3):
+    value = i * 2
+
+print(i)      # 2 — loop variable persists
+print(value)  # 4 — loop variable persists
+```
+
+This is different from many other languages where loop variables are scoped to the loop body. In Python, only function definitions create a new scope — not `if`, `for`, or `while` blocks.
+
+## Naming conventions
+
+Python uses conventions to signal scope and intent:
+
+- `snake_case` for local and global variables
+- `UPPER_SNAKE_CASE` for module-level constants
+- `_leading_underscore` for "private" names (internal to a module or class)
+
+```python
+MAX_RETRIES = 3          # constant — do not modify
+_internal_data = []      # internal — do not use from outside
+```
+
+These are conventions, not enforced rules. They communicate intent to other developers.
+
+## What to carry forward
+
+- variables inside a function are local to that function
+- parameters are local variables
+- variables at the top level of a file are global
+- Python resolves names using LEGB: Local, Enclosing, Global, Built-in
+- you can read globals without declaration, but need `global` to reassign them
+- prefer passing values as parameters and returning results over using globals
+- `nonlocal` modifies variables from an enclosing scope
+- only functions create new scope — loops and conditionals do not
+
+Scope discipline keeps your code predictable. When functions depend only on their parameters and produce results via return values, they are easy to test, reason about, and reuse. The next lesson covers lists and tuples, Python's primary sequence types.

@@ -1,0 +1,149 @@
+---
+title: "How Python executes code"
+description: "Learn how the Python interpreter runs code, the difference between REPL and script execution, and how to run Python programs."
+course: python
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+
+Before writing complex Python programs, it helps to understand how Python actually executes your code and the different ways you can run it.
+
+## The Python interpreter
+
+The **interpreter** is the program that reads and runs Python code. When you type `python3` in your terminal, you are launching the interpreter.
+
+The interpreter does two main things:
+
+1. reads your `.py` source code
+2. executes it line by line
+
+There is no separate build step. You write code and run it directly.
+
+## Running code in the REPL
+
+When you start Python without any arguments, it opens an interactive session called a **REPL** (read-evaluate-print loop):
+
+```bash
+$ python3
+>>> print("hello")
+hello
+>>> 2 + 3
+5
+>>> name = "Ada"
+>>> name
+'Ada'
+```
+
+The `>>>` prompt means Python is waiting for input. Type an expression and Python evaluates it immediately, printing the result. `print()` is Python's built-in function for displaying output — it writes its arguments to the terminal, separated by spaces, followed by a newline.
+
+The REPL is useful for:
+
+- experimenting with syntax
+- testing small ideas quickly
+- inspecting how a function or library behaves
+
+Exit the REPL with `exit()` or by pressing `Ctrl+D` on macOS/Linux or `Ctrl+Z` then `Enter` on Windows.
+
+## Running a Python file
+
+Most programs live in `.py` files, not in the REPL. To run a file:
+
+```bash
+python3 hello.py
+```
+
+Python reads the file from top to bottom and executes each statement. Nothing happens automatically for code that is only defined — functions must be called, classes must be instantiated.
+
+```python
+# hello.py
+def greet(name):
+    print(f"Hello, {name}")
+
+greet("Ada")
+```
+
+Running this file executes the `def` statement (which registers the function) and then calls `greet("Ada")`, which prints the greeting.
+
+<Note title="Naming files">
+  <p>Python files should use lowercase names with underscores, like <code>data_processor.py</code> or <code>fetch_users.py</code>. Avoid spaces and special characters in filenames.</p>
+</Note>
+
+## How Python reads a file
+
+Python executes a file **top to bottom**. Each line is processed in order:
+
+```python
+print("line 1")    # runs first
+print("line 2")    # runs second
+
+def helper():      # this line registers the function
+    print("inside") # does NOT run yet — only runs when helper() is called
+
+helper()           # NOW the function body executes
+```
+
+Key points:
+
+- function and class definitions are executed when Python encounters them — they create the function or class object and bind it to a name
+- the body of a function does not run until the function is called
+- if you call a function before it is defined, you get a `NameError`
+
+```python
+greet("Ada")       # NameError — greet is not defined yet
+
+def greet(name):   # now greet exists
+    print(f"Hello, {name}")
+```
+
+This is why function definitions typically appear before the code that calls them.
+
+## What happens when code runs
+
+When Python executes a line, it:
+
+1. **Parses** the source code into an internal structure
+2. **Compiles** it to **bytecode** — a low-level intermediate format
+3. **Runs** the bytecode in the **Python virtual machine**
+
+You do not manage any of this yourself. The interpreter handles it automatically. The bytecode is an implementation detail — you write `.py` files and the interpreter runs them.
+
+## Errors at runtime
+
+Because Python executes code as it runs, errors are discovered at **runtime**, not before.
+
+```python
+print("starting")
+result = 10 / 0    # ZeroDivisionError — only discovered when this line runs
+print("done")      # never reached
+```
+
+The program runs until it hits the error, then stops. This is different from compiled languages like TypeScript, where many errors are caught before the code ever runs.
+
+This means you need to be comfortable reading error messages and tracing through code to understand where things went wrong. You will learn those skills throughout this course.
+
+## Modules and imports
+
+Python programs are often split across multiple files. When one file needs code from another, it uses an `import` statement:
+
+```python
+import math
+
+print(math.sqrt(16))  # 4.0
+```
+
+Python loads the `math` module, makes its contents available under the `math` name, and continues executing. Import statements are executed just like any other line of code — they run when Python reaches them.
+
+You will learn more about modules and imports in a later lesson. For now, understand that imports are how Python code is shared across files.
+
+## What to carry forward
+
+- the Python interpreter reads and runs your code directly
+- the REPL is for interactive experimentation; files are for real programs
+- Python executes files top to bottom, line by line
+- function definitions are executed when encountered; function bodies run when called
+- errors are discovered at runtime, not before
+- imports load code from other files
+
+This execution model is the foundation for everything else. The next lesson covers variables and how Python handles values.

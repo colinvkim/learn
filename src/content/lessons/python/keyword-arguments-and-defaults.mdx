@@ -1,0 +1,198 @@
+---
+title: "Keyword arguments and default values"
+description: "Learn how to make functions more flexible with default parameter values, keyword arguments, and the *args and **kwargs patterns."
+course: python
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+
+
+Functions become more useful and easier to read when parameters have sensible defaults and can be passed by name. Python supports both patterns directly.
+
+## Default parameter values
+
+You can give a parameter a default value that is used when no argument is provided:
+
+```python
+def greet(name, greeting="Hello"):
+    print(f"{greeting}, {name}")
+
+greet("Ada")               # Hello, Ada
+greet("Ada", "Hi")         # Hi, Ada
+```
+
+Parameters with defaults must come **after** parameters without defaults:
+
+```python
+def greet(name, greeting="Hello"):    # correct
+    ...
+
+def greet(greeting="Hello", name):    # SyntaxError
+    ...
+```
+
+Default values are evaluated **once**, when the function is defined, not each time it is called:
+
+```python
+def add_item(item, items=[]):
+    items.append(item)
+    return items
+
+first = add_item("a")
+second = add_item("b")
+
+print(first)     # ['a', 'b'] — unexpected!
+print(second)    # ['a', 'b'] — same list
+```
+
+The `[]` is created once and shared across all calls. This is a common beginner mistake.
+
+The fix is to use `None` as the default and create the mutable value inside the function:
+
+```python
+def add_item(item, items=None):
+    if items is None:
+        items = []
+    items.append(item)
+    return items
+
+first = add_item("a")
+second = add_item("b")
+
+print(first)     # ['a']
+print(second)    # ['b']
+```
+
+<Warning title="Never use a mutable value as a default">
+  <p>Lists, dictionaries, and sets as default parameters are created once and shared. Use <code>None</code> as the default and create the mutable value inside the function body.</p>
+</Warning>
+
+## Keyword arguments
+
+Arguments can be passed by name, not just by position:
+
+```python
+def create_user(name, age, role="user"):
+    return {"name": name, "age": age, "role": role}
+
+user = create_user(age=36, name="Ada")
+# {"name": "Ada", "age": 36, "role": "user"}
+```
+
+Keyword arguments make calls more readable, especially when a function has many parameters:
+
+```python
+connect(host="db.example.com", port=5432, username="admin", timeout=30)
+```
+
+This is clearer than `connect("db.example.com", 5432, "admin", 30)` because each value is labeled.
+
+You can mix positional and keyword arguments, but all keyword arguments must come after positional ones:
+
+```python
+create_user("Ada", age=36)           # okay
+create_user(name="Ada", 36)           # SyntaxError — positional after keyword
+```
+
+## Forcing keyword-only arguments
+
+You can force certain parameters to be passed by keyword using `*` as a separator:
+
+```python
+def create_user(name, *, age=None, role=None):
+    return {"name": name, "age": age, "role": role}
+
+create_user("Ada", age=36, role="admin")    # okay
+create_user("Ada", 36, "admin")              # TypeError — age and role must be keywords
+```
+
+Everything after `*` must be passed by keyword. This is useful when a function has optional parameters that would be unclear if passed positionally.
+
+## *args — variable positional arguments
+
+Use `*args` to accept any number of positional arguments as a tuple:
+
+```python
+def total(*args):
+    return sum(args)
+
+total(1, 2, 3)       # 6
+total(10, 20)        # 30
+total()              # 0
+```
+
+`args` is a regular tuple. You can iterate over it, index it, or pass it to other functions:
+
+```python
+def log(*args):
+    for item in args:
+        print(item)
+```
+
+The name `args` is a convention. The `*` is what matters. You could write `*values` — it works the same way.
+
+## **kwargs — variable keyword arguments
+
+Use `**kwargs` to accept any number of keyword arguments as a dictionary:
+
+```python
+def build_profile(**kwargs):
+    return kwargs
+
+profile = build_profile(name="Ada", age=36, city="London")
+# {"name": "Ada", "age": 36, "city": "London"}
+```
+
+`kwargs` is a regular dictionary. You can iterate over it, check for keys, or pass it to other functions.
+
+## Combining parameter styles
+
+A function can combine regular parameters, `*args`, keyword-only arguments, and `**kwargs`:
+
+```python
+def create_user(name, *args, age=None, **kwargs):
+    user = {"name": name}
+    if age is not None:
+        user["age"] = age
+    user.update(kwargs)
+    return user
+```
+
+The order is fixed by Python's syntax rules:
+
+1. regular positional parameters
+2. `*args`
+3. keyword-only parameters (after `*` or `*args`)
+4. `**kwargs`
+
+In practice, most functions use only one or two of these. A function that uses all four is probably doing too much.
+
+## Unpacking in function calls
+
+You can also use `*` and `**` when **calling** a function to unpack a collection into arguments:
+
+```python
+def greet(first, last):
+    print(f"{first} {last}")
+
+name = ("Ada", "Lovelace")
+greet(*name)           # Ada Lovelace — unpacks tuple into positional args
+
+info = {"first": "Ada", "last": "Lovelace"}
+greet(**info)          # Ada Lovelace — unpacks dict into keyword args
+```
+
+This is useful when you have data in a collection and need to pass it to a function that expects individual arguments.
+
+## What to carry forward
+
+- default values make parameters optional with a fallback
+- never use a mutable value (list, dict, set) as a default — use `None` instead
+- keyword arguments make calls more readable
+- `*` forces keyword-only arguments
+- `*args` collects extra positional arguments into a tuple
+- `**kwargs` collects extra keyword arguments into a dict
+- `*` and `**` also unpack collections when calling functions
+
+These patterns make functions flexible and self-documenting. The next lesson covers scope, which determines where variable names are accessible in your code.

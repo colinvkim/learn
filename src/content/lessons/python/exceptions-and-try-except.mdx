@@ -1,0 +1,203 @@
+---
+title: "Exceptions and try/except"
+description: "Learn how Python handles errors with exceptions, how to catch and handle them with try/except, and how to write code that fails gracefully."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+Things go wrong in programs. Files do not exist, network requests fail, and data is malformed. Python uses **exceptions** to signal and handle errors. Understanding exceptions is essential for writing programs that fail gracefully instead of crashing.
+
+## What an exception is
+
+An exception is an event that disrupts the normal flow of a program. When Python encounters an error, it **raises** (throws) an exception and stops executing the current code path.
+
+```python
+result = 10 / 0    # ZeroDivisionError: division by zero
+print("done")      # never reached
+```
+
+Python prints the exception type, a message, and a **traceback** showing where the error occurred.
+
+## try/except
+
+Wrap code that might fail in a `try` block and handle the error in an `except` block:
+
+```python
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("Cannot divide by zero.")
+
+print("Program continues.")
+```
+
+The `except` block runs only if that specific exception type is raised. After handling, the program continues normally.
+
+<Tip title="Catch specific exceptions">
+  <p>Always catch the most specific exception type you can. A bare <code>except:</code> or <code>except Exception:</code> catches everything, including mistakes in your own code that you should see and fix.</p>
+</Tip>
+
+## Handling multiple exceptions
+
+You can handle different exceptions separately:
+
+```python
+try:
+    with open("data.json") as f:
+        data = json.load(f)
+except FileNotFoundError:
+    print("File does not exist.")
+except json.JSONDecodeError:
+    print("File contains invalid JSON.")
+```
+
+Or handle them the same way:
+
+```python
+try:
+    with open("data.json") as f:
+        data = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    print(f"Error reading file: {e}")
+```
+
+## The else clause
+
+An `else` block runs only if no exception was raised:
+
+```python
+try:
+    with open("data.json") as f:
+        data = json.load(f)
+except FileNotFoundError:
+    print("File not found.")
+else:
+    print(f"Loaded {len(data)} items.")
+```
+
+The `else` block is useful for code that should only run on success, keeping the `try` block focused on the risky operation.
+
+## The finally clause
+
+A `finally` block always runs, whether an exception occurred or not:
+
+```python
+try:
+    f = open("data.txt")
+    try:
+        process(f)
+    finally:
+        f.close()
+except Exception:
+    print("Processing failed.")
+```
+
+The inner `finally` ensures the file is closed regardless of what happens during processing. In practice, `with` statements replace most `finally` blocks for file handling. You will still see `finally` for other kinds of cleanup, like closing network connections or releasing locks.
+
+## Accessing the exception object
+
+Bind the exception to a variable to inspect it:
+
+```python
+try:
+    result = 10 / 0
+except ZeroDivisionError as e:
+    print(f"Error: {e}")
+    print(f"Error type: {type(e).__name__}")
+```
+
+This is useful for logging or producing user-friendly error messages.
+
+## Common built-in exceptions
+
+You will encounter these frequently:
+
+| Exception | When it occurs |
+|-----------|---------------|
+| `ValueError` | A value has the wrong type or content |
+| `TypeError` | An operation is applied to an inappropriate type |
+| `KeyError` | A dictionary key does not exist |
+| `IndexError` | A list index is out of range |
+| `FileNotFoundError` | A file or directory does not exist |
+| `AttributeError` | An object does not have the requested attribute |
+| `ImportError` / `ModuleNotFoundError` | A module cannot be imported |
+| `ZeroDivisionError` | Division or modulo by zero |
+| `OSError` | Operating system errors (parent of many file errors) |
+
+## Validating input with ValueError
+
+Use `ValueError` to signal invalid input:
+
+```python
+def set_age(age):
+    if not isinstance(age, int):
+        raise TypeError("Age must be an integer")
+    if age < 0:
+        raise ValueError("Age cannot be negative")
+    return age
+```
+
+Raise an exception when your function receives something it cannot work with. This fails fast and produces a clear error message.
+
+## A robust file loading function
+
+Putting it all together:
+
+```python
+import json
+from pathlib import Path
+
+
+def load_config(path):
+    """Load a JSON configuration file with clear error handling."""
+    path = Path(path)
+
+    if not path.exists():
+        raise FileNotFoundError(f"Config file not found: {path}")
+
+    try:
+        with open(path) as f:
+            config = json.load(f)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON in {path}: {e}") from e
+
+    if not isinstance(config, dict):
+        raise ValueError(f"Expected a JSON object in {path}")
+
+    return config
+```
+
+This function:
+
+1. checks the file exists before trying to open it
+2. catches JSON parsing errors and re-raises them with context
+3. validates the structure of the data
+4. uses `from e` to chain exceptions, preserving the original cause
+
+## Exception chaining
+
+When you raise a new exception while handling another, use `from` to preserve the original:
+
+```python
+try:
+    data = json.load(f)
+except json.JSONDecodeError as e:
+    raise ValueError(f"Bad config file: {e}") from e
+```
+
+The traceback will show both the original error and the new one. This makes debugging much easier.
+
+## What to carry forward
+
+- exceptions disrupt normal program flow and must be handled
+- use `try/except` to catch and handle specific exception types
+- avoid bare `except:` — it hides bugs
+- `else` runs on success; `finally` always runs
+- use `raise` to signal errors in your own code
+- use `from e` to chain exceptions and preserve the original cause
+- validate input early and fail fast with clear messages
+
+Exception handling makes your programs robust. The next lesson goes deeper into raising errors, creating custom exceptions, and reading tracebacks to debug problems.

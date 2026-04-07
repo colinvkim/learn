@@ -1,0 +1,379 @@
+---
+title: "A small real-world project"
+description: "Build a complete Python project from scratch — a CLI tool that fetches weather data from an API, processes it, and displays a forecast."
+course: python
+status: published
+---
+
+This lesson brings together everything you have learned: functions, data structures, modules, error handling, file I/O, APIs, CLI argument parsing, and testing. You will build a weather forecast tool.
+
+## The project
+
+A CLI tool called `weather` that:
+
+1. accepts a city name as a command-line argument
+2. fetches current weather data from an API
+3. displays a formatted forecast
+4. optionally caches results to a file
+
+## Project structure
+
+```
+weather/
+├── .venv/
+├── src/
+│   └── weather/
+│       ├── __init__.py
+│       ├── __main__.py
+│       ├── cli.py
+│       ├── api.py
+│       ├── formatter.py
+│       └── cache.py
+├── tests/
+│   ├── test_formatter.py
+│   └── test_cache.py
+├── requirements.txt
+└── README.md
+```
+
+## Dependencies
+
+```
+# requirements.txt
+requests>=2.28,<3.0
+```
+
+For testing:
+
+```bash
+pip install pytest
+```
+
+## The API client
+
+```python
+# api.py
+"""Fetch weather data from the Open-Meteo API (free, no API key required)."""
+
+import requests
+
+
+BASE_URL = "https://api.open-meteo.com/v1"
+CITIES = {
+    "london": (51.5074, -0.1278),
+    "new york": (40.7128, -74.0060),
+    "tokyo": (35.6762, 139.6503),
+    "paris": (48.8566, 2.3522),
+    "sydney": (-33.8688, 151.2093),
+}
+
+
+def get_coordinates(city: str) -> tuple[float, float]:
+    """Look up coordinates for a city name."""
+    city_lower = city.lower().strip()
+    if city_lower not in CITIES:
+        raise ValueError(f"Unknown city: {city}. Available: {', '.join(sorted(CITIES))}")
+    return CITIES[city_lower]
+
+
+def fetch_weather(city: str) -> dict:
+    """Fetch current weather and forecast for a city.
+
+    Returns a dictionary with keys: city, temperature, windspeed, description.
+    Raises requests.RequestException on network errors.
+    """
+    lat, lon = get_coordinates(city)
+
+    response = requests.get(
+        f"{BASE_URL}/forecast",
+        params={
+            "latitude": lat,
+            "longitude": lon,
+            "current_weather": True,
+            "daily": "temperature_2m_max,temperature_2m_min",
+            "timezone": "auto",
+        },
+        timeout=10,
+    )
+    response.raise_for_status()
+    data = response.json()
+
+    current = data.get("current_weather", {})
+    daily = data.get("daily", {})
+
+    return {
+        "city": city.title(),
+        "temperature": current.get("temperature", "N/A"),
+        "windspeed": current.get("windspeed", "N/A"),
+        "description": _weather_code_to_description(current.get("weathercode")),
+        "max_temp": daily.get("temperature_2m_max", [None])[0],
+        "min_temp": daily.get("temperature_2m_min", [None])[0],
+    }
+
+
+def _weather_code_to_description(code):
+    """Convert a WMO weather code to a human-readable description."""
+    codes = {
+        0: "Clear sky",
+        1: "Mainly clear",
+        2: "Partly cloudy",
+        3: "Overcast",
+        45: "Foggy",
+        48: "Rime fog",
+        51: "Light drizzle",
+        61: "Slight rain",
+        63: "Moderate rain",
+        65: "Heavy rain",
+        71: "Slight snow",
+        73: "Moderate snow",
+        75: "Heavy snow",
+        95: "Thunderstorm",
+    }
+    return codes.get(code, "Unknown")
+```
+
+## The CLI interface
+
+```python
+# cli.py
+"""Command-line interface for the weather tool."""
+
+import argparse
+import sys
+from pathlib import Path
+
+from .api import fetch_weather
+from .formatter import format_forecast
+from .cache import Cache
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """Build the argument parser."""
+    parser = argparse.ArgumentParser(
+        description="Get the current weather forecast for a city.",
+    )
+    parser.add_argument(
+        "city",
+        help="City name (e.g., London, New York, Tokyo)",
+    )
+    parser.add_argument(
+        "--cache",
+        action="store_true",
+        help="Cache results to a local file",
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        dest="as_json",
+        help="Output raw JSON instead of formatted text",
+    )
+    return parser
+
+
+def main():
+    """Entry point for the weather CLI tool."""
+    parser = build_parser()
+    args = parser.parse_args()
+
+    cache = Cache(Path.home() / ".weather_cache") if args.cache else None
+
+    try:
+        # Try cache first
+        if cache:
+            cached = cache.get(args.city)
+            if cached:
+                data = cached
+            else:
+                data = fetch_weather(args.city)
+                cache.set(args.city, data)
+        else:
+            data = fetch_weather(args.city)
+
+        # Output
+        if args.as_json:
+            import json
+            print(json.dumps(data, indent=2))
+        else:
+            print(format_forecast(data))
+
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error fetching weather: {e}", file=sys.stderr)
+        sys.exit(2)
+```
+
+## Formatting output
+
+```python
+# formatter.py
+"""Format weather data for display."""
+
+
+def format_forecast(data: dict) -> str:
+    """Format weather data into a readable string."""
+    lines = [
+        f"Weather in {data['city']}",
+        f"{'─' * 30}",
+        f"  Temperature:  {data['temperature']}°C",
+        f"  Condition:    {data['description']}",
+        f"  Wind:         {data['windspeed']} km/h",
+    ]
+
+    if data.get("max_temp") is not None:
+        lines.append(f"  High:         {data['max_temp']}°C")
+        lines.append(f"  Low:          {data['min_temp']}°C")
+
+    return "\n".join(lines)
+```
+
+## Caching
+
+```python
+# cache.py
+"""Simple file-based cache for weather data."""
+
+import json
+from pathlib import Path
+
+
+class Cache:
+    """Cache data to a directory."""
+
+    def __init__(self, directory: Path):
+        self.directory = directory
+        self.directory.mkdir(parents=True, exist_ok=True)
+
+    def _path(self, key: str) -> Path:
+        """Get the file path for a cache key."""
+        safe = key.lower().replace(" ", "_")
+        return self.directory / f"{safe}.json"
+
+    def get(self, key: str) -> dict | None:
+        """Get a cached value, or None if not found or expired."""
+        path = self._path(key)
+        if not path.exists():
+            return None
+        try:
+            text = path.read_text(encoding="utf-8")
+            return json.loads(text)
+        except (json.JSONDecodeError, OSError):
+            return None
+
+    def set(self, key: str, value: dict) -> None:
+        """Cache a value."""
+        path = self._path(key)
+        try:
+            path.write_text(json.dumps(value, indent=2), encoding="utf-8")
+        except OSError:
+            pass    # cache write failure is non-fatal
+```
+
+## Tests
+
+```python
+# tests/test_formatter.py
+from weather.formatter import format_forecast
+
+
+def test_format_forecast_basic():
+    data = {
+        "city": "London",
+        "temperature": 15.2,
+        "windspeed": 12.5,
+        "description": "Partly cloudy",
+        "max_temp": 18.0,
+        "min_temp": 10.0,
+    }
+    result = format_forecast(data)
+
+    assert "London" in result
+    assert "15.2" in result
+    assert "Partly cloudy" in result
+    assert "18.0" in result
+    assert "10.0" in result
+
+
+def test_format_forecast_missing_optional():
+    data = {
+        "city": "Tokyo",
+        "temperature": 22,
+        "windspeed": 5,
+        "description": "Clear sky",
+    }
+    result = format_forecast(data)
+
+    assert "Tokyo" in result
+    assert "22" in result
+    assert "High" not in result    # no max_temp/min_temp
+```
+
+## Running the project
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the tool
+python -m weather London
+
+# With caching and JSON output
+python -m weather Tokyo --cache --json
+
+# Run tests
+pytest
+```
+
+Example output:
+
+```
+$ python -m weather london
+Weather in London
+──────────────────────────────
+  Temperature:  15.2°C
+  Condition:    Partly cloudy
+  Wind:         12.5 km/h
+  High:         18.0°C
+  Low:          10.0°C
+```
+
+## What this project demonstrates
+
+This project uses nearly every concept from the course:
+
+- **Functions** with parameters, return values, and defaults
+- **Data structures** — dictionaries, lists, tuples
+- **Modules** — code split across focused files
+- **Error handling** — try/except, raising ValueError, clear messages
+- **File I/O** — reading and writing cache files with pathlib
+- **APIs** — fetching data with requests, handling responses
+- **CLI** — argparse for argument parsing, help text, exit codes
+- **Testing** — pytest for verifying behavior
+- **Type hints** — optional annotations on key functions
+- **Project structure** — clean separation of concerns
+
+## Where to go from here
+
+You now have the foundation to:
+
+- **Automate tasks** — file processing, data cleanup, system administration
+- **Build web backends** — with FastAPI, Flask, or Django
+- **Analyze data** — with pandas, numpy, and matplotlib
+- **Scrape websites** — with requests and BeautifulSoup
+- **Build bots** — for Slack, Discord, or Telegram
+- **Contribute to open source** — read and understand real Python codebases
+
+The best way to improve is to build things. Start with a problem you have, break it into functions, write tests, and iterate.
+
+## What to carry forward
+
+- real projects combine many concepts naturally
+- separate concerns into focused modules
+- always handle errors with clear messages
+- cache results when appropriate
+- test behavior, not implementation
+- use type hints on public interfaces
+- start small and grow incrementally
+
+You now have the foundation to use Python for real work. The rest is practice.

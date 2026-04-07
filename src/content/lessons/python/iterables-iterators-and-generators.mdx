@@ -1,0 +1,257 @@
+---
+title: "Iterables, iterators, and generators"
+description: "Learn how Python's iteration protocol works, how to create generators with yield, and when lazy computation is useful."
+course: python
+status: published
+---
+
+You have used `for` loops throughout this course. Now learn what makes them work under the hood and how to create your own lazy sequences with generators.
+
+## Iterables vs iterators
+
+An **iterable** is anything you can loop over with a `for` loop:
+
+```python
+for item in [1, 2, 3]:       # list is iterable
+for char in "hello":          # string is iterable
+for key in {"a": 1}:          # dict is iterable
+```
+
+An **iterator** is an object that produces values one at a time when you call `next()` on it. Every iterator is iterable, but not every iterable is an iterator.
+
+Python converts an iterable into an iterator using `iter()`:
+
+```python
+numbers = [1, 2, 3]
+it = iter(numbers)    # creates an iterator
+
+next(it)    # 1
+next(it)    # 2
+next(it)    # 3
+next(it)    # StopIteration — no more values
+```
+
+`StopIteration` is a built-in exception that signals the end of iteration. You rarely raise it manually — Python's `for` loops handle it automatically.
+
+When a `for` loop runs, it calls `iter()` on the collection and then calls `next()` repeatedly until `StopIteration` signals the end.
+
+## The iteration protocol
+
+Behind the scenes, the protocol has two parts:
+
+- `__iter__()` — returns an iterator
+- `__next__()` — returns the next value or raises `StopIteration`
+
+You can make any class iterable by implementing these methods:
+
+```python
+class Countdown:
+    def __init__(self, start):
+        self.start = start
+
+    def __iter__(self):
+        self.current = self.start
+        return self
+
+    def __next__(self):
+        if self.current <= 0:
+            raise StopIteration
+        self.current = self.current - 1
+        return self.current + 1
+```
+
+```python
+for n in Countdown(3):
+    print(n)    # 3, 2, 1
+```
+
+Most of the time you do not need to implement this manually. Generators are simpler.
+
+## Generator functions
+
+A **generator** is a function that produces values one at a time using `yield`:
+
+```python
+def count_down(start):
+    current = start
+    while current > 0:
+        yield current
+        current = current - 1
+```
+
+```python
+for n in count_down(3):
+    print(n)    # 3, 2, 1
+```
+
+`yield` is like `return`, but it **pauses** the function instead of ending it. The next time `next()` is called, execution resumes right after the `yield`.
+
+Generators are simpler than writing `__iter__` and `__next__` by hand. A function with `yield` is automatically an iterator.
+
+## Lazy vs eager computation
+
+A regular function computes its entire result before returning:
+
+```python
+def squares(n):
+    result = []
+    for i in range(n):
+        result.append(i ** 2)
+    return result
+
+# Computes all 1,000,000 squares upfront
+result = squares(1_000_000)
+```
+
+A generator computes values **on demand**:
+
+```python
+def squares(n):
+    for i in range(n):
+        yield i ** 2
+
+# Computes squares one at a time as needed
+result = squares(1_000_000)    # returns immediately — no computation yet
+```
+
+When you iterate, each square is computed only when needed:
+
+```python
+gen = squares(1_000_000)
+
+print(next(gen))    # 0 — only first value computed
+print(next(gen))    # 1
+```
+
+This is called **lazy evaluation**. It uses minimal memory and can handle infinite sequences.
+
+## Infinite generators
+
+Generators can produce values forever:
+
+```python
+def natural_numbers():
+    n = 1
+    while True:
+        yield n
+        n = n + 1
+```
+
+```python
+nums = natural_numbers()
+
+next(nums)    # 1
+next(nums)    # 2
+next(nums)    # 3
+# ... goes on forever
+```
+
+Infinite sequences are only practical with generators. A list cannot hold infinite values.
+
+## Generator expressions
+
+Like list comprehensions, but with parentheses — they create generators instead of lists:
+
+```python
+squares = (n ** 2 for n in range(10))
+
+next(squares)    # 0
+next(squares)    # 1
+```
+
+Generator expressions are memory-efficient for large datasets:
+
+```python
+# This creates a full list in memory — uses lots of memory
+total = sum([n ** 2 for n in range(1_000_000)])
+
+# This computes values one at a time — minimal memory
+total = sum(n ** 2 for n in range(1_000_000))
+```
+
+Drop the square brackets to turn a comprehension into a generator expression. Functions like `sum()`, `max()`, and `min()` accept generators directly.
+
+## When generators help
+
+Generators are useful when:
+
+- processing large files line by line
+- streaming data from a network
+- computing expensive sequences where you do not need all values
+- creating pipelines that transform data step by step
+
+```python
+def read_log_lines(path):
+    """Yield non-empty, non-comment lines from a log file."""
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#"):
+                yield line
+
+
+def parse_entries(lines):
+    """Yield parsed log entries from raw lines."""
+    for line in lines:
+        parts = line.split("|")
+        if len(parts) >= 3:
+            yield {
+                "timestamp": parts[0],
+                "level": parts[1],
+                "message": parts[2],
+            }
+
+
+def filter_errors(entries):
+    """Yield only error-level entries."""
+    for entry in entries:
+        if entry["level"] == "ERROR":
+            yield entry
+
+
+# Chain them together — data flows through lazily
+errors = filter_errors(
+    parse_entries(
+        read_log_lines("server.log")
+    )
+)
+
+for error in errors:
+    print(error["message"])
+```
+
+Each function does one thing. Data flows through the pipeline one item at a time. Memory usage stays constant regardless of file size.
+
+## Sending values into generators
+
+Generators can receive values via `.send()`:
+
+```python
+def accumulator():
+    total = 0
+    while True:
+        value = yield total
+        total = total + (value or 0)
+```
+
+```python
+gen = accumulator()
+next(gen)         # 0 — prime the generator
+gen.send(10)      # 10
+gen.send(5)       # 15
+gen.send(3)       # 18
+```
+
+This is an advanced pattern used in coroutines and async code. Most everyday code does not need `.send()`.
+
+## What to carry forward
+
+- iterables work with `for` loops; iterators produce values with `next()`
+- `for` loops call `iter()` and then `next()` until `StopIteration`
+- generators use `yield` to produce values one at a time, pausing between
+- generators are lazy — they compute values on demand
+- generator expressions `(x for x in items)` are memory-efficient alternatives to list comprehensions
+- chain generators to build data processing pipelines
+- infinite sequences are possible with generators
+
+Generators are a powerful tool for processing data efficiently. The next lesson covers how to manage Python environments and install external packages with pip and venv.

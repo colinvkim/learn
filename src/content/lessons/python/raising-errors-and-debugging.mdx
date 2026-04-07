@@ -1,0 +1,198 @@
+---
+title: "Raising errors, custom exceptions, and reading tracebacks"
+description: "Learn how to raise exceptions in your own code, create custom exception types, and read tracebacks to diagnose problems quickly."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+You have seen how to catch exceptions. Now learn how to raise them, when to create your own exception types, and how to read the information Python gives you when things go wrong.
+
+## Raising exceptions
+
+Use `raise` to signal that something has gone wrong:
+
+```python
+def set_temperature(celsius):
+    if celsius < -273.15:
+        raise ValueError("Temperature below absolute zero")
+    return celsius
+```
+
+`raise` stops execution immediately and propagates the exception up the call stack until it is caught or the program exits.
+
+## Choosing the right exception type
+
+Python provides many built-in exception types. Using the right one communicates what went wrong:
+
+| Exception | Use when |
+|-----------|----------|
+| `ValueError` | A value is inappropriate (negative age, invalid format) |
+| `TypeError` | A value has the wrong type (string where int expected) |
+| `KeyError` | A required key is missing from a dictionary |
+| `FileNotFoundError` | A file path does not exist |
+| `RuntimeError` | A general runtime error with no better category |
+
+```python
+def divide(a, b):
+    if not isinstance(a, (int, float)):
+        raise TypeError(f"Expected a number, got {type(a).__name__}")
+    if b == 0:
+        raise ValueError("Cannot divide by zero")
+    return a / b
+```
+
+Using the right exception type lets callers catch specific errors:
+
+```python
+try:
+    result = divide("10", 2)
+except TypeError as e:
+    print(f"Type error: {e}")
+```
+
+## Custom exception classes
+
+Create your own exception types for domain-specific errors:
+
+```python
+class ConfigError(Exception):
+    """Base exception for configuration errors."""
+
+
+class MissingConfigError(ConfigError):
+    """A required configuration value is missing."""
+
+
+class InvalidConfigError(ConfigError):
+    """A configuration value is invalid."""
+
+
+class ConfigFileError(ConfigError):
+    """The configuration file cannot be read."""
+```
+
+Custom exceptions inherit from `Exception` or from a custom base class. They work exactly like built-in exceptions:
+
+```python
+def load_database_url(config):
+    url = config.get("database_url")
+    if url is None:
+        raise MissingConfigError("database_url is required")
+    if not url.startswith(("postgresql://", "mysql://")):
+        raise InvalidConfigError(f"Invalid database URL: {url}")
+    return url
+```
+
+Callers can catch your specific exceptions:
+
+```python
+try:
+    url = load_database_url(config)
+except MissingConfigError as e:
+    print(f"Configuration error: {e}")
+except InvalidConfigError as e:
+    print(f"Invalid configuration: {e}")
+```
+
+This makes your API clearer. Callers know exactly what can go wrong and how to respond.
+
+## Reading tracebacks
+
+When an uncaught exception occurs, Python prints a **traceback**:
+
+```
+Traceback (most recent call last):
+  File "app.py", line 15, in <module>
+    main()
+  File "app.py", line 10, in main
+    load_config("config.json")
+  File "app.py", line 5, in load_config
+    return json.load(f)
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(), **kw)
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+```
+
+Read a traceback **from bottom to top**:
+
+1. **Last line** — the exception type and message: `JSONDecodeError: Expecting value...`
+2. **Frames above** — the call stack, from most recent to oldest
+3. **Each frame** shows the file, line number, and function name
+4. **The arrow** (in some displays) points to the exact line that raised the exception
+
+The most important lines are usually the first frame in **your** code (closest to the bottom) and the exception message.
+
+<Tip title="Ignore standard library frames">
+  <p>Tracebacks often pass through standard library or package code. Focus on the frames in your own files — those are the ones you can fix.</p>
+</Tip>
+
+## Debugging strategies
+
+When you encounter an error:
+
+**1. Read the exception message.** It often tells you exactly what is wrong.
+
+**2. Find the line in your code.** Look for the first frame that is your file.
+
+**3. Check the values.** Print or log the variables involved in the failing line.
+
+**4. Reproduce the error.** Run the minimal code that produces the same error.
+
+**5. Fix the root cause.** Do not just catch the exception — understand why it happened.
+
+```python
+# Bad — hides the problem
+try:
+    result = process(data)
+except Exception:
+    pass
+
+# Good — investigate and fix the root cause
+result = process(data)    # let it fail, read the traceback, fix the issue
+```
+
+## Logging exceptions
+
+In real programs, log exceptions instead of just printing them:
+
+```python
+import logging
+
+logging.basicConfig(level=logging.ERROR)
+
+try:
+    process_data()
+except Exception as e:
+    logging.exception("Failed to process data")    # logs the full traceback
+```
+
+`logging.exception()` automatically includes the traceback. This is essential for debugging issues in deployed code where you cannot interact with the program directly.
+
+## When not to catch
+
+Do not catch exceptions to:
+
+- hide bugs during development
+- continue when the program is in an inconsistent state
+- suppress errors that the caller should know about
+
+Catch exceptions when:
+
+- you can recover meaningfully (use a default, retry, skip a bad record)
+- you can add context and re-raise
+- you need to clean up resources
+- you are at the boundary of your program and need to log the error
+
+## What to carry forward
+
+- use `raise` to signal errors in your code
+- choose the most specific built-in exception type for the situation
+- create custom exceptions for domain-specific errors
+- read tracebacks from bottom to top — focus on your code's frames
+- log exceptions with `logging.exception()` in production code
+- do not catch exceptions just to hide problems — catch them to recover or add context
+
+Reading and responding to errors is a core programming skill. The next lesson covers objects and classes, Python's approach to organizing code around data and behavior.

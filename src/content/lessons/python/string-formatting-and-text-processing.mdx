@@ -1,0 +1,230 @@
+---
+title: "String formatting and text processing"
+description: "Learn Python's string methods, f-strings, and the re module for working with text patterns."
+course: python
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+
+
+Text processing is one of Python's strongest areas. Whether you are cleaning user input, parsing log files, or extracting data from unstructured text, Python's string tools handle it efficiently.
+
+## String methods you will use constantly
+
+Strings have many built-in methods for common transformations:
+
+```python
+text = "  Hello, World  "
+
+text.strip()        # "Hello, World"       — remove surrounding whitespace
+text.lstrip()       # "Hello, World  "     — remove leading whitespace
+text.rstrip()       # "  Hello, World"     — remove trailing whitespace
+text.lower()        # "  hello, world  "   — lowercase
+text.upper()        # "  HELLO, WORLD  "   — uppercase
+text.title()        # "  Hello, World  "   — title case (each word capitalized)
+text.capitalize()   # "  hello, world  "   — first character uppercase, rest lowercase
+text.swapcase()     # "  hELLO, wORLD  "   — swap case
+```
+
+`capitalize()` operates on the raw string — it does not strip whitespace first. The first character of `"  Hello, World  "` is a space, so the result keeps the leading spaces and lowercases the rest.
+
+## Checking string content
+
+```python
+"hello".startswith("hel")     # True
+"hello".endswith("lo")        # True
+"hello".find("ll")            # 2 — index of first occurrence
+"hello".find("xyz")           # -1 — not found
+"hello".index("ll")           # 2 — like find but raises ValueError if missing
+"hello".count("l")            # 2 — number of occurrences
+"abc123".isalnum()            # True — all alphanumeric
+"abc".isalpha()               # True — all alphabetic
+"123".isdigit()               # True — all digits
+"   ".isspace()               # True — all whitespace
+```
+
+## Splitting and joining
+
+```python
+"apple,banana,cherry".split(",")     # ["apple", "banana", "cherry"]
+"one\ntwo\nthree".splitlines()       # ["one", "two", "three"]
+" ".join(["apple", "banana"])        # "apple banana"
+```
+
+`split()` without arguments splits on any whitespace:
+
+```python
+"  one   two  three  ".split()    # ["one", "two", "three"]
+```
+
+## Replacing content
+
+```python
+text = "hello world"
+text.replace("world", "Python")    # "hello Python"
+
+# Replace only the first occurrence
+text.replace("l", "L", 1)          # "heLlo world"
+```
+
+`replace()` returns a new string — it does not modify the original.
+
+## f-strings in depth
+
+f-strings support formatting expressions:
+
+```python
+name = "Ada"
+score = 95.678
+
+f"Name: {name}"                    # "Name: Ada"
+f"Score: {score:.2f}"              # "Score: 95.68" — 2 decimal places
+f"Number: {42:05d}"                # "Number: 00042" — zero-padded
+f"Pct: {0.85:.1%}"                 # "Pct: 85.0%" — percentage format
+f"Name: {name:>10}"                # "Name:        Ada" — right-aligned
+f"Name: {name:<10}"                # "Name: Ada       " — left-aligned
+f"Name: {name:^10}"                # "Name:    Ada    " — centered
+```
+
+f-strings can call methods and expressions:
+
+```python
+user = {"name": "ada lovelace"}
+
+f"Hello, {user['name'].title()}"    # "Hello, Ada Lovelace"
+f"2 + 3 = {2 + 3}"                   # "2 + 3 = 5"
+```
+
+**Tip: Debug with f-string `=` syntax** — Python 3.8+ supports `{expr=}` for debugging. Writing `f"{name=} {score=}"` produces `"name='Ada' score=95.678"` — the variable name and its value.
+
+## Regular expressions
+
+When string methods are not enough — for complex pattern matching or extraction — use the `re` module:
+
+```python
+import re
+
+text = "Contact us at info@example.com or support@example.com."
+
+# Find all email addresses
+emails = re.findall(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", text)
+# ["info@example.com", "support@example.com"]
+```
+
+## Common re functions
+
+```python
+# re.search — find first match
+match = re.search(r"\d{3}-\d{4}", "Call 123-4567")
+if match:
+    print(match.group())    # "123-4567"
+
+# re.findall — find all matches
+re.findall(r"\d+", "a1b2c3")    # ["1", "2", "3"]
+
+# re.sub — replace matches
+re.sub(r"\d+", "X", "a1b2c3")    # "aXbXcX"
+
+# re.split — split on pattern
+re.split(r"[,\s]+", "one,two three,four")    # ["one", "two", "three", "four"]
+```
+
+## Compiling patterns
+
+Compile a pattern once if you use it repeatedly:
+
+```python
+import re
+
+email_pattern = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
+
+# Use the compiled pattern
+emails = email_pattern.findall(text)
+is_valid = bool(email_pattern.match("test@example.com"))
+```
+
+Compiling is slightly faster when the pattern is used many times. For one-off uses, the module-level functions are fine.
+
+## Common regex patterns
+
+| Pattern | Matches |
+|---------|---------|
+| `\d+` | One or more digits |
+| `\w+` | One or more word characters (letters, digits, underscore) |
+| `\s+` | One or more whitespace characters |
+| `[a-z]+` | One or more lowercase letters |
+| `^hello` | "hello" at the start of the string |
+| `world$` | "world" at the end of the string |
+| `colou?r` | "color" or "colour" (the `u` is optional) |
+| `\d{3}-\d{4}` | Phone number format like "123-4567" |
+| `https?://\S+` | HTTP or HTTPS URLs |
+
+<Warning title="Regex is not always the answer">
+  <p>Regular expressions are powerful but hard to read and debug. If a string method like <code>.startswith()</code>, <code>.split()</code>, or <code>.replace()</code> solves the problem, prefer it. Reach for regex when the pattern is genuinely complex.</p>
+</Warning>
+
+## A real-world example: log parser
+
+```python
+import re
+from collections import Counter
+from pathlib import Path
+
+
+LOG_PATTERN = re.compile(
+    r'(?P<ip>\d+\.\d+\.\d+\.\d+) - - \[(?P<date>[^\]]+)\] '
+    r'"(?P<method>\w+) (?P<path>\S+) HTTP/\d\.\d" '
+    r'(?P<status>\d+) (?P<size>\d+)'
+)
+
+
+def parse_log(path):
+    """Parse an Apache/Nginx access log and return structured entries."""
+    entries = []
+
+    with open(path) as f:
+        for line in f:
+            match = LOG_PATTERN.match(line)
+            if match:
+                entry = match.groupdict()
+                entry["status"] = int(entry["status"])
+                entry["size"] = int(entry["size"])
+                entries.append(entry)
+
+    return entries
+
+
+def report(entries):
+    """Print a summary of log entries."""
+    status_counts = Counter(e["status"] for e in entries)
+    top_paths = Counter(e["path"] for e in entries).most_common(5)
+    total_size = sum(e["size"] for e in entries)
+
+    print(f"Total requests: {len(entries)}")
+    print(f"Total data served: {total_size / 1_048_576:.1f} MB")
+    print("\nStatus codes:")
+    for code, count in status_counts.most_common():
+        print(f"  {code}: {count}")
+    print("\nTop paths:")
+    for path, count in top_paths:
+        print(f"  {path}: {count}")
+
+
+entries = parse_log(Path("access.log"))
+report(entries)
+```
+
+This is a realistic text processing task: compile a pattern, match each line, extract named groups, and aggregate results.
+
+## What to carry forward
+
+- strings are immutable — all methods return new strings
+- use `.strip()`, `.lower()`, `.upper()`, `.split()`, `.join()` for everyday text work
+- use `.startswith()`, `.endswith()`, `.find()` for checks
+- f-strings support format specifiers: `{value:.2f}`, `{value:>10}`, `{value=}`
+- use `re` for complex pattern matching — not for simple checks
+- compile patterns with `re.compile()` for repeated use
+- prefer string methods over regex when both work
+
+Text processing is essential for working with logs, user input, and file data. The next lesson covers dates and times — another area where Python provides strong built-in tools.

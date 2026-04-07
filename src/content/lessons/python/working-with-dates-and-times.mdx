@@ -1,0 +1,267 @@
+---
+title: "Working with dates and times"
+description: "Learn how to handle dates, times, timezones, and duration calculations in Python using the datetime module."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+import Note from "../../../components/content/Note.astro";
+
+
+Working with dates and times is notoriously tricky. Timezones, daylight saving time, and different formats create subtle bugs. Python's `datetime` module handles most of these cases, and understanding its design prevents common mistakes.
+
+## The datetime module
+
+The `datetime` module provides several types:
+
+```python
+from datetime import date, time, datetime, timedelta, timezone
+```
+
+- `date` — a calendar date (year, month, day)
+- `time` — a time of day (hour, minute, second, microsecond)
+- `datetime` — a combined date and time
+- `timedelta` — a duration (difference between two datetimes)
+- `timezone` — timezone information
+
+## Creating datetimes
+
+```python
+from datetime import date, datetime
+
+# Specific date
+birthday = date(1990, 5, 15)
+# date(1990, 5, 15)
+
+# Specific datetime
+meeting = datetime(2025, 4, 6, 14, 30)
+# datetime(2025, 4, 6, 14, 30)
+
+# Current date/time
+today = date.today()
+now = datetime.now()              # naive — no timezone
+now_utc = datetime.now(timezone.utc)   # aware — UTC timezone
+```
+
+<Tip title="Prefer timezone-aware datetimes">
+  <p>Naive datetimes (no timezone) are ambiguous — <code>"2025-04-06 14:30"</code> could be anywhere in the world. Use <code>datetime.now(timezone.utc)</code> for current time, and always attach a timezone when storing or transmitting datetime values.</p>
+</Tip>
+
+## Accessing components
+
+```python
+meeting = datetime(2025, 4, 6, 14, 30)
+
+meeting.year      # 2025
+meeting.month     # 4
+meeting.day       # 6
+meeting.hour      # 14
+meeting.minute    # 30
+meeting.weekday() # 0 — Monday (0=Monday, 6=Sunday)
+```
+
+## Formatting and parsing
+
+Convert a datetime to a string:
+
+```python
+now = datetime.now()
+
+now.strftime("%Y-%m-%d %H:%M")       # "2025-04-06 14:30"
+now.strftime("%B %d, %Y")            # "April 06, 2025"
+now.isoformat()                      # "2025-04-06T14:30:00.000000"
+```
+
+Parse a string into a datetime:
+
+```python
+dt = datetime.strptime("2025-04-06 14:30", "%Y-%m-%d %H:%M")
+dt = datetime.fromisoformat("2025-04-06T14:30:00")
+```
+
+Common format codes:
+
+| Code | Meaning | Example |
+|------|---------|---------|
+| `%Y` | 4-digit year | 2025 |
+| `%m` | 2-digit month | 04 |
+| `%d` | 2-digit day | 06 |
+| `%H` | 24-hour | 14 |
+| `%M` | Minute | 30 |
+| `%S` | Second | 00 |
+| `%B` | Full month name | April |
+| `%b` | Abbreviated month | Apr |
+| `%A` | Full weekday name | Sunday |
+
+## Calculating differences
+
+Subtract two datetimes to get a `timedelta`:
+
+```python
+from datetime import datetime, timedelta
+
+start = datetime(2025, 4, 1)
+end = datetime(2025, 4, 6, 14, 30)
+
+diff = end - start
+print(diff)            # 5 days, 14:30:00
+print(diff.days)       # 5
+print(diff.seconds)    # 52200 (14*3600 + 30*60)
+print(diff.total_seconds())  # 484200.0
+```
+
+Add or subtract timedeltas:
+
+```python
+now = datetime.now()
+
+tomorrow = now + timedelta(days=1)
+last_week = now - timedelta(weeks=1)
+in_one_hour = now + timedelta(hours=1)
+```
+
+`timedelta` supports: `days`, `seconds`, `microseconds`, `milliseconds`, `minutes`, `hours`, `weeks`.
+
+## Naive vs aware datetimes
+
+A **naive** datetime has no timezone information:
+
+```python
+naive = datetime(2025, 4, 6, 14, 30)
+naive.tzinfo    # None
+```
+
+An **aware** datetime includes timezone:
+
+```python
+from datetime import timezone, timedelta as td
+
+utc = timezone.utc
+aware = datetime(2025, 4, 6, 14, 30, tzinfo=utc)
+aware.tzinfo    # datetime.timezone.utc
+```
+
+<Tip title="Always use timezone-aware datetimes">
+  <p>Naive datetimes are ambiguous — is "2025-04-06 14:30" in New York or Tokyo? Always attach timezone information, especially when storing or transmitting datetime values. Use UTC internally and convert to local timezones only for display.</p>
+</Tip>
+
+## UTC as the standard
+
+Store and transmit datetimes in UTC:
+
+```python
+from datetime import datetime, timezone
+
+now_utc = datetime.now(timezone.utc)
+print(now_utc)    # 2025-04-06 14:30:00+00:00
+```
+
+Convert to a local timezone for display:
+
+```python
+from datetime import timezone, timedelta
+
+# Create a timezone for EST (UTC-5)
+est = timezone(timedelta(hours=-5))
+local_time = now_utc.astimezone(est)
+print(local_time)    # 2025-04-06 09:30:00-05:00
+```
+
+For proper timezone handling with daylight saving time, use the `zoneinfo` module from the standard library (Python 3.9+):
+
+```python
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+now_utc = datetime.now(timezone.utc)
+ny_time = now_utc.astimezone(ZoneInfo("America/New_York"))
+london_time = now_utc.astimezone(ZoneInfo("Europe/London"))
+```
+
+`zoneinfo` handles DST transitions automatically.
+
+## A real-world example: age calculator
+
+```python
+from datetime import date
+
+
+def calculate_age(birthdate):
+    """Calculate age in years from a birthdate."""
+    today = date.today()
+    age = today.year - birthdate.year
+
+    # Adjust if birthday has not occurred this year
+    if (today.month, today.day) < (birthdate.month, birthdate.day):
+        age = age - 1
+
+    return age
+
+
+age = calculate_age(date(1990, 5, 15))
+print(f"Age: {age}")
+```
+
+## A real-world example: scheduling helper
+
+```python
+from datetime import datetime, timedelta
+
+
+def next_occurrence(day_of_week, hour, minute, tz=None):
+    """Calculate the next occurrence of a given day and time.
+
+    Args:
+        day_of_week: 0=Monday, 6=Sunday.
+        hour: Hour in 24-hour format.
+        minute: Minute.
+        tz: Timezone (defaults to local).
+
+    Returns:
+        The next datetime matching the day and time.
+    """
+    now = datetime.now(tz)
+    days_ahead = day_of_week - now.weekday()
+
+    if days_ahead <= 0:
+        # Target day already occurred this week — go to next week
+        days_ahead = days_ahead + 7
+
+    target = now + timedelta(days=days_ahead)
+    target = target.replace(hour=hour, minute=minute, second=0, microsecond=0)
+
+    return target
+
+
+# Next Monday at 9:00 AM
+next_monday = next_occurrence(0, 9, 0)
+print(f"Next Monday 9 AM: {next_monday}")
+```
+
+<Note title="DST caveat">
+  <p>This function uses <code>.replace()</code> to set the time, which does not account for DST transitions. If the target time falls in a spring-forward gap, the result may be off by an hour. For production scheduling, use a library like <code>zoneinfo</code> with proper timezone handling or a dedicated scheduling library.</p>
+</Note>
+
+## Common date/time mistakes
+
+1. **Comparing naive and aware datetimes** — Python raises a `TypeError`. Always ensure both datetimes are either naive or aware.
+
+2. **Forgetting that `timedelta` does not support months or years** — months have variable lengths. Use the `dateutil` library for month arithmetic.
+
+3. **Storing datetimes in ambiguous formats** — store as UTC datetime objects or ISO 8601 strings with timezone offset (e.g., `"2025-04-06T14:30:00+00:00"`). Avoid formats like `"April 6, 2025"` that cannot be reliably parsed back or lack timezone information.
+
+4. **Ignoring DST transitions** — naive arithmetic across DST boundaries can be off by an hour. Use `zoneinfo` for timezone-aware calculations.
+
+## What to carry forward
+
+- `datetime` combines date and time; `date` and `time` are separate types
+- use `.strftime()` to format; use `.strptime()` to parse
+- subtract datetimes to get a `timedelta`
+- add `timedelta` to datetimes for date arithmetic
+- prefer timezone-aware datetimes — use UTC internally
+- use `zoneinfo` for proper timezone handling (Python 3.9+)
+- naive and aware datetimes cannot be compared
+- `timedelta` does not support months or years — use `dateutil` for that
+
+Dates and times are a common source of subtle bugs. Awareness and discipline around timezones prevent most of them. The next lesson covers testing — how to verify your code works correctly.

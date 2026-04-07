@@ -1,0 +1,88 @@
+---
+title: "What Python is"
+description: "Learn what Python is used for, where it runs, and why it became one of the most popular programming languages."
+course: python
+status: published
+---
+
+Python is a general-purpose programming language used for scripting, data analysis, web backends, automation, machine learning, and much more. It is one of the most widely taught and widely used languages in the world.
+
+## What Python is used for
+
+Python shows up in many different contexts:
+
+- **Scripting and automation** — writing small programs that rename files, scrape websites, send emails, or schedule tasks
+- **Data analysis and visualization** — loading datasets, cleaning data, computing statistics, and generating charts
+- **Web backends** — powering server-side logic with frameworks like Django, FastAPI, or Flask
+- **Machine learning and AI** — training models and running inference with libraries like PyTorch and TensorFlow
+- **DevOps and infrastructure** — writing deployment scripts, CI/CD tooling, and system administration utilities
+- **Application development** — building desktop tools, CLI utilities, and even games
+
+The same core language underlies all of these. What changes is the ecosystem of libraries you use on top of it.
+
+## Where Python runs
+
+Python runs on your local machine through a program called the **Python interpreter**. You install the interpreter once, and it can run any Python program you write.
+
+Unlike JavaScript, which is embedded in browsers, Python is not built into your operating system by default. You install it separately. On most systems, the command `python3` or `python` invokes the interpreter.
+
+## Interpreted vs compiled, at a useful level
+
+Python is generally described as an **interpreted language**. When you run a Python file, the interpreter reads and executes it directly — there is no separate compilation step that produces a standalone binary.
+
+Behind the scenes, Python does compile your code to an intermediate format called **bytecode**, which it then runs on a virtual machine. But you do not interact with this process directly. You write `.py` files and run them.
+
+The practical difference from compiled languages like C or Go:
+
+- you write code and run it immediately
+- there is no compile step you need to manage
+- errors are discovered at runtime, not before the code runs
+- you can experiment interactively in a REPL (read-evaluate-print loop)
+
+This makes Python fast to iterate on, which is one reason it is popular for exploration and prototyping.
+
+## Expressions vs statements
+
+Python distinguishes between **expressions** and **statements**, just like most programming languages.
+
+An **expression** produces a value:
+
+```python
+2 + 3           # evaluates to 5
+"hello".upper() # evaluates to "HELLO"
+len([1, 2, 3])  # evaluates to 3
+```
+
+A **statement** performs an action. It may or may not produce a value:
+
+```python
+x = 10          # assignment statement
+print("hi")     # function call statement
+if x > 5:       # conditional statement
+    print(x)
+```
+
+The distinction matters because expressions can appear inside statements, but statements cannot appear inside expressions. You can write `print(2 + 3)` because `2 + 3` is an expression. You cannot write `x = if True: 1` because `if` is a statement, not a value-producing expression.
+
+## Values vs variables
+
+A **value** is a piece of data — a number, a string, a list, etc. A **variable** is a name that refers to a value.
+
+```python
+count = 0
+```
+
+This does not mean "put 0 inside count." It means "make the name `count` refer to the value `0`." If you later write `count = 1`, you are not changing the value `0` — you are making `count` refer to a different value.
+
+This distinction becomes important when working with mutable data structures like lists and dictionaries, which you will encounter later.
+
+## What to carry forward
+
+- Python is a general-purpose language used for scripting, data, web, automation, and more
+- it runs through an interpreter that you install on your machine
+- code executes top to bottom, line by line
+- Python is dynamically typed — types are determined at runtime
+- expressions produce values; statements perform actions
+- variables are names that refer to values, not containers that hold them
+
+These fundamentals set the stage for the rest of the course. The next lesson looks at how Python executes code in more detail and how to run Python programs.

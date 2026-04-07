@@ -1,0 +1,237 @@
+---
+title: "Lists and tuples"
+description: "Learn Python's list and tuple types — how to create, access, slice, and modify them, and when to use each."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+Lists and tuples are Python's primary **sequence types** — ordered collections of items. They differ in one key way: lists are mutable, tuples are not.
+
+## Creating lists
+
+A list is an ordered, mutable collection written with square brackets:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+numbers = [1, 2, 3, 4, 5]
+mixed = [1, "hello", True]    # lists can hold mixed types
+empty = []                     # empty list
+```
+
+Lists are the most commonly used data structure in Python. You will use them constantly.
+
+## Accessing items by index
+
+Use square brackets with an integer index to access items. Indexing starts at 0:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+fruits[0]     # "apple"
+fruits[1]     # "banana"
+fruits[2]     # "cherry"
+```
+
+Negative indices count from the end:
+
+```python
+fruits[-1]    # "cherry"  — last item
+fruits[-2]    # "banana"  — second to last
+```
+
+Accessing an index that does not exist raises an `IndexError`:
+
+```python
+fruits[5]     # IndexError: list index out of range
+```
+
+## Modifying lists
+
+Lists are mutable — you can change them in place:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+fruits[1] = "blueberry"    # modify by index
+fruits.append("date")      # add to the end
+fruits.insert(1, "apricot") # insert at index
+removed = fruits.pop()     # remove and return last item
+removed_first = fruits.pop(0)  # remove and return first item
+```
+
+Common list methods:
+
+```python
+fruits.remove("banana")    # removes first occurrence of "banana"
+fruits.index("cherry")     # returns index of "cherry"
+fruits.count("apple")      # counts occurrences of "apple"
+fruits.sort()              # sorts in place
+fruits.reverse()           # reverses in place
+```
+
+<Tip title="sort() vs sorted()">
+  <p><code>list.sort()</code> sorts the list in place and returns <code>None</code>. <code>sorted(list)</code> returns a new sorted list and leaves the original unchanged. Prefer <code>sorted()</code> when you need to keep the original order.</p>
+</Tip>
+
+## Slicing
+
+Slicing extracts a portion of a list without modifying the original:
+
+```python
+numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+numbers[2:5]     # [2, 3, 4]       — start inclusive, end exclusive
+numbers[:3]      # [0, 1, 2]       — from start to index 3
+numbers[7:]      # [7, 8, 9]       — from index 7 to end
+numbers[:]       # [0, 1, 2, ...]  — shallow copy of the entire list
+numbers[::2]     # [0, 2, 4, 6, 8] — every second item
+numbers[::-1]    # [9, 8, 7, ...]  — reversed
+```
+
+Slice syntax is `[start:stop:step]`. All three parts are optional. The result is always a new list.
+
+## List length and membership
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+len(fruits)          # 3 — number of items
+"apple" in fruits    # True — membership check
+"grape" in fruits    # False
+```
+
+## Iterating over lists
+
+Use a `for` loop to process each item:
+
+```python
+for fruit in fruits:
+    print(fruit)
+```
+
+To get both the index and the item, use `enumerate()`:
+
+```python
+for index, fruit in enumerate(fruits):
+    print(f"{index}: {fruit}")
+```
+
+## Building lists
+
+You can build a list incrementally:
+
+```python
+results = []
+
+for n in range(10):
+    if n % 2 == 0:
+        results.append(n)
+
+# results: [0, 2, 4, 6, 8]
+```
+
+You will learn a more concise way to do this — list comprehensions — in a later lesson.
+
+## Concatenation and repetition
+
+```python
+[1, 2] + [3, 4]       # [1, 2, 3, 4] — concatenation
+[0] * 5               # [0, 0, 0, 0, 0] — repetition
+```
+
+## Tuples
+
+A tuple is an ordered, **immutable** collection written with parentheses:
+
+```python
+point = (3, 4)
+colors = ("red", "green", "blue")
+single = (42,)          # note the trailing comma — required for single-item tuples
+empty = ()              # empty tuple
+```
+
+Tuples support indexing and slicing just like lists:
+
+```python
+point[0]     # 3
+point[-1]    # 4
+point[:1]    # (3,)
+```
+
+But they cannot be modified:
+
+```python
+point[0] = 5    # TypeError: 'tuple' object does not support item assignment
+point.append(6) # AttributeError: 'tuple' object has no attribute 'append'
+```
+
+## When to use lists vs tuples
+
+Use **lists** when:
+
+- the collection will grow or shrink
+- you need to modify items
+- the items are homogeneous (same kind of thing)
+
+```python
+users = ["Ada", "Bob", "Cia"]    # users will be added/removed
+```
+
+Use **tuples** when:
+
+- the collection has a fixed structure
+- each position has a specific meaning (like a record)
+- you want to signal that the data should not change
+- you need a hashable key for a dictionary (lists cannot be dict keys)
+
+```python
+point = (x, y)                    # fixed structure — two coordinates
+rgb = (255, 128, 64)             # each position means something specific
+location = ("London", 51.5)      # heterogeneous data — name and coordinate
+```
+
+Tuples are also returned when you return multiple values from a function:
+
+```python
+def min_max(numbers):
+    return min(numbers), max(numbers)
+
+result = min_max([3, 1, 7, 2])    # (1, 7) — a tuple
+```
+
+## Unpacking
+
+You can unpack a tuple (or list) into individual variables:
+
+```python
+point = (3, 4)
+x, y = point
+
+print(x)    # 3
+print(y)    # 4
+```
+
+Unpacking is common when returning multiple values from functions or iterating over pairs:
+
+```python
+pairs = [("a", 1), ("b", 2), ("c", 3)]
+
+for letter, number in pairs:
+    print(f"{letter}: {number}")
+```
+
+## What to carry forward
+
+- lists are ordered, mutable sequences — `[1, 2, 3]`
+- tuples are ordered, immutable sequences — `(1, 2, 3)`
+- indexing starts at 0; negative indices count from the end
+- slicing `[start:stop:step]` extracts portions of a sequence
+- `len()` gives length; `in` checks membership
+- `list.sort()` mutates; `sorted()` returns a new list
+- use lists for collections that change; use tuples for fixed structures
+- unpacking assigns items from a sequence to individual variables
+
+Lists and tuples handle most ordered data. The next lesson covers dictionaries and sets, which organize data differently — by key rather than by position.

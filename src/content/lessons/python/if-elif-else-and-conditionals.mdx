@@ -1,0 +1,208 @@
+---
+title: "if, elif, else, and conditionals"
+description: "Learn how to make decisions in Python using if/elif/else, how truthy and falsy values work, and how to write clear conditional logic."
+course: python
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+
+
+Programs need to make decisions: run one block of code if a condition is true, another if it is false. Python handles this with `if`, `elif`, and `else`.
+
+## The basic if statement
+
+An `if` statement runs a block of code only when its condition is true:
+
+```python
+temperature = 30
+
+if temperature > 25:
+    print("It's warm outside.")
+```
+
+The condition follows the `if` keyword. A colon `:` marks the start of the block. The block is **indented** — Python uses indentation, not braces, to define code blocks.
+
+## if / else
+
+Add `else` to provide an alternative when the condition is false:
+
+```python
+temperature = 15
+
+if temperature > 25:
+    print("It's warm outside.")
+else:
+    print("It's cold outside.")
+```
+
+Only one branch runs. If the `if` condition is true, the `else` block is skipped entirely.
+
+## if / elif / else
+
+Use `elif` (short for "else if") to check multiple conditions in sequence:
+
+```python
+temperature = 20
+
+if temperature > 30:
+    print("It's hot.")
+elif temperature > 20:
+    print("It's warm.")
+elif temperature > 10:
+    print("It's cool.")
+else:
+    print("It's cold.")
+```
+
+Python evaluates conditions top to bottom. The first true condition wins and the rest are skipped. If none are true, the `else` block runs.
+
+The order matters. A more general condition should come after more specific ones:
+
+```python
+# Wrong — the first condition catches everything
+if temperature > 10:
+    print("above 10")
+elif temperature > 20:    # never reached
+    print("above 20")
+```
+
+## Nested conditionals
+
+You can place `if` statements inside other `if` statements:
+
+```python
+age = 25
+has_id = True
+
+if age >= 18:
+    if has_id:
+        print("Entry allowed.")
+    else:
+        print("ID required.")
+else:
+    print("Must be 18 or older.")
+```
+
+Nesting works but gets hard to read quickly. Often you can combine conditions with `and` / `or` instead:
+
+```python
+if age >= 18 and has_id:
+    print("Entry allowed.")
+elif age >= 18:
+    print("ID required.")
+else:
+    print("Must be 18 or older.")
+```
+
+## Logical operators
+
+Combine conditions with `and`, `or`, and `not`:
+
+```python
+age = 25
+has_ticket = True
+
+if age >= 18 and has_ticket:
+    print("Entry allowed.")
+
+if age < 12 or age >= 65:
+    print("Discount available.")
+
+if not has_ticket:
+    print("Ticket required.")
+```
+
+- `and` — true when both sides are true
+- `or` — true when at least one side is true
+- `not` — inverts the boolean value
+
+## Truthy and falsy values
+
+Python does not require conditions to be actual booleans. Any value can be used in an `if` statement. Python evaluates it as true or false using these rules:
+
+The following values are **falsy** (treated as false):
+
+- `False`
+- `None`
+- `0` (integer zero)
+- `0.0` (float zero)
+- `""` (empty string)
+- `[]` (empty list)
+- `{}` (empty dictionary)
+
+Everything else is **truthy** (treated as true):
+
+- non-zero numbers
+- non-empty strings
+- non-empty collections
+- most objects
+
+This lets you write concise checks:
+
+```python
+name = ""
+
+if name:
+    print(f"Hello, {name}")
+else:
+    print("Name is empty.")
+```
+
+<Warning title="Do not overuse truthy checks">
+  <p>Truthy/falsy shorthand works well for emptiness checks, but can be unclear for numbers. Writing <code>if count:</code> is less clear than <code>if count > 0:</code> when you specifically mean "greater than zero." Choose readability over brevity.</p>
+</Warning>
+
+## The ternary expression
+
+Python has a compact form of `if/else` for simple value selection:
+
+```python
+status = "active" if is_logged_in else "guest"
+```
+
+This is an **expression** — it produces a value. It reads as: `value_if_true if condition else value_if_false`.
+
+Use this for simple assignments. For anything more complex, use a full `if/else` block.
+
+## Common patterns
+
+### Checking membership
+
+Use `in` to test if a value exists in a collection:
+
+```python
+role = "admin"
+
+if role in ("admin", "moderator"):
+    print("Access granted.")
+```
+
+### Checking for None
+
+Use `is` or `is not` to check for `None`:
+
+```python
+result = None
+
+if result is None:
+    print("No result found.")
+
+if result is not None:
+    print(f"Result: {result}")
+```
+
+`is` checks identity — whether two names refer to the exact same object in memory. Since there is only one `None` value in Python, identity checking is the correct way to test for it. Using `== None` works in most cases but can behave unexpectedly with custom objects that override equality.
+
+## What to carry forward
+
+- `if` runs a block when its condition is true
+- `elif` checks additional conditions in order; only the first match runs
+- `else` catches everything that did not match earlier conditions
+- Python uses indentation, not braces, for code blocks
+- `and`, `or`, `not` combine and invert conditions
+- many values besides `False` are falsy — `0`, `""`, `[]`, `{}`, `None`
+- use `is` / `is not` to check for `None`
+- `value if condition else alternative` is a compact ternary expression
+
+Conditionals let your code respond to different situations. The next lesson covers loops, which let your code repeat actions.

@@ -1,0 +1,176 @@
+---
+title: "pip and virtual environments"
+description: "Learn how to install Python packages with pip, manage isolated environments with venv, and understand why dependency isolation matters."
+course: python
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+
+Python's standard library covers many tasks, but thousands of external packages extend what Python can do. To use them, you need to install packages and manage **dependencies** — the external libraries your code relies on.
+
+## Why virtual environments exist
+
+When you install a package, it gets added to Python's site-packages directory. Without isolation:
+
+- every project shares the same installed packages
+- different projects may need different versions of the same package
+- upgrading a package for one project might break another
+
+A **virtual environment** solves this by creating an isolated Python environment per project. Each environment has its own site-packages directory. Packages installed in one environment do not affect others.
+
+## Creating a virtual environment
+
+Use the built-in `venv` module to create an environment:
+
+```bash
+python3 -m venv .venv
+```
+
+The `-m` flag tells Python to run the `venv` module. This ensures the correct Python installation creates the environment. On some systems, typing just `venv` would not work because the module is not on the system PATH.
+
+This creates a `.venv` directory containing a copy of the Python interpreter and its own site-packages. The name `.venv` is a convention — any name works, but `.venv` signals that it is a virtual environment and should not be committed to version control.
+
+## Activating the environment
+
+Before installing or running packages, activate the environment:
+
+```bash
+source .venv/bin/activate        # macOS/Linux
+.venv\Scripts\activate           # Windows (Command Prompt)
+```
+
+After activation, your shell prompt changes to show the environment name, and `python` and `pip` commands use the isolated environment:
+
+```bash
+(.venv) $ which python
+/path/to/project/.venv/bin/python
+```
+
+To deactivate:
+
+```bash
+(.venv) $ deactivate
+```
+
+<Tip title="Always use a virtual environment">
+  <p>Creating and activating a virtual environment should be your first step on any new Python project. It prevents dependency conflicts and makes your project reproducible. The only exception is throwaway scripts where no external packages are needed.</p>
+</Tip>
+
+## Installing packages with pip
+
+`pip` is Python's package installer. Use it to install packages from PyPI (the Python Package Index):
+
+```bash
+pip install requests
+```
+
+This downloads `requests` and its dependencies and installs them in the active environment.
+
+Install a specific version:
+
+```bash
+pip install requests==2.31.0
+```
+
+Install a version range:
+
+```bash
+pip install "requests>=2.28,<3.0"
+```
+
+## requirements.txt
+
+A `requirements.txt` file lists a project's dependencies, one per line:
+
+```
+requests>=2.28,<3.0
+python-dotenv>=1.0
+click>=8.0
+```
+
+Install all dependencies at once:
+
+```bash
+pip install -r requirements.txt
+```
+
+Generate a requirements file from your current environment:
+
+```bash
+pip freeze > requirements.txt
+```
+
+`pip freeze` outputs all installed packages with their exact versions. This captures your entire environment, including transitive dependencies (packages your packages depend on).
+
+<Tip title="Handwritten vs frozen requirements">
+  <p>Maintain a handwritten file with your direct dependencies and version constraints (e.g., <code>requests>=2.28</code>), and use <code>pip freeze</code> to capture the full environment including transitive dependencies for reproducibility. For automatic management of pinned transitive dependencies, consider a tool like <code>pip-tools</code>, which resolves and pins the entire dependency tree.</p>
+</Tip>
+
+## Upgrading and uninstalling
+
+```bash
+pip install --upgrade requests    # upgrade to latest version
+pip uninstall requests            # remove a package
+pip list                          # list installed packages
+pip show requests                 # show details about a package
+```
+
+## Project structure with dependencies
+
+A typical Python project with dependencies looks like:
+
+```
+myproject/
+├── .venv/              # virtual environment — do not commit
+├── src/
+│   └── myproject/
+│       ├── __init__.py
+│       └── main.py
+├── tests/
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
+
+The `.gitignore` should include `.venv/` so the environment is not committed. Each developer creates their own environment locally.
+
+## Why dependencies need version constraints
+
+When you write `pip install requests`, you get the latest version. But the latest version today may not be the latest version tomorrow. A major version bump might change APIs and break your code.
+
+Always specify version constraints for anything beyond a throwaway script:
+
+```
+requests>=2.28,<3.0    # any 2.28+ but not 3.0
+flask>=3.0             # any 3.0+
+```
+
+This protects you from unexpected breakage when someone else installs your dependencies.
+
+## Common pip issues
+
+### Permission errors
+
+If you get a permission error, you are probably trying to install globally (no virtual environment). Create and activate a `.venv` first.
+
+### Package not found after install
+
+Make sure the virtual environment is activated. `which python` (or `where python` on Windows) should point to the `.venv` directory.
+
+### Conflicting dependencies
+
+Two packages may require incompatible versions of a third package. pip will tell you about this during installation. The fix is usually adjusting version constraints or using a different package.
+
+## What to carry forward
+
+- virtual environments isolate dependencies per project
+- create with `python3 -m venv .venv`
+- activate with `source .venv/bin/activate`
+- use `pip install` to add packages
+- maintain a `requirements.txt` for reproducibility
+- always use version constraints
+- never commit `.venv/` to version control
+
+Managing dependencies correctly prevents a huge class of problems. The next lesson covers project structure and organization for larger Python programs.

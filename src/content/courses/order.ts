@@ -199,4 +199,52 @@ export const courseLessonOrder: Record<string, string[]> = {
     "immutability-as-a-practice",
     "readable-code-over-clever-code",
   ],
+  python: [
+    // Module 1: Beginner phase — what Python is and core syntax
+    "what-python-is",
+    "how-python-executes-code",
+    "variables-and-assignment",
+    "primitive-types-and-operators",
+    "if-elif-else-and-conditionals",
+    "while-loops",
+    "for-loops-and-ranges",
+    // Module 2: Functions
+    "defining-and-calling-functions",
+    "keyword-arguments-and-defaults",
+    "scope-and-why-it-matters",
+    // Module 3: Data structures
+    "lists-and-tuples",
+    "dictionaries-and-sets",
+    // Module 4: Intermediate phase — data transformations and organization
+    "list-dict-and-set-comprehensions",
+    "copying-vs-mutating-data",
+    "transforming-data-patterns",
+    "splitting-code-into-modules",
+    "the-standard-library",
+    // Module 5: File I/O and data formats
+    "reading-and-writing-files",
+    "working-with-json",
+    "working-with-csv",
+    // Module 6: Error handling
+    "exceptions-and-try-except",
+    "raising-errors-and-debugging",
+    // Module 7: Objects and classes
+    "objects-and-classes",
+    // Module 8: Applied phase — iteration and environments
+    "iterables-iterators-and-generators",
+    "pip-and-virtual-environments",
+    "project-structure-and-organization",
+    // Module 9: Working with external systems
+    "calling-apis-with-requests",
+    "handling-api-responses",
+    "building-cli-tools",
+    // Module 10: Text and time
+    "string-formatting-and-text-processing",
+    "working-with-dates-and-times",
+    // Module 11: Code quality
+    "testing-your-code",
+    "type-hints-and-mypy",
+    // Module 12: Capstone
+    "a-small-real-world-project",
+  ],
 };

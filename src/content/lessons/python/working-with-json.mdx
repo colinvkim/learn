@@ -1,0 +1,219 @@
+---
+title: "Working with JSON"
+description: "Learn how to parse, create, and transform JSON data in Python — the most common format for APIs and configuration files."
+course: python
+status: published
+---
+
+JSON (JavaScript Object Notation) is the most common data interchange format on the web. APIs return JSON, configuration files use JSON, and many tools export data as JSON. Python handles JSON natively with the `json` module.
+
+## What JSON is
+
+JSON is a text format for representing structured data. It supports:
+
+- objects (key-value pairs) — like Python dictionaries
+- arrays (ordered lists) — like Python lists
+- strings, numbers, booleans, and null
+
+A JSON file looks like this:
+
+```json
+{
+  "name": "Ada",
+  "age": 36,
+  "active": true,
+  "tags": ["python", "data"],
+  "address": null
+}
+```
+
+## JSON to Python type mapping
+
+When you parse JSON into Python, types convert automatically:
+
+| JSON | Python |
+|------|--------|
+| object | `dict` |
+| array | `list` |
+| string | `str` |
+| number | `int` (if no decimal) or `float` (if decimal point present) |
+| `true` / `false` | `True` / `False` |
+| `null` | `None` |
+
+JSON itself has only one number type. Python's `json` module parses `42` as `int` and `3.14` as `float` based on the syntax.
+
+## Parsing JSON from a string
+
+Use `json.loads()` (load string) to parse JSON text:
+
+```python
+import json
+
+text = '{"name": "Ada", "age": 36}'
+data = json.loads(text)
+
+print(data["name"])    # Ada
+print(type(data))      # dict
+```
+
+`loads` stands for "load string." It takes a JSON string and returns a Python object.
+
+## Reading JSON from a file
+
+Use `json.load()` (no "s") to read directly from a file:
+
+```python
+import json
+
+with open("data.json") as f:
+    data = json.load(f)
+
+print(data["name"])
+```
+
+`load` takes a file object. `loads` takes a string. Both return Python data.
+
+## Writing JSON
+
+Use `json.dumps()` (dump string) to convert Python data to a JSON string:
+
+```python
+import json
+
+user = {"name": "Ada", "age": 36, "active": True}
+
+text = json.dumps(user)
+# '{"name": "Ada", "age": 36, "active": true}'
+```
+
+Use `json.dump()` to write directly to a file:
+
+```python
+with open("output.json", "w") as f:
+    json.dump(user, f)
+```
+
+## Pretty-printing JSON
+
+Add `indent` to produce readable output:
+
+```python
+print(json.dumps(user, indent=2))
+```
+
+```json
+{
+  "name": "Ada",
+  "age": 36,
+  "active": true
+}
+```
+
+This is useful for debugging and for writing config files that humans may edit.
+
+## Handling errors
+
+Invalid JSON raises `json.JSONDecodeError`:
+
+```python
+import json
+
+try:
+    data = json.loads("{bad json}")
+except json.JSONDecodeError as e:
+    print(f"Invalid JSON: {e}")
+```
+
+Always handle this when reading JSON from external sources like APIs.
+
+## Working with API responses
+
+A typical workflow looks like this:
+
+```python
+import json
+from pathlib import Path
+
+
+def load_api_response(path):
+    """Load and validate an API response from a JSON file."""
+    with open(path) as f:
+        data = json.load(f)
+
+    if not isinstance(data, dict):
+        raise ValueError("Expected a JSON object")
+
+    return data
+
+
+response = load_api_response(Path("response.json"))
+users = response.get("users", [])
+
+for user in users:
+    print(user.get("name", "Unknown"))
+```
+
+This function:
+
+1. reads the file
+2. parses the JSON
+3. validates the top-level structure
+4. returns the data for further processing
+
+## Transforming JSON data
+
+A common task is loading JSON, transforming it, and saving the result:
+
+```python
+import json
+from pathlib import Path
+
+
+def normalize_users(input_path, output_path):
+    """Load users, clean data, and save normalized output."""
+    with open(input_path) as f:
+        users = json.load(f)
+
+    cleaned = []
+    for user in users:
+        cleaned.append({
+            "id": user.get("id"),
+            "name": user.get("name", "").strip().title(),
+            "email": user.get("email", "").lower(),
+            "active": bool(user.get("active", False)),
+        })
+
+    with open(output_path, "w") as f:
+        json.dump(cleaned, f, indent=2)
+
+    return len(cleaned)
+
+
+count = normalize_users(Path("raw_users.json"), Path("clean_users.json"))
+print(f"Normalized {count} users.")
+```
+
+This is a realistic pattern: read, transform, write. The transformation step cleans up whitespace, normalizes case, and ensures consistent types.
+
+## When JSON is not enough
+
+JSON has limitations:
+
+- no date type — dates are strings or numbers
+- no comments — not ideal for human-edited config files
+- one JSON value per file — storing multiple independent documents requires wrapping them in an array or using JSON Lines (one JSON object per line)
+- keys must be strings
+
+For configuration files that humans edit, consider YAML or TOML (external packages). For tabular data, consider CSV. For large datasets, consider a database.
+
+## What to carry forward
+
+- `json.loads()` parses a JSON string; `json.load()` reads from a file
+- `json.dumps()` produces a JSON string; `json.dump()` writes to a file
+- JSON objects become Python dicts; arrays become lists
+- invalid JSON raises `json.JSONDecodeError`
+- always handle errors when reading JSON from external sources
+- use `indent=2` for readable output
+- JSON is great for APIs and structured data but has limitations
+
+JSON covers most data interchange tasks. The next lesson covers CSV, the other format you will encounter frequently when working with real-world data.

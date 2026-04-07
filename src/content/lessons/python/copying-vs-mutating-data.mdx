@@ -1,0 +1,210 @@
+---
+title: "Copying vs mutating data"
+description: "Learn the difference between modifying data in place and creating new copies, and how to avoid the most common mutation bugs in Python."
+course: python
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+
+
+Python data structures fall into two categories: **mutable** (can be changed in place) and **immutable** (cannot be changed). Understanding which is which — and what operations modify vs return new data — prevents a whole class of subtle bugs.
+
+## Mutable vs immutable types
+
+**Mutable** types can be changed after creation:
+
+- `list`
+- `dict`
+- `set`
+
+**Immutable** types cannot be changed after creation:
+
+- `int`, `float`, `bool`
+- `str`
+- `tuple`
+- `frozenset`
+
+When you "modify" an immutable value, you are actually creating a new value:
+
+```python
+name = "Ada"
+name.upper()        # returns "ADA" — name is still "Ada"
+name = name.upper() # now name refers to the new string "ADA"
+```
+
+## The aliasing problem
+
+When you assign a mutable object to a new variable, both names refer to the **same object**:
+
+```python
+original = [1, 2, 3]
+alias = original
+
+alias.append(4)
+
+print(original)    # [1, 2, 3, 4] — changed through the alias
+print(alias)       # [1, 2, 3, 4]
+```
+
+This is not a bug — it is how Python works. But it surprises many beginners who expect `alias = original` to create a copy.
+
+## Shallow copies
+
+A shallow copy creates a new container but does not copy the items inside it:
+
+```python
+original = [1, 2, 3]
+copy = original.copy()    # or list(original), or original[:]
+
+copy.append(4)
+
+print(original)    # [1, 2, 3] — unchanged
+print(copy)        # [1, 2, 3, 4]
+```
+
+For dictionaries:
+
+```python
+original = {"name": "Ada", "age": 36}
+copy = original.copy()
+
+copy["age"] = 37
+
+print(original)    # {"name": "Ada", "age": 36}
+print(copy)        # {"name": "Ada", "age": 37}
+```
+
+For a generic approach, use the `copy` module:
+
+```python
+import copy
+
+copy = copy.copy(original)
+```
+
+## The shallow copy trap
+
+A shallow copy does not copy nested objects:
+
+```python
+original = [[1, 2], [3, 4]]
+copy = original.copy()
+
+copy[0].append(99)
+
+print(original)    # [[1, 2, 99], [3, 4]] — nested list was mutated
+print(copy)        # [[1, 2, 99], [3, 4]]
+```
+
+The outer list was copied, but the inner lists are still shared. Use a **deep copy** to copy everything recursively:
+
+```python
+import copy
+
+original = [[1, 2], [3, 4]]
+copy = copy.deepcopy(original)
+
+copy[0].append(99)
+
+print(original)    # [[1, 2], [3, 4]] — unchanged
+print(copy)        # [[1, 2, 99], [3, 4]]
+```
+
+## Operations that mutate vs create new
+
+Many Python operations mutate in place. Others return a new object. Knowing which is which matters:
+
+**Mutate in place** (return `None`):
+
+```python
+lst.sort()           # sorts the list in place
+lst.append(x)        # adds to the end
+lst.reverse()        # reverses in place
+lst.extend(other)    # adds all items from other
+lst.remove(x)        # removes first occurrence of x
+lst.pop()            # removes and returns last item
+dict.update(other)   # merges another dict
+set.add(x)           # adds to the set
+```
+
+**Return new objects** (do not mutate):
+
+```python
+sorted(lst)          # returns a new sorted list
+reversed(lst)        # returns a reverse iterator
+lst + other          # returns a new list
+s.upper()            # returns a new string
+s.replace(a, b)      # returns a new string
+dict1 | dict2        # returns a new dict (Python 3.9+)
+```
+
+<Warning title="The sort() trap">
+  <p>A common mistake is writing <code>result = my_list.sort()</code> and getting <code>None</code>. <code>sort()</code> returns <code>None</code> because it sorts in place. Use <code>sorted(my_list)</code> when you need a new sorted list.</p>
+</Warning>
+
+## Default argument mutation
+
+This was introduced in the function lesson but bears repeating here. Never use a mutable value as a default argument:
+
+```python
+def add_item(item, items=[]):    # wrong — shared default
+    items.append(item)
+    return items
+
+def add_item(item, items=None):  # correct — create inside function
+    if items is None:
+        items = []
+    items.append(item)
+    return items
+```
+
+## Passing mutable objects to functions
+
+When you pass a mutable object to a function, the function receives a reference to the same object:
+
+```python
+def add_tag(data, tag):
+    data["tags"].append(tag)
+
+user = {"name": "Ada", "tags": []}
+add_tag(user, "admin")
+
+print(user)    # {"name": "Ada", "tags": ["admin"]}
+```
+
+This is intended — functions often need to modify the data they receive. But if you want to protect the original data, pass a copy:
+
+```python
+add_tag(user.copy(), "admin")    # original user is unchanged
+```
+
+In practice, whether a function should mutate its arguments or return new data is a design choice. The standard library is mixed — `list.sort()` mutates, `sorted()` returns new data. Be consistent within your own code. Many modern Python developers prefer returning new data because it is easier to reason about and test.
+
+## Immutable alternatives
+
+When you want to avoid mutation bugs, consider using immutable types:
+
+- use `tuple` instead of `list` for fixed structures
+- use `frozenset` instead of `set` for immutable sets
+- use `types.MappingProxyType` for read-only dictionary views
+
+```python
+from types import MappingProxyType
+
+config = MappingProxyType({"debug": False, "host": "localhost"})
+config["debug"] = True    # TypeError — read-only
+```
+
+## What to carry forward
+
+- mutable types (list, dict, set) can be changed in place
+- immutable types (int, str, tuple, bool) cannot — operations return new values
+- assignment does not copy — both names refer to the same object
+- use `.copy()` or `list()` or `dict()` for shallow copies
+- use `copy.deepcopy()` for nested structures
+- many methods mutate in place and return `None` (`sort`, `append`, `reverse`)
+- built-in functions like `sorted()` and `reversed()` return new objects
+- be intentional about whether your functions mutate arguments or return new data
+
+Understanding mutation prevents subtle bugs. The next lesson covers practical patterns for transforming data with the tools you have learned so far.

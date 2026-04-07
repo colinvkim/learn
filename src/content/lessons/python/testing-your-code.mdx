@@ -1,0 +1,298 @@
+---
+title: "Testing your code"
+description: "Learn how to write tests for Python code using assert, unittest, and pytest, and understand what to test and why."
+course: python
+status: published
+---
+
+Tests verify that your code does what you expect. They catch regressions when you change code, document how functions should behave, and give you confidence to refactor. Python makes testing straightforward.
+
+## Why test
+
+Testing is not about proving code is correct. It is about:
+
+- **Catching regressions** — ensuring changes do not break existing behavior
+- **Documenting behavior** — a test shows what a function expects and returns
+- **Designing better code** — testable code tends to be modular and decoupled
+- **Saving time** — running a test is faster than manual verification
+
+## assert — the simplest test
+
+The `assert` statement checks a condition and raises `AssertionError` if it is false:
+
+```python
+def add(a, b):
+    return a + b
+
+
+assert add(2, 3) == 5
+assert add(-1, 1) == 0
+assert add(0, 0) == 0
+```
+
+If any assertion fails, the program stops with an error. This is useful for quick checks in scripts. For organized testing, use a test framework.
+
+## Writing testable functions
+
+Testable code has clear inputs and outputs with minimal side effects:
+
+```python
+# Hard to test — prints output, reads from global state
+def process():
+    global data
+    result = data * 2
+    print(result)
+
+# Easy to test — takes input, returns output
+def process(data):
+    return data * 2
+```
+
+The second version can be tested without setup or capturing output.
+
+## The unittest module
+
+`unittest` is Python's built-in testing framework. Organize tests in a class:
+
+```python
+# test_utils.py
+import unittest
+from utils import format_name, is_valid_email
+
+
+class TestFormatName(unittest.TestCase):
+    def test_basic(self):
+        self.assertEqual(format_name("Ada", "Lovelace"), "Ada Lovelace")
+
+    def test_empty_last(self):
+        self.assertEqual(format_name("Ada", ""), "Ada")
+
+    def test_empty_both(self):
+        self.assertEqual(format_name("", ""), "")
+
+
+class TestIsValidEmail(unittest.TestCase):
+    def test_valid(self):
+        self.assertTrue(is_valid_email("ada@example.com"))
+
+    def test_missing_at(self):
+        self.assertFalse(is_valid_email("adaexample.com"))
+
+    def test_empty(self):
+        self.assertFalse(is_valid_email(""))
+
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+Run tests:
+
+```bash
+python -m unittest test_utils
+```
+
+The `if __name__ == "__main__"` block at the bottom lets you also run the file directly with `python test_utils.py`. Both approaches work, but `python -m unittest` is preferred because it discovers and runs all test files in a directory automatically.
+
+Common assertion methods:
+
+| Method | Checks |
+|--------|--------|
+| `assertEqual(a, b)` | `a == b` |
+| `assertNotEqual(a, b)` | `a != b` |
+| `assertTrue(x)` | `x` is true |
+| `assertFalse(x)` | `x` is false |
+| `assertIsNone(x)` | `x` is `None` |
+| `assertIn(a, b)` | `a` is in `b` |
+| `assertRaises(exc, func, *args)` | `func(*args)` raises `exc` |
+
+## pytest — the modern standard
+
+`pytest` is the most popular Python testing framework. It requires less boilerplate:
+
+```bash
+pip install pytest
+```
+
+Write tests as plain functions:
+
+```python
+# test_utils.py
+from utils import format_name, is_valid_email
+
+
+def test_format_name_basic():
+    assert format_name("Ada", "Lovelace") == "Ada Lovelace"
+
+
+def test_format_name_empty_last():
+    assert format_name("Ada", "") == "Ada"
+
+
+def test_format_name_empty_both():
+    assert format_name("", "") == ""
+
+
+def test_email_valid():
+    assert is_valid_email("ada@example.com")
+
+
+def test_email_missing_at():
+    assert not is_valid_email("adaexample.com")
+
+
+def test_email_empty():
+    assert not is_valid_email("")
+```
+
+Run tests:
+
+```bash
+pytest
+```
+
+`pytest` discovers files starting with `test_` or ending with `_test.py`, finds functions starting with `test_`, and runs them. Failed assertions produce clear output showing what was expected vs actual.
+
+## Organizing tests
+
+Place tests in a separate directory:
+
+```
+project/
+├── src/
+│   └── myproject/
+│       ├── __init__.py
+│       ├── utils.py
+│       └── models.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_utils.py
+│   └── test_models.py
+└── requirements.txt
+```
+
+Or alongside your code:
+
+```
+project/
+├── utils.py
+├── test_utils.py
+├── models.py
+└── test_models.py
+```
+
+The separate `tests/` directory is preferred for larger projects. It keeps production code clean.
+
+## Testing for expected errors
+
+Test that your code raises the right exceptions:
+
+```python
+import pytest
+from utils import set_age
+
+
+def test_set_age_negative():
+    with pytest.raises(ValueError, match="cannot be negative"):
+        set_age(-5)
+
+
+def test_set_age_wrong_type():
+    with pytest.raises(TypeError):
+        set_age("not a number")
+```
+
+This verifies not just that an error is raised, but that it is the right type with the right message.
+
+## Parametrized tests
+
+Test multiple inputs with one function using `@pytest.mark.parametrize`:
+
+```python
+import pytest
+from utils import is_palindrome
+
+
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("racecar", True),
+        ("hello", False),
+        ("madam", True),
+        ("", True),
+        ("a", True),
+    ],
+)
+def test_is_palindrome(text, expected):
+    assert is_palindrome(text) == expected
+```
+
+This runs the test once for each pair of inputs. It is much cleaner than writing five separate functions.
+
+## Fixtures
+
+Fixtures set up test data that multiple tests share:
+
+```python
+import pytest
+
+
+@pytest.fixture
+def sample_users():
+    return [
+        {"name": "Ada", "age": 36, "active": True},
+        {"name": "Bob", "age": 28, "active": False},
+        {"name": "Cia", "age": 42, "active": True},
+    ]
+
+
+def test_active_count(sample_users):
+    active = [u for u in sample_users if u["active"]]
+    assert len(active) == 2
+
+
+def test_average_age(sample_users):
+    avg = sum(u["age"] for u in sample_users) / len(sample_users)
+    assert abs(avg - 35.33) < 0.01    # compare with tolerance
+```
+
+Fixtures replace duplicated setup code. Each test receives a fresh copy of the fixture data.
+
+## What to test
+
+Test the **behavior**, not the implementation:
+
+- **Public functions** — do they return the right results?
+- **Edge cases** — empty input, zero, negative numbers, None
+- **Error conditions** — does the right exception get raised?
+- **Boundary conditions** — limits, maximums, empty collections
+
+Do not test:
+
+- trivial pass-through code (e.g., a function that just calls another function)
+- private implementation details that may change
+- third-party library behavior (test that you use them correctly, not how they work)
+
+## A testing workflow
+
+1. Write a function
+2. Write a test that fails
+3. Make the test pass
+4. Refactor if needed
+5. Run all tests to ensure nothing broke
+
+Run tests frequently. The faster your feedback loop, the easier bugs are to find.
+
+## What to carry forward
+
+- `assert` checks conditions — the simplest form of testing
+- `unittest` is built-in and class-based; `pytest` is the modern standard
+- install `pytest` with `pip install pytest`; run with `pytest`
+- test functions should be small, focused, and independent
+- use `pytest.raises()` to test expected errors
+- use `@pytest.mark.parametrize` to test multiple inputs cleanly
+- use fixtures to share setup code across tests
+- test behavior, not implementation
+- run tests frequently — fast feedback catches bugs early
+
+Testing is an investment that pays off every time you change code. The next lesson covers type hints — an optional but increasingly common way to make Python code more reliable and readable.

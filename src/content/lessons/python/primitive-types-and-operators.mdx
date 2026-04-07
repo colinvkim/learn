@@ -1,0 +1,228 @@
+---
+title: "Primitive types and operators"
+description: "Learn Python's primitive types — integers, floats, strings, and booleans — and the operators that work with them."
+course: python
+status: published
+---
+
+Every value in Python has a type. The simplest types are called **primitive types** — they are indivisible, meaning they cannot be broken down into smaller parts.
+
+## Integers (`int`)
+
+Integers are whole numbers, positive or negative, with no size limit:
+
+```python
+count = 42
+negative = -7
+zero = 0
+large = 9999999999999999999999999  # Python handles arbitrarily large integers
+```
+
+The `type()` function tells you the type of any value:
+
+```python
+type(42)    # <class 'int'>
+```
+
+The output says `<class 'int'>` — "class" here means the same thing as "type." You will learn what classes are in a later lesson. For now, `type()` tells you what kind of value you are working with.
+
+## Floats (`float`)
+
+Floats are numbers with a decimal point:
+
+```python
+price = 19.99
+pi = 3.14159
+negative = -0.5
+```
+
+Floats use double-precision (64-bit) format. They can represent very large and very small numbers, but not always exactly:
+
+```python
+0.1 + 0.2    # 0.30000000000000004 — not exactly 0.3
+```
+
+This is a fundamental limitation of how computers represent decimal fractions in binary. For most everyday work, the imprecision is negligible. When exact decimal arithmetic matters (such as financial calculations), use Python's `decimal` module.
+
+Scientific notation uses `e`:
+
+```python
+avogadro = 6.022e23    # 6.022 × 10^23
+```
+
+## Strings (`str`)
+
+Strings are sequences of characters — text:
+
+```python
+name = "Ada"
+greeting = 'Hello, world'
+multiline = """
+This spans
+multiple lines
+"""
+```
+
+Python accepts both single and double quotes for strings. Triple quotes (`"""` or `'''`) create multi-line strings.
+
+Strings support **f-strings** for embedding expressions:
+
+```python
+name = "Ada"
+age = 36
+message = f"{name} is {age} years old"
+# "Ada is 36 years old"
+```
+
+An `f` before the opening quote tells Python to evaluate expressions inside `{}`. This is the standard way to build formatted strings in modern Python.
+
+## Booleans (`bool`)
+
+Booleans represent truth values:
+
+```python
+is_active = True
+has_error = False
+```
+
+Note the capital letters — `True` and `False`, not `true` and `false` as in many other languages.
+
+Booleans usually come from comparisons:
+
+```python
+5 > 3     # True
+5 == 5    # True (equality uses ==, not =)
+5 != 3    # True (not equal)
+5 < 3     # False
+```
+
+## None
+
+`None` represents the absence of a value. It is the only value of the `NoneType` type:
+
+```python
+result = None
+type(result)    # <class 'NoneType'>
+```
+
+`None` is not the same as `0`, `""`, or `False` — but all of these are "falsy" (treated as false in conditions). You will see `None` used frequently as a default or placeholder. Use `is` or `is not` to check for it:
+
+```python
+if result is None:
+    print("No result yet.")
+```
+
+## Arithmetic operators
+
+Python supports standard arithmetic:
+
+```python
+10 + 3    # 13 — addition
+10 - 3    # 7  — subtraction
+10 * 3    # 30 — multiplication
+10 / 3    # 3.333... — division (always returns float)
+10 // 3   # 3  — floor division (integer result)
+10 % 3    # 1  — modulo (remainder)
+10 ** 3   # 1000 — exponentiation
+```
+
+Division with `/` always returns a float, even for clean results:
+
+```python
+10 / 2    # 5.0 — float, not int
+```
+
+Use `//` when you want an integer result.
+
+## String operators
+
+Strings support a limited set of operators:
+
+```python
+"hello" + " " + "world"   # "hello world" — concatenation
+"ha" * 3                   # "hahaha" — repetition
+```
+
+You can also check membership with `in`:
+
+```python
+"el" in "hello"    # True
+"xyz" in "hello"   # False
+```
+
+You cannot subtract, divide, or multiply strings.
+
+## Comparison operators
+
+Comparisons produce booleans:
+
+```python
+x = 10
+
+x == 10   # True  — equal
+x != 5    # True  — not equal
+x > 5     # True  — greater than
+x < 15    # True  — less than
+x >= 10   # True  — greater than or equal
+x <= 9    # False — less than or equal
+```
+
+You can chain comparisons naturally in Python:
+
+```python
+5 < x < 15    # True — equivalent to (5 < x) and (x < 15)
+```
+
+## Type conversion
+
+You can convert between types using the type name as a function:
+
+```python
+int("42")       # 42 — string to int
+float("3.14")   # 3.14 — string to float
+str(42)         # "42" — int to string
+bool(1)         # True
+bool(0)         # False
+bool("")        # False — empty string
+```
+
+`bool()` returns `False` for "falsy" values (`0`, `""`, `None`, `[]`, `{}`) and `True` for everything else.
+
+```python
+int("hello")    # ValueError: invalid literal for int()
+```
+
+## Checking types
+
+Use `type()` to inspect a value's type:
+
+```python
+type(42)        # <class 'int'>
+type(3.14)      # <class 'float'>
+type("hello")   # <class 'str'>
+type(True)      # <class 'bool'>
+```
+
+You can also use `isinstance()` to check if a value is a particular type:
+
+```python
+isinstance(42, int)       # True
+isinstance(3.14, float)   # True
+isinstance(42, float)     # False
+```
+
+`isinstance()` is preferred over `type()` for type checks because it handles a broader range of cases correctly. For now, use whichever is clearer.
+
+## What to carry forward
+
+- Python has four core primitive types: `int`, `float`, `str`, `bool`
+- `None` represents the absence of a value and has its own type (`NoneType`)
+- integers have no size limit; floats use double-precision and may have rounding issues
+- strings support f-strings for embedding expressions
+- booleans are `True` and `False` (capitalized)
+- `/` always returns float; `//` returns integer
+- use `==` for equality, `=` for assignment
+- chain comparisons naturally: `5 < x < 15`
+- convert types with `int()`, `float()`, `str()`, `bool()`
+
+These types are the building blocks for all Python data. The next lesson covers how to make decisions in your code using conditionals.
