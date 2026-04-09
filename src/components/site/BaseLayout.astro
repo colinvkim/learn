@@ -2,6 +2,7 @@
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import "../../styles/global.css";
+import ProgressEnhancer from "./ProgressEnhancer.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 import Analytics from "@vercel/analytics/astro";
 import themeControllerScript from "../../lib/theme-controller.ts?raw";
@@ -59,5 +60,6 @@ const canonical = Astro.site
       )
     }
     <slot />
+    <ProgressEnhancer />
   </body>
 </html>

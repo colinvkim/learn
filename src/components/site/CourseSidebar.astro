@@ -14,7 +14,11 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
 ---
 
 <aside class="lg:h-full lg:overflow-y-auto lg:overscroll-y-contain lg:border-r lg:border-line/80 lg:bg-panel/40 lg:pr-0">
-  <div class="space-y-6 border-b border-line/80 pb-6 lg:min-h-full lg:border-b-0 lg:px-3 lg:py-8">
+  <div
+    data-sidebar-progress
+    data-course-id={course.id}
+    class="space-y-6 border-b border-line/80 pb-6 lg:min-h-full lg:border-b-0 lg:px-3 lg:py-8"
+  >
     <div class="space-y-4 rounded-2xl border border-line/80 bg-canvas/72 p-3 shadow-soft dark:bg-canvas/34">
       {
         topics.length > 0 && (
@@ -32,6 +36,31 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
           {course.data.title}
         </a>
       </div>
+
+      <section
+        class="space-y-3 rounded-[1.15rem] border border-line/80 bg-panel/88 px-3 py-3 dark:bg-canvas/28"
+      >
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">
+            Course Progress
+          </p>
+          <span
+            data-course-progress-count
+            class="rounded-full border border-line bg-canvas/70 px-2 py-1 text-[0.7rem] font-medium text-muted"
+          >
+            0/{lessons.length}
+          </span>
+        </div>
+        <div class="h-1.5 overflow-hidden rounded-full bg-line/75">
+          <div
+            data-course-progress-bar
+            class="h-full w-0 rounded-full bg-[linear-gradient(90deg,var(--color-accent),color-mix(in_oklch,var(--color-accent),white_18%))] transition-[width] duration-300"
+          ></div>
+        </div>
+        <p data-course-progress-caption class="text-sm leading-6 text-muted">
+          No lessons started yet.
+        </p>
+      </section>
     </div>
 
     <div class="space-y-2">
@@ -44,8 +73,9 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
             return (
               <a
                 href={getLessonHref(course.id, slug)}
+                data-lesson-link={slug}
                 class:list={[
-                  "relative block rounded-xl px-3 py-2.5 text-[0.86rem] leading-5.5 transition",
+                  "relative block rounded-xl px-3 py-2.5 pr-16 text-[0.86rem] leading-5.5 transition",
                   isCurrent
                     ? "bg-canvas/88 text-ink shadow-[inset_0_0_0_1px_var(--color-line)] dark:bg-canvas/52"
                     : "text-muted hover:bg-canvas/75 hover:text-ink dark:hover:bg-canvas/40",
@@ -53,6 +83,11 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
                 aria-current={isCurrent ? "page" : undefined}
               >
                 <span class="font-medium">{lesson.data.title}</span>
+                <span
+                  data-lesson-marker
+                  hidden
+                  class="absolute right-3 top-1/2 inline-flex -translate-y-1/2 rounded-full border px-2 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.08em] transition data-[status=in-progress]:border-amber-500/30 data-[status=in-progress]:bg-amber-500/10 data-[status=in-progress]:text-amber-700 data-[status=completed]:border-emerald-500/30 data-[status=completed]:bg-emerald-500/10 data-[status=completed]:text-emerald-700 dark:data-[status=in-progress]:text-amber-300 dark:data-[status=completed]:text-emerald-300"
+                ></span>
               </a>
             );
           })

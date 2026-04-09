@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 
 After making a repository and a first commit, the next job is learning how to inspect what is happening.
 
@@ -31,6 +32,18 @@ This shows:
 - which files are untracked
 
 For beginners, `git status` is the safest command to run when you are unsure what is happening.
+
+<Quiz
+  id="q-status-meaning"
+  question="What does git status NOT show?"
+  options={[
+    "The actual line-by-line content of your changes",
+    "Which branch you are on",
+    "Which files are staged vs. untracked",
+  ]}
+  correctIndex={0}
+  explanation="git status shows the repository state (branch, staged files, untracked files) but not the actual content of changes. For that, use git diff."
+/>
 
 It is also one of the best places to reinforce the three-state model:
 
@@ -74,6 +87,18 @@ git log --oneline
 ```
 
 That gives a compact list of recent commits with short identifiers and commit messages.
+
+<Quiz
+  id="q-what-git-log-shows"
+  question="What does git log --oneline display?"
+  options={[
+    "A compact list of recent commits with short IDs and messages",
+    "The full diff of every commit in the repository",
+    "A list of all branches and their current state",
+  ]}
+  correctIndex={0}
+  explanation="git log --oneline gives a compact view: each commit as a short hash plus its message. For full diffs, use git log -p instead."
+/>
 
 ## A practical inspection habit
 

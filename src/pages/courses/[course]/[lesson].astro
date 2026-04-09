@@ -2,6 +2,7 @@
 import { render, type CollectionEntry } from "astro:content";
 import ContentArticle from "../../../components/site/ContentArticle.astro";
 import DocsLayout from "../../../components/site/DocsLayout.astro";
+import LessonProgress from "../../../components/site/LessonProgress.astro";
 import LessonPager from "../../../components/site/LessonPager.astro";
 import {
   getCourseHref,
@@ -54,26 +55,35 @@ const currentLessonSlug = getLessonSlug(lesson);
     { label: lesson.data.title },
   ]}
 >
-  <header class="space-y-4 border-b border-line/80 pb-8">
-    <div class="space-y-3">
-      <h1 class="text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-        {lesson.data.title}
-      </h1>
-      <p
-        class="max-w-3xl text-[1.02rem] leading-7 text-muted sm:text-lg sm:leading-8"
-      >
-        {lesson.data.description}
-      </p>
-    </div>
-  </header>
+  <section
+    data-lesson-root
+    data-course-id={course.id}
+    data-lesson-slug={currentLessonSlug}
+    class="space-y-8"
+  >
+    <header class="space-y-4 border-b border-line/80 pb-8">
+      <div class="space-y-3">
+        <h1 class="text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+          {lesson.data.title}
+        </h1>
+        <p
+          class="max-w-3xl text-[1.02rem] leading-7 text-muted sm:text-lg sm:leading-8"
+        >
+          {lesson.data.description}
+        </p>
+      </div>
+    </header>
 
-  <ContentArticle class="pt-1">
-    <Content />
-  </ContentArticle>
+    <LessonProgress courseId={course.id} lessonSlug={currentLessonSlug} />
 
-  <LessonPager
-    courseId={course.id}
-    previousLesson={previousLesson}
-    nextLesson={nextLesson}
-  />
+    <ContentArticle class="pt-1">
+      <Content />
+    </ContentArticle>
+
+    <LessonPager
+      courseId={course.id}
+      previousLesson={previousLesson}
+      nextLesson={nextLesson}
+    />
+  </section>
 </DocsLayout>

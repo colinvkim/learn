@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Steps from "../../../components/content/Steps.astro";
 import Tip from "../../../components/content/Tip.astro";
 import Warning from "../../../components/content/Warning.astro";
@@ -21,6 +22,18 @@ git init
 ```
 
 This creates a hidden `.git` directory that stores the repository's metadata and history.
+
+<Quiz
+  id="q-init-purpose"
+  question="What does git init actually do?"
+  options={[
+    "Creates a .git directory that stores the repository's metadata",
+    "Uploads your project to GitHub",
+    "Generates a README and .gitignore file",
+  ]}
+  correctIndex={0}
+  explanation="git init only creates a local .git directory. It does not connect to any remote server — that requires separate commands like git remote add."
+/>
 
 ## What `.git` is
 
@@ -121,6 +134,18 @@ Add initial project files
 Without `-m`, Git usually opens your configured editor so you can write the commit message there instead.
 
 This records the current staged snapshot in the repository history.
+
+<Quiz
+  id="q-first-commit"
+  question="What files does git commit include by default?"
+  options={[
+    "Only the files that were staged with git add",
+    "Every file in the project directory",
+    "Only files that were modified since the last commit",
+  ]}
+  correctIndex={0}
+  explanation="git commit only includes files that were staged with git add. It does not automatically include every file — that's why the staging step matters."
+/>
 
 The commit does not automatically include every file in the project. It includes the changes that were staged.
 
