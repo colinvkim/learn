@@ -164,13 +164,7 @@ export function recordQuizAttempt(
 
   record.quizzes[quizId] = quizRecord;
 
-  const completedQuizCount = lessonQuizIds.filter(
-    (currentQuizId) => Boolean(record.quizzes[currentQuizId]?.completedAt),
-  ).length;
-
-  if (lessonQuizIds.length > 0 && completedQuizCount === lessonQuizIds.length) {
-    record.status = "completed";
-  } else if (record.status === "not-started") {
+  if (record.status === "not-started") {
     record.status = "in-progress";
   }
 

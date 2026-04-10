@@ -83,12 +83,12 @@ function setStatusText(panel: HTMLElement, status: LessonStatus) {
   }
 
   if (status === "completed") {
-    summary.textContent = "You’ve finished this lesson on this device.";
+    summary.textContent = "Marked complete.";
     return;
   }
 
   if (status === "in-progress") {
-    summary.textContent = "Your progress is saved locally as you move through the lesson.";
+    summary.textContent = "You’ve started this lesson.";
     return;
   }
 
@@ -263,7 +263,7 @@ function updateSidebar(sidebar: HTMLElement) {
 
     marker.hidden = status === "not-started";
     marker.dataset.status = status;
-    marker.textContent = status === "completed" ? "Done" : "Now";
+    marker.textContent = status === "completed" ? "Complete" : "Started";
   });
 
   const totalLessons = sidebar.querySelectorAll("[data-lesson-link]").length;

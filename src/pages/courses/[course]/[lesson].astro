@@ -74,11 +74,11 @@ const currentLessonSlug = getLessonSlug(lesson);
       </div>
     </header>
 
-    <LessonProgress courseId={course.id} lessonSlug={currentLessonSlug} />
-
     <ContentArticle class="pt-1">
       <Content />
     </ContentArticle>
+
+    <LessonProgress courseId={course.id} lessonSlug={currentLessonSlug} />
 
     <LessonPager
       courseId={course.id}
