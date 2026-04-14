@@ -18,16 +18,16 @@ Most developer education platforms are bloated with heavy frameworks, complex CM
 
 ### Content Model
 
-- **Typed content collections**
-- **Course progress tracking**
+- Typed content collections
+- Course progress tracking
 
 ### Site
 
-- **Homepage is intentionally simple**
-- **Docs-style reading shell**
-- **Copyable code blocks**
-- **Theme toggle**
-- **Server-rendered by default**
+- Homepage is intentionally simple
+- Docs-style reading shell
+- Copyable code blocks
+- Theme toggle
+- Server-rendered by default
 
 ## Tech Stack
 
