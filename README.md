@@ -1,23 +1,56 @@
+<p align="center">
+    <img src="./public/favicon.svg" alt="learn" width="120">
+</p>
+
 # learn
 
-`learn` is a static Astro site for developer education. The site is content-first, docs-shaped, and intentionally minimal.
+A static Astro site for developer education. Content-first, docs-shaped, intentionally minimal. Courses and lessons live in typed content collections with MDX support for richer components.
 
-The current standard is:
+![Astro](https://img.shields.io/badge/Astro%206-FF5D01?logo=astro&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind%20v4-06B6D4?logo=tailwindcss&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 
-- Astro 6
-- Tailwind CSS v4
-- typed content collections
-- server-rendered pages by default
-- Inter for UI text
-- JetBrains Mono for commands and code
+## Why learn?
 
-## Development
+Most developer education platforms are bloated with heavy frameworks, complex CMS layers, and custom dashboards. learn strips all of that down. It's Astro, Tailwind, and typed content collections. Courses are directories, lessons are files, frontmatter controls the rest.
 
-Install dependencies:
+## Features
+
+### Content Model
+
+- **Typed content collections**
+- **Course progress tracking**
+
+### Site
+
+- **Homepage is intentionally simple**
+- **Docs-style reading shell**
+- **Copyable code blocks**
+- **Theme toggle**
+- **Server-rendered by default**
+
+## Tech Stack
+
+- **Astro 6**
+- **Tailwind CSS v4**
+- **Inter**
+- **JetBrains Mono**
+- **MDX** (available for lessons that need components)
+
+## Requirements
+
+- **Node.js 20+**
+- **pnpm**
+
+## Installation
 
 ```bash
+git clone https://github.com/colinvkim/learn.git
+cd learn
 pnpm install
 ```
+
+## Development
 
 Start the dev server:
 
@@ -31,43 +64,39 @@ Build for production:
 pnpm build
 ```
 
-Run Astro CLI commands:
+Run any Astro CLI command:
 
 ```bash
-pnpm astro ...
+pnpm astro check
 ```
 
-## Project structure
+## Project Structure
 
-```text
-/
-├── CONTENT-PREFERENCES.md
-├── public/
+```
+learn/
 ├── src/
 │   ├── components/
-│   │   ├── content/
+│   │   ├── content/            # MDX callout components (Note, Tip, Warning, Steps)
 │   │   ├── icons/
-│   │   └── site/
+│   │   └── site/               # Docs-style shell (sidebar, header, layout)
 │   ├── content/
-│   │   ├── courses/
-│   │   └── lessons/
+│   │   ├── courses/            # Course entries (.md / .mdx)
+│   │   └── lessons/            # Lessons nested per course
 │   ├── lib/
-│   │   └── content/
+│   │   └── content/            # Content querying utilities
 │   ├── pages/
 │   └── styles/
+├── public/
+├── CONTENT-PREFERENCES.md      # Authoring guidelines
 ├── astro.config.mjs
-└── src/content.config.ts
+└── src/content.config.ts       # Typed collection schemas
 ```
 
-## Content model
+## Content Model
 
-Courses live in `src/content/courses/`.
+### Courses
 
-Lessons live in `src/content/lessons/<course>/`.
-
-Both collections accept `.md` and `.mdx`.
-
-Course frontmatter:
+Live in `src/content/courses/`. Accept `.md` and `.mdx`.
 
 ```yaml
 title: npm and pnpm
@@ -82,7 +111,9 @@ tags:
   - pnpm
 ```
 
-Lesson frontmatter:
+### Lessons
+
+Live in `src/content/lessons/<course>/`. Accept `.md` and `.mdx`.
 
 ```yaml
 title: Introduction
@@ -92,98 +123,18 @@ order: 1
 status: published
 ```
 
-Notes:
-
-- `status` is either `draft` or `published`
-- `course` is a reference to a course entry
-- `order` controls lesson sequencing in the sidebar and pager
-- courses should stay small unless the topic genuinely requires more depth
-
-## Authoring rules
+## Authoring
 
 Read [CONTENT-PREFERENCES.md](./CONTENT-PREFERENCES.md) before writing or revising lessons.
 
 The short version:
 
-- write for readers with little or no prior knowledge unless the topic requires more
-- define terms before depending on them
-- explain one tool or concept at a time
-- compare tools only after each one makes sense on its own
-- use Markdown by default
-- use MDX only when structured components add real value
+- Write for readers with little or no prior knowledge
+- Define terms before depending on them
+- Explain one tool or concept at a time
+- Compare tools only after each one makes sense on its own
+- Use Markdown by default; MDX only when components add real value
 
-## MDX components
+## License
 
-MDX is available for lessons or course files that need richer structure.
-
-Available components:
-
-- `Note`
-- `Tip`
-- `Warning`
-- `Steps`
-
-### Importing components in a lesson
-
-From a lesson file in `src/content/lessons/<course>/...`:
-
-```mdx
----
-title: Example
-description: Example lesson
-course: npm-and-pnpm
-order: 99
-status: draft
----
-
-import Note from "../../../components/content/Note.astro";
-import Tip from "../../../components/content/Tip.astro";
-import Warning from "../../../components/content/Warning.astro";
-import Steps from "../../../components/content/Steps.astro";
-```
-
-From a course file in `src/content/courses/...`:
-
-```mdx
-import Note from "../../components/content/Note.astro";
-```
-
-### Example usage
-
-```mdx
-<Note title="Important distinction">
-  <p><code>npm install</code> and <code>npm install react</code> are different actions.</p>
-</Note>
-
-<Tip>
-  <p>You can add multiple packages at once with <code>pnpm add react react-dom</code>.</p>
-</Tip>
-
-<Warning title="Do not mix package managers">
-  <p>A project should generally use one lockfile and one package manager workflow.</p>
-</Warning>
-
-<Steps>
-  <li>Install Node.js.</li>
-  <li>Open the project directory.</li>
-  <li>Run <code>pnpm install</code>.</li>
-</Steps>
-```
-
-Guidelines:
-
-- keep callouts sparse
-- use them to clarify important distinctions, not to decorate the page
-- keep the text inside them short
-
-## Site notes
-
-- The homepage is intentionally simple.
-- Course content uses the custom docs-style shell in `src/components/site/`.
-- Code blocks are copyable.
-- Theme state is stored locally and preserved across page navigation.
-
-## Current content status
-
-- `npm and pnpm` is the first published course
-- `typescript` remains a draft scaffold
+MIT. See [LICENSE](LICENSE) for details.
