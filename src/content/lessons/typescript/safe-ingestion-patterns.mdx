@@ -5,6 +5,8 @@ course: typescript
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 Trust boundaries appear everywhere: API calls, environment variables, file reads, message queues. Each needs a consistent pattern for safe ingestion.
 
 ## API response ingestion
@@ -127,3 +129,15 @@ Inside the application, after validation, the data is typed. No more assertions,
 - after validation, data is typed — no more defensive checks needed internally
 
 The next module covers tsconfig.json, strict flags, ESM vs CommonJS, and setting up a TypeScript project.
+
+<Quiz
+  id="q-safe-ingestion-flow"
+  question="Which sequence best matches a safe ingestion pattern?"
+  options={[
+    "Receive unknown data, validate it, then use the validated typed value internally",
+    "Cast incoming data to the type you want, then validate only if a bug appears",
+    "Use raw external data everywhere and add optional chaining later",
+  ]}
+  correctIndex={0}
+  explanation="The reliable pattern is boundary-first validation. Once the data is validated, the rest of the application can work with trusted types."
+/>

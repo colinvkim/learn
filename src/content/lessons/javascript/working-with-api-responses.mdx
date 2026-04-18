@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Tip from "../../../components/content/Tip.astro";
 
 API responses are the most common source of external data in JavaScript applications. They are also the most unpredictable — APIs change, return unexpected formats, and fail without warning.
@@ -204,3 +205,15 @@ For production applications, consider HTTP caching headers (`Cache-Control`, `ET
 - cache responses to avoid redundant network requests
 
 API responses are the boundary between your code and the outside world. The next lesson covers defensive programming — checking assumptions in dynamic code.
+
+<Quiz
+  id="q-api-response-safety"
+  question="What is the stronger default after calling response.json() on API data you do not control?"
+  options={[
+    "Validate or defensively access the response shape before using nested fields",
+    "Assume the shape matches the docs and access fields directly",
+    "Convert the whole object to a string and parse it again",
+  ]}
+  correctIndex={0}
+  explanation="External APIs can drift or fail. Defensive access and validation reduce crashes from missing or malformed fields."
+/>

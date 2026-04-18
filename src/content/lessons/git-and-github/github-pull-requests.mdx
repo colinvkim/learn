@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 
 A pull request is one of GitHub's most important collaboration tools.
 
@@ -66,3 +67,15 @@ That keeps the collaboration flow visible in one place:
 - merge result
 
 The important beginner idea is not the exact merge button variant. It is understanding that pull requests are the shared review step before integration.
+
+<Quiz
+  id="q-pr-updates"
+  question="What happens if you push more commits to the branch after opening a pull request?"
+  options={[
+    "The pull request updates to include the new commits automatically",
+    "The pull request closes and you must open a new one",
+    "GitHub moves the new commits directly onto the base branch",
+  ]}
+  correctIndex={0}
+  explanation="A pull request tracks the source branch. New commits pushed to that branch appear in the same pull request."
+/>

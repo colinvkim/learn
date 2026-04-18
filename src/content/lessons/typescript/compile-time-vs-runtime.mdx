@@ -5,6 +5,8 @@ course: typescript
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 TypeScript has two distinct phases. Confusing them is the most common source of frustration for beginners.
 
 ## Compile time
@@ -71,3 +73,15 @@ The compiled JavaScript is what runs in production. The types exist only during 
 - the compiled output is plain JavaScript
 
 The next lesson covers type erasure in more detail and explains why TypeScript's approach is deliberately lightweight.
+
+<Quiz
+  id="q-compile-vs-runtime"
+  question="Which statement is true?"
+  options={[
+    "Compile time is when TypeScript checks types; runtime is when JavaScript actually executes",
+    "Compile time is when the browser runs your program for the first time",
+    "Runtime is when TypeScript reads your annotations before emitting JavaScript",
+  ]}
+  correctIndex={0}
+  explanation="TypeScript's checker runs before execution. Once the code is running, you are in JavaScript runtime land."
+/>

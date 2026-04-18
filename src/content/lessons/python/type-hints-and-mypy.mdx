@@ -5,6 +5,8 @@ course: python
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 Python is dynamically typed — types are determined at runtime. Type hints let you **optionally** declare the types of variables, parameters, and return values. They do not change how your code runs. They are documentation that tools can check.
 
 ## Basic type hints
@@ -256,3 +258,15 @@ The type hints tell callers and tools exactly what to expect. The docstring expl
 - they are most valuable for libraries, large codebases, and complex data
 
 Type hints are an optional but increasingly standard part of Python development. The final lesson brings everything together into a small real-world project.
+
+<Quiz
+  id="q-type-hints-runtime"
+  question="What do Python type hints change at runtime by themselves?"
+  options={[
+    "Nothing — they mainly help people and tools like mypy",
+    "They automatically reject wrong argument types at runtime",
+    "They compile Python into a statically typed binary",
+  ]}
+  correctIndex={0}
+  explanation="Type hints are optional annotations. They improve readability and tooling, but Python does not enforce them automatically at runtime."
+/>

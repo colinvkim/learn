@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Steps from "../../../components/content/Steps.astro";
 
 At this point, the pieces should be familiar enough to connect into one default workflow.
@@ -107,3 +108,15 @@ In the everyday workflow, stashing is useful when:
 <Note title="Stashing is optional">
   <p>If your work is already in a commit, you do not need to stash. Stashing is only for uncommitted changes that you want to set aside temporarily.</p>
 </Note>
+
+<Quiz
+  id="q-safe-next-step"
+  question="You pulled the latest main and are about to start a new task. What is the strongest default next step?"
+  options={[
+    "Create and switch to a new branch for that task before making changes",
+    "Work directly on main until the feature is almost done",
+    "Open a pull request before writing any code",
+  ]}
+  correctIndex={0}
+  explanation="This workflow treats a branch as the default workspace for each task. That keeps work isolated and makes review and merging cleaner."
+/>

@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Warning from "../../../components/content/Warning.astro";
 
 JavaScript objects and arrays are reference types. When you pass an object to a function, assign it to a new variable, or store it in a collection, you are working with a reference to the same underlying data.
@@ -192,3 +193,15 @@ const processed = users.map((user) => ({
 - mutation bugs are hard to trace because the symptom appears far from the cause
 
 Immutability as a practice makes code more predictable. The next unit covers objects at a deeper level — prototypes, constructors, and classes.
+
+<Quiz
+  id="q-shallow-copy"
+  question="What is the main limitation of using spread syntax like { ...obj } or [...arr] to copy data?"
+  options={[
+    "It only makes a shallow copy, so nested objects and arrays are still shared",
+    "It always mutates the original object before copying",
+    "It works only for arrays, not for objects",
+  ]}
+  correctIndex={0}
+  explanation="Spread copies only the top level. Nested references still point at the same underlying objects unless you clone them separately."
+/>

@@ -5,6 +5,7 @@ course: python
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
 import Warning from "../../../components/content/Warning.astro";
 
 
@@ -208,3 +209,15 @@ config["debug"] = True    # TypeError — read-only
 - be intentional about whether your functions mutate arguments or return new data
 
 Understanding mutation prevents subtle bugs. The next lesson covers practical patterns for transforming data with the tools you have learned so far.
+
+<Quiz
+  id="q-assignment-not-copy"
+  question="What happens when you write b = a and a refers to a list?"
+  options={[
+    "b refers to the same list object unless you make an explicit copy",
+    "Python automatically deep-copies the list",
+    "Python converts a into an immutable tuple for b",
+  ]}
+  correctIndex={0}
+  explanation="Assignment binds a new name to the same object. To avoid shared mutation, you need an explicit copy."
+/>

@@ -5,6 +5,8 @@ course: typescript
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 TypeScript provides two types that accept any value: `any` and `unknown`. They look similar but behave very differently. Understanding the distinction is one of the most important skills in practical TypeScript.
 
 ## `any`: opting out of the type system
@@ -110,3 +112,15 @@ The `unknown` version is more verbose. It is also correct. The next modules on g
 - the narrowing burden of `unknown` is a feature, not a drawback
 
 The next lesson covers `never`, `null`, and `undefined` — the types that handle absence and impossibility.
+
+<Quiz
+  id="q-unknown-safer"
+  question="Why is unknown safer than any for external data?"
+  options={[
+    "Because you must narrow unknown before using it, so unsafe operations are blocked until you check",
+    "Because unknown automatically validates runtime data",
+    "Because unknown can only hold objects, not primitives",
+  ]}
+  correctIndex={0}
+  explanation="`unknown` accepts anything but forbids unsafe use until you prove more about the value. That friction is the safety benefit."
+/>

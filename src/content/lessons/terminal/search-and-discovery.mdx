@@ -7,6 +7,7 @@ status: published
 
 import Note from "../../../components/content/Note.astro";
 import Callout from "../../../components/content/Callout.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
 
 This is where the terminal starts to feel powerful. Instead of clicking through folders and using a graphical search bar, you can describe exactly what you want and get an answer in seconds.
@@ -161,3 +162,15 @@ This pattern — command | grep — is one of the most frequently used terminal 
 ## The main idea to carry forward
 
 Use `find` to locate files by name or metadata. Use `grep` to search inside files for text patterns. Use `which` to find where a command lives. Use `locate` for fast system-wide searches when available. And remember: `command | grep pattern` lets you search the output of anything.
+
+<Quiz
+  id="q-find-vs-grep"
+  question="You know a file contains the word TODO somewhere inside it, but you do not know which file. Which tool is the better fit first?"
+  options={[
+    "grep",
+    "find",
+    "which",
+  ]}
+  correctIndex={0}
+  explanation="`grep` searches file contents for matching text. `find` is mainly for locating files by name, path, or metadata."
+/>

@@ -7,6 +7,7 @@ status: published
 
 import Note from "../../../components/content/Note.astro";
 import Callout from "../../../components/content/Callout.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
 
 Once you can navigate, the next step is changing things: creating files, organizing directories, and removing what you no longer need.
@@ -188,3 +189,15 @@ rm README.txt            # remove the original
 ## The main idea to carry forward
 
 `touch`, `mkdir`, `cp`, `mv`, and `rm` are the basic file manipulation toolkit. Use `-i` when you want safety, `-r` when working with directories, and always preview with `ls` before running destructive commands. Glob patterns let you operate on many files at once.
+
+<Quiz
+  id="q-cp-vs-mv"
+  question="Which command should you use when you want the original file to stay where it is and also create a copy somewhere else?"
+  options={[
+    "cp",
+    "mv",
+    "rm",
+  ]}
+  correctIndex={0}
+  explanation="`cp` copies and leaves the original in place. `mv` moves or renames the file instead of preserving both copies."
+/>

@@ -5,6 +5,7 @@ course: python
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
 import Tip from "../../../components/content/Tip.astro";
 
 
@@ -234,3 +235,15 @@ This reads a web server log, extracts the HTTP status code from each line, and c
 - handle `FileNotFoundError` and other file-related exceptions
 
 Files are how programs persist and exchange data. The next two lessons cover the two most common data formats you will encounter: JSON and CSV.
+
+<Quiz
+  id="q-write-vs-append"
+  question="Which file mode should you use when you want to keep the existing file contents and add new text at the end?"
+  options={[
+    '"a"',
+    '"w"',
+    '"r"',
+  ]}
+  correctIndex={0}
+  explanation="`a` appends to the end of the file. `w` overwrites the existing contents."
+/>

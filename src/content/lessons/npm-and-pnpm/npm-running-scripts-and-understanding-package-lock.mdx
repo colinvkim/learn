@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Warning from "../../../components/content/Warning.astro";
 
 After dependencies are in place, two parts of npm start showing up constantly:
@@ -125,3 +126,15 @@ That stricter behavior is why teams prefer it in CI.
 <Warning title="Do not use npm ci as your normal add-dependency command">
   <p><code>npm ci</code> is for reproducing an existing dependency state. It is not the command to use when adding packages or updating dependency ranges during normal development.</p>
 </Warning>
+
+<Quiz
+  id="q-lockfile-role"
+  question="What is package-lock.json mainly for?"
+  options={[
+    "Recording the exact dependency versions that were installed so setups stay reproducible",
+    "Storing the full source code of installed packages for publishing",
+    "Replacing package.json as the main manifest file",
+  ]}
+  correctIndex={0}
+  explanation="`package-lock.json` pins the resolved dependency tree. `package.json` still describes the project and dependency ranges."
+/>

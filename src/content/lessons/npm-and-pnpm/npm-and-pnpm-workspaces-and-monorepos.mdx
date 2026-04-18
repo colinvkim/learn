@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Tip from "../../../components/content/Tip.astro";
 
 As projects grow, developers often split them into multiple packages. A design system might have component packages. A large app might have shared libraries. Managing dependencies across these packages becomes complex. Workspaces solve this problem.
@@ -196,3 +197,15 @@ packages/
 ```
 
 Workspaces reduce duplication and keep related code organized while maintaining clear boundaries between packages.
+
+<Quiz
+  id="q-workspaces-when"
+  question="When do workspaces usually become worth the added complexity?"
+  options={[
+    "When one repository contains multiple related packages that need to stay coordinated",
+    "Whenever you install your first dependency in a single-package project",
+    "Only when you plan to publish every package publicly",
+  ]}
+  correctIndex={0}
+  explanation="Workspaces are most useful when a repo holds several related packages that share dependencies or depend on each other."
+/>

@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Tip from "../../../components/content/Tip.astro";
 
 `map`, `filter`, and `reduce` cover the broadest transformations. But you often need to find a single item, test whether any or all elements match a condition, or reorder an array. These methods handle those cases.
@@ -199,3 +200,15 @@ This is equivalent to `[...colors]; updated[1] = "yellow"` but in a single expre
 - prefer the `to*` methods when your environment supports them for cleaner immutable code
 
 These methods complete the array toolkit. Combined with `map`, `filter`, and `reduce`, they cover essentially every array operation you will encounter.
+
+<Quiz
+  id="q-some-vs-find"
+  question="You only need to know whether any item in the array matches a condition. Which method communicates that intent best?"
+  options={[
+    "some",
+    "find",
+    "sort",
+  ]}
+  correctIndex={0}
+  explanation="`some` returns a boolean answer to an any-match question. `find` returns the matching element itself."
+/>

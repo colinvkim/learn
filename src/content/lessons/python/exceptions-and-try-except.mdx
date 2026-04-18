@@ -5,6 +5,7 @@ course: python
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
 import Tip from "../../../components/content/Tip.astro";
 
 
@@ -201,3 +202,15 @@ The traceback will show both the original error and the new one. This makes debu
 - validate input early and fail fast with clear messages
 
 Exception handling makes your programs robust. The next lesson goes deeper into raising errors, creating custom exceptions, and reading tracebacks to debug problems.
+
+<Quiz
+  id="q-else-clause"
+  question="When does the else block of a try/except statement run?"
+  options={[
+    "Only if no exception was raised in the try block",
+    "Only if an exception was raised and caught",
+    "Always, before finally",
+  ]}
+  correctIndex={0}
+  explanation="`else` is the success path for a `try` block. It runs only when the `try` section completed without raising an exception."
+/>

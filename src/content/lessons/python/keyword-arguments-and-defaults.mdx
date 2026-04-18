@@ -5,6 +5,7 @@ course: python
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
 import Warning from "../../../components/content/Warning.astro";
 
 
@@ -196,3 +197,15 @@ This is useful when you have data in a collection and need to pass it to a funct
 - `*` and `**` also unpack collections when calling functions
 
 These patterns make functions flexible and self-documenting. The next lesson covers scope, which determines where variable names are accessible in your code.
+
+<Quiz
+  id="q-mutable-default"
+  question="Why should you avoid using a mutable value like [] as a default parameter?"
+  options={[
+    "Because the same default object is reused across calls",
+    "Because Python silently converts it into a tuple",
+    "Because default parameters can only be numbers or strings",
+  ]}
+  correctIndex={0}
+  explanation="Mutable defaults are created once, not per call. That means state can leak from one function call to the next."
+/>

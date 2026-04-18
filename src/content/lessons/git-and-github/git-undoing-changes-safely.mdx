@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Tip from "../../../components/content/Tip.astro";
 import Warning from "../../../components/content/Warning.astro";
 
@@ -170,3 +171,15 @@ Git makes it safe to make mistakes.
 `git restore` discards uncommitted work in the working tree or staging area.
 
 Understanding which tool to use prevents unnecessary history rewrites and keeps shared branches stable.
+
+<Quiz
+  id="q-shared-undo"
+  question="You already pushed a bad commit to a shared branch. What is the safest default?"
+  options={[
+    "Use git revert so the undo itself becomes a new commit",
+    "Use git reset --hard so the bad commit disappears from history",
+    "Delete the branch and recreate it from scratch",
+  ]}
+  correctIndex={0}
+  explanation="`git revert` preserves shared history and adds a new commit that undoes the old one. Reset is mainly for local history that has not been shared."
+/>

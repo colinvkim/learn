@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Warning from "../../../components/content/Warning.astro";
 
 `async/await` is syntactic sugar over promises. It does not add new capabilities — it makes existing patterns easier to read and write.
@@ -229,3 +230,15 @@ This is the async equivalent of `Array.from()`. It handles async iterables, asyn
 - `Array.fromAsync()` collects async iterables or generators into arrays (ES2025)
 
 `async/await` is the dominant pattern for asynchronous JavaScript. Combined with the event loop understanding from the first lesson, it explains how async code behaves. The next lesson covers fetching data from APIs in practice.
+
+<Quiz
+  id="q-await-scope"
+  question="What does await pause?"
+  options={[
+    "The current async function until that promise settles",
+    "The entire JavaScript runtime and every other task",
+    "Only the network request, while the function continues running normally",
+  ]}
+  correctIndex={0}
+  explanation="`await` pauses the current async function, not the whole runtime. Other work can still continue through the event loop."
+/>

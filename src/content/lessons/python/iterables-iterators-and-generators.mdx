@@ -5,6 +5,8 @@ course: python
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 You have used `for` loops throughout this course. Now learn what makes them work under the hood and how to create your own lazy sequences with generators.
 
 ## Iterables vs iterators
@@ -255,3 +257,15 @@ This is an advanced pattern used in coroutines and async code. Most everyday cod
 - infinite sequences are possible with generators
 
 Generators are a powerful tool for processing data efficiently. The next lesson covers how to manage Python environments and install external packages with pip and venv.
+
+<Quiz
+  id="q-generator-lazy"
+  question="What is the main benefit of a generator compared with building a full list up front?"
+  options={[
+    "It produces values lazily, so work and memory use happen only as needed",
+    "It always runs faster than every list-based approach",
+    "It converts every loop into parallel execution",
+  ]}
+  correctIndex={0}
+  explanation="Generators yield values one at a time. That makes them useful for large datasets, streams, and pipelines where you do not want every value in memory at once."
+/>

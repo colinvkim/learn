@@ -5,6 +5,8 @@ course: typescript
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 TypeScript checks the types of your source code at compile time. It does **not** check the data your application receives at runtime. This distinction is the most important boundary in a typed application.
 
 ## The trust boundary
@@ -97,3 +99,15 @@ Type assertions are unsafe when:
 - type assertions are safe only with already-trusted sources
 
 The next lesson covers parsing `unknown` and narrowing after checks.
+
+<Quiz
+  id="q-trust-boundary"
+  question="Where should you validate external data in a TypeScript application?"
+  options={[
+    "At the trust boundary where untyped data enters the app",
+    "Only deep inside business logic after the data has been passed around",
+    "Nowhere, because type annotations already guarantee the shape",
+  ]}
+  correctIndex={0}
+  explanation="Validate as the data enters your system, then work with typed values internally. That keeps the unsafe boundary small."
+/>

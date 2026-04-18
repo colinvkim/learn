@@ -7,6 +7,7 @@ status: published
 
 import Note from "../../../components/content/Note.astro";
 import Callout from "../../../components/content/Callout.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 
 This lesson covers the shell features that turn individual commands into powerful workflows.
 
@@ -228,3 +229,15 @@ grep -rl "TODO" src/ | head -n 5        # find first 5 files with TODO
 ## The main idea to carry forward
 
 Pipes connect commands into pipelines. Redirection saves output to files or separates errors. Quoting prevents word splitting and controls variable expansion. Expansion (braces, variables, command substitution) saves typing. History lets you reuse and search past commands. `&&`, `||`, and `;` chain commands with different safety levels. These features turn a sequence of individual commands into serious workflows.
+
+<Quiz
+  id="q-pipe-vs-redirect"
+  question="What is the key difference between a pipe (|) and output redirection (>)?"
+  options={[
+    "A pipe sends output into another command; redirection writes output into a file",
+    "A pipe writes only errors; redirection writes only normal output",
+    "A pipe works only with text files; redirection works only with commands",
+  ]}
+  correctIndex={0}
+  explanation="A pipe connects one command to another. `>` sends command output into a file instead."
+/>

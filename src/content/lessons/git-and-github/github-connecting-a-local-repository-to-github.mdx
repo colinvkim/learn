@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Steps from "../../../components/content/Steps.astro";
 import Tip from "../../../components/content/Tip.astro";
 
@@ -137,3 +138,15 @@ After this flow:
 <Note title="Adding a remote is not the same as pushing">
   <p><code>git remote add origin ...</code> only records the remote connection. The repository history is not uploaded until you run <code>git push</code>.</p>
 </Note>
+
+<Quiz
+  id="q-remote-vs-push"
+  question="What changes after you run git remote add origin ...?"
+  options={[
+    "The local repository now knows the remote URL, but no commits have been uploaded yet",
+    "The current branch is immediately published to GitHub",
+    "GitHub creates a pull request automatically",
+  ]}
+  correctIndex={0}
+  explanation="Adding a remote only stores connection information in the local repo. Uploading commits still requires `git push`."
+/>

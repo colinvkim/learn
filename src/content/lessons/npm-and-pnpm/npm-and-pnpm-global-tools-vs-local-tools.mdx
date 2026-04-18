@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Warning from "../../../components/content/Warning.astro";
 
 Most packages should be installed locally in a project. Some tools, however, are meant to be used across all projects on your system. Understanding the difference prevents confusion and keeps your projects reliable.
@@ -130,3 +131,15 @@ This adds `"packageManager": "pnpm@10.x.x"` to your `package.json`, which helps 
 - Is the package a tool for creating or managing projects? → Install it globally
 
 Following this rule keeps your projects reproducible and avoids version conflicts.
+
+<Quiz
+  id="q-local-default"
+  question="Which is the stronger default for a tool your project depends on, like ESLint or Vite?"
+  options={[
+    "Install it locally in the project",
+    "Install it globally so every project shares one copy",
+    "Avoid installing it and run it from the registry every time",
+  ]}
+  correctIndex={0}
+  explanation="Project tools should usually be local dependencies so the whole team and CI use the same version."
+/>

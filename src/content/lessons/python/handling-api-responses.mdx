@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 
 
 Getting a response from an API is only half the work. APIs return data in formats that may include missing fields, unexpected types, or nested structures. Writing code that handles this safely prevents crashes and subtle data bugs.
@@ -277,3 +278,15 @@ user = User.model_validate(api_response["user"])
 - use `pydantic` for complex API validation
 
 Working with external data safely is a critical skill. The next lesson covers building command-line tools — making your scripts usable by others.
+
+<Quiz
+  id="q-api-validation"
+  question="What is the safer default when working with JSON returned by an external API?"
+  options={[
+    "Validate the structure before relying on nested fields and types",
+    "Trust the API docs completely and index into the data directly",
+    "Convert every value to a string so type mismatches disappear",
+  ]}
+  correctIndex={0}
+  explanation="External APIs are outside your control. Validation and defensive access protect your code from missing keys, nulls, and unexpected shapes."
+/>

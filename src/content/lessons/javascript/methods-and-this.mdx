@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Warning from "../../../components/content/Warning.astro";
 
 Methods are functions stored as object properties. When you call a method, JavaScript sets the `this` keyword to the object the method was called on.
@@ -179,3 +180,15 @@ Use regular function syntax for object methods. Use arrow functions for callback
 - use regular functions for object methods; use arrow functions for callbacks
 
 Understanding `this` is essential for working with objects, classes, and DOM event handlers. The next lesson covers the prototype chain in more depth.
+
+<Quiz
+  id="q-this-binding"
+  question="What mainly determines the value of this for a regular JavaScript function?"
+  options={[
+    "How the function is called",
+    "Where the function was defined in the file",
+    "What the function returns",
+  ]}
+  correctIndex={0}
+  explanation="For regular functions, `this` is decided by the call site. That is why passing a method as a plain callback often loses the original object binding."
+/>

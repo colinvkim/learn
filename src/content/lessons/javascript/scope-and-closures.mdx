@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 
 Scope determines which variables are accessible from a given point in code. Closures are the result of functions retaining access to variables from their surrounding scope even after that scope has finished executing.
 
@@ -210,3 +211,15 @@ The closure holds a reference to `obj`, not a snapshot of `obj.value` at creatio
 - closures hold references to outer variables, not copies
 
 Closures are one of the most important concepts in JavaScript. They connect directly to the next lesson — higher-order functions — which use closures as their primary mechanism.
+
+<Quiz
+  id="q-closure-keeps"
+  question="What does a closure keep access to?"
+  options={[
+    "Variables from the lexical scope where the function was created",
+    "Only the function's parameters, never outer variables",
+    "A frozen copy of every value exactly as it looked at creation time",
+  ]}
+  correctIndex={0}
+  explanation="A closure retains access to outer-scope bindings. It keeps references to those variables, not a frozen snapshot of their values."
+/>

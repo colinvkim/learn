@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Tip from "../../../components/content/Tip.astro";
 
 Dependencies are not static. Packages release new versions with bug fixes, features, and security patches. A project that never updates its dependencies gradually becomes outdated and potentially insecure.
@@ -131,3 +132,15 @@ This approach prevents your project from falling far behind and makes updates ma
 <Note title="Security updates are different">
 <p>Security updates should be applied promptly. Tools like <code>npm audit</code> help identify vulnerable packages. A later lesson covers security practices in detail.</p>
 </Note>
+
+<Quiz
+  id="q-version-ranges"
+  question="Why do version ranges matter in package.json?"
+  options={[
+    "They affect which newer package versions the package manager is allowed to install",
+    "They only control how dependencies are displayed on npmjs.com",
+    "They decide whether a package is installed locally or globally",
+  ]}
+  correctIndex={0}
+  explanation="A range like `^1.2.3` or `~1.2.3` tells the package manager what newer versions still count as acceptable for that dependency."
+/>

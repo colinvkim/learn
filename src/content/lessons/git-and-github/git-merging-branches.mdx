@@ -5,6 +5,7 @@ course: git-and-github
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
 import Warning from "../../../components/content/Warning.astro";
 
 Branches help keep work separate. A merge is how completed work comes back together.
@@ -75,3 +76,15 @@ For beginner workflows, prefer:
 That is a better default than starting with history-rewriting workflows.
 
 The next lesson introduces history rewriting tools such as `--amend`, rebasing, and force pushing, but those should be understood as optional tools, not the beginner default.
+
+<Quiz
+  id="q-merge-conflict"
+  question="When does a merge conflict happen?"
+  options={[
+    "When Git cannot automatically combine overlapping changes and needs a person to choose the result",
+    "Whenever two branches have any different commits",
+    "Whenever you merge into main instead of creating a new branch",
+  ]}
+  correctIndex={0}
+  explanation="Different commits alone do not create a conflict. Conflicts happen when Git cannot safely decide how overlapping changes should be combined."
+/>

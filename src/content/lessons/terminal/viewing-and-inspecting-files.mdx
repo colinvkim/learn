@@ -7,6 +7,7 @@ status: published
 
 import Note from "../../../components/content/Note.astro";
 import Callout from "../../../components/content/Callout.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
 
 A terminal user should be able to look inside any file without leaving the command line.
@@ -151,3 +152,15 @@ Binary files (images, compiled programs, archives) should not be printed with `c
 ## The main idea to carry forward
 
 Use the right viewer for the job: `cat` for small files, `less` for anything larger, `head`/`tail` for the edges, `tail -f` for live logs, `wc` for counts, `file` for type identification, and `stat` for metadata. These tools give you complete visibility into any file.
+
+<Quiz
+  id="q-less-best-use"
+  question="Which command is usually the best first choice for reading a large text file without dumping the whole thing into the terminal at once?"
+  options={[
+    "less",
+    "cat",
+    "stat",
+  ]}
+  correctIndex={0}
+  explanation="`less` lets you page through large files interactively. `cat` prints everything immediately, which is usually worse for long files."
+/>

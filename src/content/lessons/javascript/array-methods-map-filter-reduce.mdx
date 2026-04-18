@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Tip from "../../../components/content/Tip.astro";
 
 Traditional loops work fine for many tasks. But when you are transforming, selecting, or summarizing array data, array methods communicate intent more clearly than raw loops.
@@ -166,3 +167,15 @@ items.map((letter, i) => `${i}: ${letter}`);
 - always provide an initial value to `reduce` — without it, the first element becomes the initial value, which changes behavior for single-element arrays
 
 These three methods cover most data transformation needs. The next lesson adds more targeted methods for searching and testing arrays.
+
+<Quiz
+  id="q-filter-choice"
+  question="You want a new array containing only the users whose account is active. Which method is the best fit?"
+  options={[
+    "filter",
+    "map",
+    "reduce",
+  ]}
+  correctIndex={0}
+  explanation="`filter` keeps only elements that pass a test. `map` transforms every element, and `reduce` collapses the whole array into one accumulated result."
+/>

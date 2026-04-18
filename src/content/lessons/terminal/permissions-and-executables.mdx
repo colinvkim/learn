@@ -7,6 +7,7 @@ status: published
 
 import Note from "../../../components/content/Note.astro";
 import Callout from "../../../components/content/Callout.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 
 This is essential for real-world terminal use. Permission issues are a common source of confusion — "why can't I run this file?" or "why am I getting 'permission denied'?"
 
@@ -170,3 +171,15 @@ If you cannot `cd` into a directory, it may be missing the execute permission fo
 ## The main idea to carry forward
 
 Permissions control who can read, write, and execute each file. `ls -l` shows them. `chmod` changes them. `chown` changes ownership. Shebangs tell the system which interpreter to use for scripts. The current directory is usually not in `PATH`, which is why `./script` is required. `sudo` elevates privileges for admin tasks. Understanding these concepts prevents most "permission denied" confusion.
+
+<Quiz
+  id="q-dot-slash"
+  question="Why do you often run a script as ./script instead of just script?"
+  options={[
+    "Because the current directory is usually not searched through PATH automatically",
+    "Because ./ gives the file execute permission",
+    "Because every shell script must start with ./ to read arguments",
+  ]}
+  correctIndex={0}
+  explanation="`./` means 'run the file from the current directory'. It does not grant permission by itself — it only gives the shell an explicit path."
+/>

@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Warning from "../../../components/content/Warning.astro";
 import Tip from "../../../components/content/Tip.astro";
 
@@ -323,3 +324,15 @@ Best practices that reduce troubleshooting:
 - Document known issues and workarounds
 
 Troubleshooting is part of development. When package managers fail, the errors are usually fixable. Most issues fall into a few categories: peer dependencies, version conflicts, lockfiles, or corrupted installs. Learn to recognize the patterns, and you'll fix most issues quickly.
+
+<Quiz
+  id="q-peer-deps"
+  question="What does a peer dependency warning usually mean?"
+  options={[
+    "A package expects your project to provide a compatible version of another package",
+    "The package failed to download from the registry",
+    "Your lockfile is corrupted and must always be deleted",
+  ]}
+  correctIndex={0}
+  explanation="Peer dependencies describe compatibility expectations between packages, often for frameworks or plugins that must share the same host package version."
+/>

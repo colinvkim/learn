@@ -7,6 +7,7 @@ status: published
 
 import Note from "../../../components/content/Note.astro";
 import Callout from "../../../components/content/Callout.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import ShellCommandSet from "../../../components/content/ShellCommandSet.astro";
 
 A lot of terminal anxiety comes from not knowing how to visually parse commands.
@@ -135,3 +136,15 @@ command [subcommand] [flags] [arguments]
 ```
 
 Once you can read that pattern and know how to look up help text, you can figure out unfamiliar commands on your own. That skill — reading and looking up — matters more than memorizing every flag.
+
+<Quiz
+  id="q-command-parts"
+  question='In git commit -m "fix bug", what is -m?'
+  options={[
+    "A flag that changes how the command behaves",
+    "A positional argument naming the repository",
+    "A subcommand that runs before commit",
+  ]}
+  correctIndex={0}
+  explanation="`-m` is an option flag. It changes `git commit` by telling it to use the following text as the commit message."
+/>

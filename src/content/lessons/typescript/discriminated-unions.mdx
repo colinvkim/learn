@@ -5,6 +5,8 @@ course: typescript
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 A discriminated union is a union of types that all share a common property (the discriminant) with different literal values. It is the single most useful pattern for modeling real data in TypeScript.
 
 ## The pattern
@@ -91,3 +93,15 @@ type FormState =
 - discriminated unions compose — variants can contain other discriminated unions
 
 The next lesson covers exhaustiveness checking — using the type system to ensure every case is handled.
+
+<Quiz
+  id="q-discriminant-purpose"
+  question="Why is a shared discriminant property so useful in a union?"
+  options={[
+    "Because checking that property lets TypeScript narrow safely to one variant",
+    "Because it makes runtime validation unnecessary",
+    "Because it removes the need for optional properties",
+  ]}
+  correctIndex={0}
+  explanation="A discriminant like `status` or `kind` gives both you and TypeScript one reliable field to branch on."
+/>

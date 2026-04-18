@@ -6,6 +6,7 @@ status: published
 ---
 
 import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
 import Steps from "../../../components/content/Steps.astro";
 
 Once `npm` makes sense, `pnpm` is easier to place correctly.
@@ -130,3 +131,15 @@ That last command adds a `packageManager` field to `package.json`, which helps t
 > `pnpm` is a package manager for the same kinds of projects as `npm`, but many teams adopt it for efficiency, consistency, and workspace-heavy repositories.
 
 That is enough context to start using its daily commands.
+
+<Quiz
+  id="q-pnpm-store"
+  question="What is the main storage idea behind pnpm?"
+  options={[
+    "Packages are stored in a shared content-addressable store and linked into projects",
+    "Every project gets a completely separate full copy of every dependency",
+    "Packages are loaded directly from the public registry each time a script runs",
+  ]}
+  correctIndex={0}
+  explanation="pnpm avoids duplicating package contents across projects by reusing a shared store and linking files into each project's node_modules."
+/>

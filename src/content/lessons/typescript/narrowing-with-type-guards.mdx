@@ -5,6 +5,8 @@ course: typescript
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 Narrowing is how TypeScript reduces a broad type to a more specific one based on runtime checks. After narrowing, the type system knows more about what a value actually is.
 
 ## `typeof` narrowing
@@ -124,3 +126,15 @@ Early returns are a common pattern. TypeScript understands that code after the r
 - TypeScript tracks narrowing across early returns and control flow
 
 The next lesson covers discriminated unions, one of the most powerful patterns in TypeScript.
+
+<Quiz
+  id="q-in-operator"
+  question="What does the in operator help TypeScript do in a union?"
+  options={[
+    "Narrow the union by checking whether a property exists",
+    "Convert every member of the union into an interface",
+    "Validate that external JSON fully matches a type",
+  ]}
+  correctIndex={0}
+  explanation='Checks like `"error" in result` let TypeScript narrow to the variants that contain that property.'
+/>

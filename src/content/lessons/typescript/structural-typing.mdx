@@ -5,6 +5,8 @@ course: typescript
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 TypeScript uses **structural typing**. Two types are compatible if their shapes are compatible, regardless of what they are named or where they are declared.
 
 This is different from nominal typing, where type compatibility depends on explicit names or declarations.
@@ -99,3 +101,15 @@ This makes structural typing natural for:
 - structural typing matches how JavaScript works at runtime
 
 The next lesson explores how TypeScript figures out types on its own through inference.
+
+<Quiz
+  id="q-structural-shape"
+  question="Why can a value of one named type often be assigned to another named type in TypeScript?"
+  options={[
+    "Because compatibility is based mainly on shape, not the type's name",
+    "Because TypeScript ignores interfaces during assignment",
+    "Because every object type is automatically compatible with every other object type",
+  ]}
+  correctIndex={0}
+  explanation="TypeScript is structurally typed. If the required properties line up, the assignment is often allowed even when the type names differ."
+/>

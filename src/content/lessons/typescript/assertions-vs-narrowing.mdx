@@ -5,6 +5,8 @@ course: typescript
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 Sometimes TypeScript needs help understanding what type a value has. There are two ways to provide that help: narrowing (which checks at runtime) and assertions (which tell the compiler to trust you).
 
 ## Narrowing: the safe path
@@ -118,3 +120,15 @@ The `asserts value is T` return type tells TypeScript that after this function r
 - prefer narrowing and predicates; use assertions only when you genuinely know more
 
 The next lesson covers when to redesign a type instead of fighting the type system.
+
+<Quiz
+  id="q-assertion-check"
+  question="What runtime check does value as User perform by itself?"
+  options={[
+    "None",
+    "It verifies every field of User at runtime",
+    "It throws automatically if the value is wrong",
+  ]}
+  correctIndex={0}
+  explanation="A type assertion only changes what the compiler believes. It does not inspect the value at runtime."
+/>
