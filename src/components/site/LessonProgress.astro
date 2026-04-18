@@ -12,100 +12,46 @@ const { courseId, lessonSlug } = Astro.props;
   data-course-id={courseId}
   data-lesson-slug={lessonSlug}
   aria-label="Lesson progress"
-  class="group/lesson-progress overflow-hidden rounded-[1.6rem] border border-line/80 bg-[linear-gradient(180deg,color-mix(in_oklch,var(--color-panel),white_28%)_0%,var(--color-panel)_100%)] shadow-soft ring-1 ring-white/55 transition duration-200 dark:ring-white/6 data-[status=in-progress]:border-amber-500/25 data-[status=in-progress]:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_40px_rgba(245,158,11,0.08)] data-[status=completed]:border-emerald-500/25 data-[status=completed]:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_40px_rgba(16,185,129,0.08)]"
+  class="rounded-[1.15rem] border border-line/80 bg-panel/92 px-4 py-3 shadow-soft ring-1 ring-white/55 transition duration-200 dark:ring-white/6 data-[status=in-progress]:border-accent/22 data-[status=completed]:border-emerald-500/25"
 >
-  <div class="h-1.5 bg-line/65 transition group-data-[status=in-progress]/lesson-progress:bg-amber-500/85 group-data-[status=completed]/lesson-progress:bg-emerald-500/85"></div>
-
-  <div class="space-y-5 px-5 py-5 sm:px-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div class="min-w-0 space-y-2">
-        <div class="flex flex-wrap items-center gap-2.5">
-          <p class="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">
-            Lesson Progress
-          </p>
-          <span
-            data-lesson-status-badge
-            data-status-tone="neutral"
-            class="inline-flex rounded-full border border-line/80 bg-canvas/72 px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-muted transition data-[status-tone=active]:border-amber-500/30 data-[status-tone=active]:bg-amber-500/10 data-[status-tone=active]:text-amber-700 data-[status-tone=complete]:border-emerald-500/30 data-[status-tone=complete]:bg-emerald-500/10 data-[status-tone=complete]:text-emerald-700 dark:data-[status-tone=active]:text-amber-300 dark:data-[status-tone=complete]:text-emerald-300"
-          >
-            Not started
-          </span>
-        </div>
-
-        <div class="space-y-1">
-          <h2 class="text-[1.02rem] font-semibold tracking-[-0.03em] text-ink">
-            Track this lesson
-          </h2>
-          <p data-lesson-status-summary class="text-sm leading-6 text-muted">
-            Mark lesson manually or answer quick checks to track progress.
-          </p>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        data-reset-lesson-progress
-        hidden
-        class="focus-ring inline-flex rounded-full border border-line/80 bg-canvas/76 px-3 py-2 text-sm font-medium text-muted transition hover:border-line hover:bg-canvas hover:text-ink"
-      >
-        Reset progress
-      </button>
+  <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+    <div class="min-w-0">
+      <p class="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">
+        Lesson Progress
+      </p>
     </div>
 
-    <div
-      class="inline-flex w-full flex-wrap gap-2 rounded-[1.15rem] border border-line/80 bg-canvas/42 p-1.5 md:w-auto md:flex-nowrap"
-      role="group"
-      aria-label="Set lesson progress status"
-    >
-      <button
-        type="button"
-        data-status-option="not-started"
-        aria-pressed="true"
-        class="focus-ring rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-medium text-muted transition hover:text-ink data-[selected=true]:border-line/80 data-[selected=true]:bg-canvas data-[selected=true]:text-ink dark:data-[selected=true]:bg-canvas/80"
+    <div class="w-full lg:w-auto">
+      <div
+        class="grid min-w-0 grid-cols-3 gap-1 rounded-[0.95rem] border border-line/80 bg-canvas/72 p-1 lg:w-[22rem]"
+        role="group"
+        aria-label="Set lesson progress status"
       >
-        Not started
-      </button>
-      <button
-        type="button"
-        data-status-option="in-progress"
-        aria-pressed="false"
-        class="focus-ring rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-medium text-muted transition hover:text-ink data-[selected=true]:border-amber-500/25 data-[selected=true]:bg-amber-500/14 data-[selected=true]:text-amber-700 dark:data-[selected=true]:text-amber-300"
-      >
-        In progress
-      </button>
-      <button
-        type="button"
-        data-status-option="completed"
-        aria-pressed="false"
-        class="focus-ring rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-medium text-muted transition hover:text-ink data-[selected=true]:border-emerald-500/25 data-[selected=true]:bg-emerald-500/14 data-[selected=true]:text-emerald-700 dark:data-[selected=true]:text-emerald-300"
-      >
-        Completed
-      </button>
-    </div>
-
-    <section
-      data-lesson-quiz-summary
-      class="space-y-3 rounded-[1.2rem] border border-line/80 bg-canvas/54 px-4 py-4 dark:bg-canvas/26"
-      aria-label="Quick check progress"
-    >
-      <div class="flex items-center justify-between gap-3">
-        <p class="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">
-          Quick Checks
-        </p>
-        <p
-          data-lesson-quiz-progress
-          class="text-right text-[0.8rem] font-medium leading-5 text-muted"
+        <button
+          type="button"
+          data-status-option="not-started"
+          aria-pressed="true"
+          class="focus-ring rounded-[0.7rem] border border-transparent px-3 py-2 text-center text-[0.82rem] font-medium text-muted transition hover:text-ink data-[selected=true]:border-line/80 data-[selected=true]:bg-panel data-[selected=true]:text-ink"
         >
-          No quick checks in this lesson.
-        </p>
+          Not started
+        </button>
+        <button
+          type="button"
+          data-status-option="in-progress"
+          aria-pressed="false"
+          class="focus-ring rounded-[0.7rem] border border-transparent px-3 py-2 text-center text-[0.82rem] font-medium text-muted transition hover:text-ink data-[selected=true]:border-accent/18 data-[selected=true]:bg-accent/10 data-[selected=true]:text-accent"
+        >
+          In progress
+        </button>
+        <button
+          type="button"
+          data-status-option="completed"
+          aria-pressed="false"
+          class="focus-ring rounded-[0.7rem] border border-transparent px-3 py-2 text-center text-[0.82rem] font-medium text-muted transition hover:text-ink data-[selected=true]:border-emerald-500/25 data-[selected=true]:bg-emerald-500/12 data-[selected=true]:text-emerald-700 dark:data-[selected=true]:text-emerald-300"
+        >
+          Completed
+        </button>
       </div>
-
-      <div class="h-2 overflow-hidden rounded-full bg-line/80">
-        <div
-          data-lesson-quiz-bar
-          class="h-full w-0 rounded-full bg-[linear-gradient(90deg,var(--color-accent),color-mix(in_oklch,var(--color-accent),white_18%))] transition-[width] duration-300"
-        ></div>
-      </div>
-    </section>
+    </div>
   </div>
 </section>
