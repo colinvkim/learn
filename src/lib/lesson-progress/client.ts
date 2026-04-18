@@ -247,11 +247,11 @@ function updateSidebar(sidebar: HTMLElement) {
     marker
       .querySelectorAll("[data-lesson-marker-icon]")
       .forEach((icon) => {
-        if (!(icon instanceof HTMLElement)) {
+        if (!(icon instanceof Element)) {
           return;
         }
 
-        icon.hidden = icon.dataset.lessonMarkerIcon !== status;
+        icon.toggleAttribute("hidden", icon.getAttribute("data-lesson-marker-icon") !== status);
       });
   });
 
