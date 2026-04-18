@@ -5,7 +5,6 @@ import PageShell from "../components/site/PageShell.astro";
 import { getPublishedCourseSummaries } from "../lib/content/queries";
 
 const summaries = await getPublishedCourseSummaries();
-const hasCourses = summaries.length > 0;
 ---
 
 <BaseLayout

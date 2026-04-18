@@ -39,7 +39,7 @@ Most developer education platforms are bloated with heavy frameworks, complex CM
 
 ## Requirements
 
-- **Node.js 20+**
+- **Node.js 22.12+**
 - **pnpm**
 
 ## Installation
@@ -119,7 +119,6 @@ Live in `src/content/lessons/<course>/`. Accept `.md` and `.mdx`.
 title: Introduction
 description: Start with the big picture.
 course: npm-and-pnpm
-order: 1
 status: published
 ```
 

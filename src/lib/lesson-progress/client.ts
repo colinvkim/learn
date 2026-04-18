@@ -121,7 +121,6 @@ function updateLessonPanel(panel: HTMLElement) {
       summary.quizCount === 0 ? 0 : (summary.completedQuizCount / summary.quizCount) * 100;
     progressBar.style.width = `${completion}%`;
   }
-
 }
 
 function resetQuizUI(quiz: HTMLElement) {
@@ -359,6 +358,12 @@ function handleQuizSelection(option: HTMLButtonElement) {
   }
 
   const isCorrect = selectedIndex === correctIndex;
+  const quizIds = getLessonQuizIds(context.root);
+  const summary = getLessonProgressSummary(
+    context.courseId,
+    context.lessonSlug,
+    quizIds,
+  );
 
   recordQuizAttempt(
     context.courseId,
@@ -366,6 +371,10 @@ function handleQuizSelection(option: HTMLButtonElement) {
     quizId,
     isCorrect,
   );
+
+  if (summary.status === "not-started") {
+    setLessonStatus(context.courseId, context.lessonSlug, "in-progress");
+  }
 
   if (isCorrect) {
     updateAll();

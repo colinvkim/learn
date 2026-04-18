@@ -37,6 +37,7 @@ pnpm astro ...
   - `refactor:` only for internal code changes with no intended user-visible behavior or UI change
   - `docs:` for documentation-only edits
   - `chore:` for maintenance work like tooling, config, or dependency housekeeping
+- Commit at logical checkpoints after verification, not only at end of long sessions.
 - Commit changes immediately after they are verified to pass locally.
 
 ## Lesson Ordering

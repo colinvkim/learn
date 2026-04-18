@@ -9,7 +9,6 @@ export const LESSON_STATUS_VALUES = [
 export type LessonStatus = (typeof LESSON_STATUS_VALUES)[number];
 
 export interface QuizProgressRecord {
-  attempts: number;
   completedAt: string | null;
 }
 
@@ -145,11 +144,8 @@ export function recordQuizAttempt(
   const state = readLessonProgressState();
   const record = getOrCreateLessonRecord(state, courseId, lessonSlug);
   const quizRecord = record.quizzes[quizId] ?? {
-    attempts: 0,
     completedAt: null,
   };
-
-  quizRecord.attempts += 1;
 
   if (isCorrect && !quizRecord.completedAt) {
     quizRecord.completedAt = new Date().toISOString();
