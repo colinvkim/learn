@@ -1,23 +1,9 @@
+// @ts-nocheck
+
 (() => {
-  type Theme = "light" | "dark";
-
-  type LearnThemeController = {
-    restoreTheme: () => void;
-    syncToggles: () => void;
-  };
-
-  type LearnWindow = Window & {
-    __learnThemeController?: LearnThemeController;
-  };
-
-  interface ThemeToggleEvent {
-    clientX?: number;
-    clientY?: number;
-  }
-
   const storageKey = "learn-theme";
   const root = document.documentElement;
-  const learnWindow = window as LearnWindow;
+  const learnWindow = window;
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
   const getStoredTheme = () => {
@@ -50,7 +36,7 @@
     });
   };
 
-  const applyTheme = (theme: Theme, persist = true) => {
+  const applyTheme = (theme, persist = true) => {
     root.classList.toggle("dark", theme === "dark");
     root.style.colorScheme = theme;
 
@@ -65,7 +51,7 @@
     applyTheme(getResolvedTheme(), false);
   };
 
-  const toggleTheme = (event?: ThemeToggleEvent) => {
+  const toggleTheme = (event) => {
     const nextTheme = root.classList.contains("dark") ? "light" : "dark";
     const update = () => applyTheme(nextTheme);
 
