@@ -278,6 +278,12 @@ function updateSidebar(sidebar: HTMLElement) {
   if (progressCaption instanceof HTMLElement) {
     if (completedCount === totalLessons && totalLessons > 0) {
       progressCaption.textContent = "All lessons marked complete.";
+    } else if (completedCount > 0 && startedCount === completedCount) {
+      progressCaption.textContent = `${completedCount} lesson${completedCount === 1 ? "" : "s"} complete`;
+    } else if (completedCount > 0) {
+      const inProgressCount = startedCount - completedCount;
+      progressCaption.textContent =
+        `${completedCount} complete, ${inProgressCount} in progress`;
     } else if (startedCount > 0) {
       progressCaption.textContent = `${startedCount} lesson${startedCount === 1 ? "" : "s"} started`;
     } else {
