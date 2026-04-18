@@ -144,10 +144,6 @@ export async function getPublishedCourseSummaries() {
   }));
 }
 
-export async function getPublishedCourseBySlug(courseId: string) {
-  return (await getPublishedContent()).courseById.get(courseId);
-}
-
 export async function getPublishedLessonsForCourse(courseId: string) {
   return (await getPublishedContent()).lessonsByCourse.get(courseId) ?? [];
 }

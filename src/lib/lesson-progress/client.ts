@@ -4,7 +4,6 @@ import {
   getLessonProgressSummary,
   readLessonProgressState,
   recordQuizAttempt,
-  resetLessonProgress,
   setLessonStatus,
   type LessonStatus,
 } from "./store";
@@ -20,18 +19,6 @@ declare global {
     __learnLessonProgressEnhancer?: boolean;
   }
 }
-
-const STATUS_LABELS: Record<LessonStatus, string> = {
-  "not-started": "Not started",
-  "in-progress": "In progress",
-  completed: "Completed",
-};
-
-const STATUS_TONES: Record<LessonStatus, string> = {
-  "not-started": "neutral",
-  "in-progress": "active",
-  completed: "complete",
-};
 
 const WRONG_FEEDBACK_TIMEOUT_MS = 1600;
 
@@ -70,13 +57,7 @@ function getLessonQuizIds(root: ParentNode) {
 }
 
 function setStatusText(panel: HTMLElement, status: LessonStatus) {
-  const badge = panel.querySelector("[data-lesson-status-badge]");
   const summary = panel.querySelector("[data-lesson-status-summary]");
-
-  if (badge instanceof HTMLElement) {
-    badge.dataset.statusTone = STATUS_TONES[status];
-    badge.textContent = STATUS_LABELS[status];
-  }
 
   if (!(summary instanceof HTMLElement)) {
     return;
@@ -111,8 +92,6 @@ function updateLessonPanel(panel: HTMLElement) {
   const quizSection = panel.querySelector("[data-lesson-quiz-summary]");
   const progressValue = panel.querySelector("[data-lesson-quiz-progress]");
   const progressBar = panel.querySelector("[data-lesson-quiz-bar]");
-  const resetButton = panel.querySelector("[data-reset-lesson-progress]");
-
   panel.dataset.status = summary.status;
   setStatusText(panel, summary.status);
 
@@ -143,9 +122,6 @@ function updateLessonPanel(panel: HTMLElement) {
     progressBar.style.width = `${completion}%`;
   }
 
-  if (resetButton instanceof HTMLButtonElement) {
-    resetButton.hidden = !summary.hasActivity;
-  }
 }
 
 function resetQuizUI(quiz: HTMLElement) {
@@ -369,7 +345,6 @@ function handleQuizSelection(option: HTMLButtonElement) {
     return;
   }
 
-  const lessonQuizIds = getLessonQuizIds(context.root);
   const isCorrect = selectedIndex === correctIndex;
 
   recordQuizAttempt(
@@ -377,7 +352,6 @@ function handleQuizSelection(option: HTMLButtonElement) {
     context.lessonSlug,
     quizId,
     isCorrect,
-    lessonQuizIds,
   );
 
   if (isCorrect) {
@@ -387,17 +361,6 @@ function handleQuizSelection(option: HTMLButtonElement) {
 
   updateAll();
   showIncorrectFeedback(quiz, option);
-}
-
-function handleReset(button: HTMLButtonElement) {
-  const context = getLessonContext(button);
-
-  if (!context) {
-    return;
-  }
-
-  resetLessonProgress(context.courseId, context.lessonSlug);
-  updateAll();
 }
 
 function bindEvents() {
@@ -418,12 +381,6 @@ function bindEvents() {
     if (quizOption instanceof HTMLButtonElement) {
       handleQuizSelection(quizOption);
       return;
-    }
-
-    const resetButton = event.target.closest("[data-reset-lesson-progress]");
-
-    if (resetButton instanceof HTMLButtonElement) {
-      handleReset(resetButton);
     }
   });
 

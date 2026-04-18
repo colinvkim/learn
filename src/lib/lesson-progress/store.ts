@@ -28,7 +28,6 @@ export interface LessonProgressSummary {
   status: LessonStatus;
   quizCount: number;
   completedQuizCount: number;
-  hasActivity: boolean;
 }
 
 const DEFAULT_STATE: LessonProgressState = {
@@ -36,7 +35,7 @@ const DEFAULT_STATE: LessonProgressState = {
   lessons: {},
 };
 
-export function getLessonProgressKey(courseId: string, lessonSlug: string) {
+function getLessonProgressKey(courseId: string, lessonSlug: string) {
   return `${courseId}:${lessonSlug}`;
 }
 
@@ -101,7 +100,7 @@ function getOrCreateLessonRecord(
   return created;
 }
 
-export function getLessonRecord(courseId: string, lessonSlug: string) {
+function getLessonRecord(courseId: string, lessonSlug: string) {
   const lessonKey = getLessonProgressKey(courseId, lessonSlug);
   return readLessonProgressState().lessons[lessonKey] ?? null;
 }
@@ -120,11 +119,6 @@ export function getLessonProgressSummary(
     status: record?.status ?? "not-started",
     quizCount: quizIds.length,
     completedQuizCount,
-    hasActivity:
-      Boolean(record) &&
-      (record.status !== "not-started" ||
-        completedQuizCount > 0 ||
-        Object.values(record.quizzes).some((quiz) => quiz.attempts > 0)),
   };
 }
 
@@ -147,7 +141,6 @@ export function recordQuizAttempt(
   lessonSlug: string,
   quizId: string,
   isCorrect: boolean,
-  lessonQuizIds: string[],
 ) {
   const state = readLessonProgressState();
   const record = getOrCreateLessonRecord(state, courseId, lessonSlug);
@@ -164,20 +157,7 @@ export function recordQuizAttempt(
 
   record.quizzes[quizId] = quizRecord;
 
-  if (record.status === "not-started") {
-    record.status = "in-progress";
-  }
-
   record.updatedAt = new Date().toISOString();
-
-  writeLessonProgressState(state);
-}
-
-export function resetLessonProgress(courseId: string, lessonSlug: string) {
-  const state = readLessonProgressState();
-  const lessonKey = getLessonProgressKey(courseId, lessonSlug);
-
-  delete state.lessons[lessonKey];
 
   writeLessonProgressState(state);
 }
