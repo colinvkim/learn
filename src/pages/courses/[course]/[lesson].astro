@@ -78,12 +78,14 @@ const currentLessonSlug = getLessonSlug(lesson);
       <Content />
     </ContentArticle>
 
-    <LessonProgress courseId={course.id} lessonSlug={currentLessonSlug} />
+    <section class="space-y-4 border-t border-line pt-8">
+      <LessonProgress courseId={course.id} lessonSlug={currentLessonSlug} />
 
-    <LessonPager
-      courseId={course.id}
-      previousLesson={previousLesson}
-      nextLesson={nextLesson}
-    />
+      <LessonPager
+        courseId={course.id}
+        previousLesson={previousLesson}
+        nextLesson={nextLesson}
+      />
+    </section>
   </section>
 </DocsLayout>
