@@ -11,26 +11,29 @@ const { courseId, lessonSlug } = Astro.props;
   data-lesson-progress
   data-course-id={courseId}
   data-lesson-slug={lessonSlug}
-  class="overflow-hidden rounded-[1.4rem] border border-line/80 bg-panel/92 shadow-soft"
+  class="overflow-hidden rounded-[1.6rem] border border-line/70 bg-[linear-gradient(180deg,color-mix(in_oklch,var(--color-panel),white_34%)_0%,var(--color-panel)_100%)] shadow-soft"
 >
-  <div class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/22">
-    <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-      <div class="space-y-2">
+  <div class="border-b border-line/70 bg-[linear-gradient(135deg,color-mix(in_oklch,var(--color-canvas),white_20%)_0%,color-mix(in_oklch,var(--color-panel),white_6%)_100%)] px-5 py-5 dark:bg-[linear-gradient(135deg,color-mix(in_oklch,var(--color-canvas),black_8%)_0%,color-mix(in_oklch,var(--color-panel),white_4%)_100%)]">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div class="space-y-1">
         <div class="flex items-center gap-2.5">
-          <p class="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-muted">
+          <p class="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted">
             Lesson Progress
           </p>
           <span
             data-lesson-status-badge
             data-status-tone="neutral"
-            class="inline-flex rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold tracking-[0.04em] text-muted transition data-[status-tone=neutral]:border-line data-[status-tone=neutral]:bg-panel/90 data-[status-tone=active]:border-amber-500/30 data-[status-tone=active]:bg-amber-500/10 data-[status-tone=active]:text-amber-700 data-[status-tone=complete]:border-emerald-500/30 data-[status-tone=complete]:bg-emerald-500/10 data-[status-tone=complete]:text-emerald-700 dark:data-[status-tone=active]:text-amber-300 dark:data-[status-tone=complete]:text-emerald-300"
+            class="hidden"
           >
             Not started
           </span>
         </div>
+        <p class="text-base font-semibold tracking-[-0.01em] text-ink">
+          Choose your progress for this lesson
+        </p>
         <p
           data-lesson-status-summary
-          class="max-w-2xl text-sm leading-6 text-muted"
+          class="hidden"
         >
           Mark the lesson manually or answer the quick checks to track progress.
         </p>
@@ -45,7 +48,7 @@ const { courseId, lessonSlug } = Astro.props;
           type="button"
           data-status-option="not-started"
           aria-pressed="true"
-          class="rounded-full border border-line bg-panel/90 px-3.5 py-2 text-sm font-medium text-muted transition hover:border-accent/30 hover:text-ink focus-ring data-[selected=true]:border-line/20 data-[selected=true]:bg-ink data-[selected=true]:text-white dark:data-[selected=true]:bg-white dark:data-[selected=true]:text-ink"
+          class="rounded-full border border-line/80 bg-panel/88 px-4 py-2 text-sm font-medium text-muted transition hover:border-accent/30 hover:bg-panel hover:text-ink focus-ring data-[selected=true]:border-line/20 data-[selected=true]:bg-ink data-[selected=true]:text-white dark:data-[selected=true]:bg-white dark:data-[selected=true]:text-ink"
         >
           Not started
         </button>
@@ -53,7 +56,7 @@ const { courseId, lessonSlug } = Astro.props;
           type="button"
           data-status-option="in-progress"
           aria-pressed="false"
-          class="rounded-full border border-line bg-panel/90 px-3.5 py-2 text-sm font-medium text-muted transition hover:border-accent/30 hover:text-ink focus-ring data-[selected=true]:border-amber-500/20 data-[selected=true]:bg-amber-500/12 data-[selected=true]:text-amber-700 dark:data-[selected=true]:text-amber-300"
+          class="rounded-full border border-line/80 bg-panel/88 px-4 py-2 text-sm font-medium text-muted transition hover:border-accent/30 hover:bg-panel hover:text-ink focus-ring data-[selected=true]:border-amber-500/25 data-[selected=true]:bg-amber-500/14 data-[selected=true]:text-amber-700 dark:data-[selected=true]:text-amber-300"
         >
           In progress
         </button>
@@ -61,7 +64,7 @@ const { courseId, lessonSlug } = Astro.props;
           type="button"
           data-status-option="completed"
           aria-pressed="false"
-          class="rounded-full border border-line bg-panel/90 px-3.5 py-2 text-sm font-medium text-muted transition hover:border-accent/30 hover:text-ink focus-ring data-[selected=true]:border-emerald-500/20 data-[selected=true]:bg-emerald-500/12 data-[selected=true]:text-emerald-700 dark:data-[selected=true]:text-emerald-300"
+          class="rounded-full border border-line/80 bg-panel/88 px-4 py-2 text-sm font-medium text-muted transition hover:border-accent/30 hover:bg-panel hover:text-ink focus-ring data-[selected=true]:border-emerald-500/25 data-[selected=true]:bg-emerald-500/14 data-[selected=true]:text-emerald-700 dark:data-[selected=true]:text-emerald-300"
         >
           Completed
         </button>
@@ -69,16 +72,19 @@ const { courseId, lessonSlug } = Astro.props;
     </div>
   </div>
 
-  <div class="grid gap-4 px-5 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-    <div data-lesson-quiz-summary class="space-y-2">
+  <div class="px-5 py-5">
+    <div
+      data-lesson-quiz-summary
+      class="rounded-[1.1rem] border border-line/70 bg-canvas/38 px-4 py-4"
+    >
       <div class="flex items-center justify-between gap-4 text-sm">
-        <p class="font-medium text-ink">Quick checks</p>
+        <p class="font-medium tracking-[0.01em] text-ink">Quick checks</p>
         <p data-lesson-quiz-progress class="text-muted">
           No quick checks in this lesson.
         </p>
       </div>
 
-      <div class="h-2 overflow-hidden rounded-full bg-line/75">
+      <div class="mt-3 h-2.5 overflow-hidden rounded-full bg-line/70">
         <div
           data-lesson-quiz-bar
           class="h-full w-0 rounded-full bg-[linear-gradient(90deg,var(--color-accent),color-mix(in_oklch,var(--color-accent),white_22%))] transition-[width] duration-300"
@@ -90,7 +96,7 @@ const { courseId, lessonSlug } = Astro.props;
       type="button"
       data-reset-lesson-progress
       hidden
-      class="rounded-full border border-line bg-canvas/65 px-3.5 py-2 text-sm font-medium text-muted transition hover:border-accent/30 hover:text-ink focus-ring"
+      class="hidden"
     >
       Reset lesson
     </button>
