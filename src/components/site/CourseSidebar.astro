@@ -1,4 +1,5 @@
 ---
+import { Check, Clock3 } from "@lucide/astro";
 import type { CourseEntry, LessonEntry } from "../../lib/content/queries";
 import { getCourseHref, getLessonHref, getLessonSlug } from "../../lib/content/queries";
 import TopicMarks from "./TopicMarks.astro";
@@ -86,8 +87,21 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
                 <span
                   data-lesson-marker
                   hidden
-                  class="absolute right-3 top-1/2 inline-flex -translate-y-1/2 rounded-full border px-2 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.08em] transition data-[status=in-progress]:border-amber-500/30 data-[status=in-progress]:bg-amber-500/10 data-[status=in-progress]:text-amber-700 data-[status=completed]:border-emerald-500/30 data-[status=completed]:bg-emerald-500/10 data-[status=completed]:text-emerald-700 dark:data-[status=in-progress]:text-amber-300 dark:data-[status=completed]:text-emerald-300"
-                ></span>
+                  aria-label="Lesson status"
+                  class="absolute right-3 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-line/80 bg-canvas/78 text-muted transition data-[status=in-progress]:border-amber-500/25 data-[status=in-progress]:bg-amber-500/10 data-[status=in-progress]:text-amber-700 data-[status=completed]:border-emerald-500/25 data-[status=completed]:bg-emerald-500/10 data-[status=completed]:text-emerald-700 dark:data-[status=in-progress]:text-amber-300 dark:data-[status=completed]:text-emerald-300"
+                >
+                  <Clock3
+                    data-lesson-marker-icon="in-progress"
+                    class="h-3.5 w-3.5"
+                    aria-hidden="true"
+                  />
+                  <Check
+                    data-lesson-marker-icon="completed"
+                    hidden
+                    class="h-3.5 w-3.5"
+                    aria-hidden="true"
+                  />
+                </span>
               </a>
             );
           })

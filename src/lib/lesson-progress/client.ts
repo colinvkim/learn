@@ -239,7 +239,20 @@ function updateSidebar(sidebar: HTMLElement) {
 
     marker.hidden = status === "not-started";
     marker.dataset.status = status;
-    marker.textContent = status === "completed" ? "Complete" : "Started";
+    marker.setAttribute(
+      "aria-label",
+      status === "completed" ? "Completed lesson" : "In-progress lesson",
+    );
+
+    marker
+      .querySelectorAll("[data-lesson-marker-icon]")
+      .forEach((icon) => {
+        if (!(icon instanceof HTMLElement)) {
+          return;
+        }
+
+        icon.hidden = icon.dataset.lessonMarkerIcon !== status;
+      });
   });
 
   const totalLessons = sidebar.querySelectorAll("[data-lesson-link]").length;
