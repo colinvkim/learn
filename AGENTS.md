@@ -31,6 +31,12 @@ pnpm astro ...
 
 - Always run `pnpm build` after making changes to verify the build passes before committing.
 - Use Conventional Commits format for commit messages: `fix:`, `feat:`, `chore:`, `refactor:`, `docs:`, etc.
+- Choose commit types by user-visible impact:
+  - `feat:` for new UI, new content, new behavior, or meaningful improvements users can notice
+  - `fix:` for bug fixes or regressions
+  - `refactor:` only for internal code changes with no intended user-visible behavior or UI change
+  - `docs:` for documentation-only edits
+  - `chore:` for maintenance work like tooling, config, or dependency housekeeping
 - Commit changes immediately after they are verified to pass locally.
 
 ## Lesson Ordering
