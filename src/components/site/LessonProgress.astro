@@ -1,4 +1,6 @@
 ---
+import { ListChecks } from "@lucide/astro";
+
 interface Props {
   courseId: string;
   lessonSlug: string;
@@ -12,16 +14,17 @@ const { courseId, lessonSlug } = Astro.props;
   data-course-id={courseId}
   data-lesson-slug={lessonSlug}
   aria-label="Lesson progress"
-  class="rounded-[1.15rem] border border-line/80 bg-panel/92 px-4 py-3 shadow-soft ring-1 ring-white/55 transition duration-200 dark:ring-white/6 data-[status=in-progress]:border-accent/22 data-[status=completed]:border-emerald-500/25"
+  class="group/lesson-progress rounded-[1.15rem] border border-line/80 bg-panel/92 px-4 py-3 shadow-soft ring-1 ring-white/55 transition duration-200 dark:ring-white/6 data-[status=in-progress]:border-accent/22 data-[status=completed]:border-emerald-500/25"
 >
-  <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-    <div class="min-w-0">
-      <p class="text-sm font-medium tracking-[-0.02em] text-ink/88">
-        Progress
+  <div class="flex flex-col items-center gap-3 lg:flex-row lg:justify-between">
+    <div class="flex min-w-0 items-center self-start lg:self-auto">
+      <p class="inline-flex items-center gap-2 text-sm font-medium tracking-[-0.02em] text-ink/88">
+        <ListChecks class="h-4 w-4 text-muted" aria-hidden="true" />
+        <span>Progress</span>
       </p>
     </div>
 
-    <div class="w-full lg:w-auto">
+    <div class="w-full self-center lg:w-auto">
       <div
         class="grid min-w-0 grid-cols-3 gap-1 rounded-[0.95rem] border border-line/80 bg-canvas/72 p-1 lg:w-[22rem]"
         role="group"
