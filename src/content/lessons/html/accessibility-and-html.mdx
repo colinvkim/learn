@@ -1,0 +1,177 @@
+---
+title: "Accessibility and HTML"
+description: "Learn how semantic markup, headings, landmarks, labels, and small structural decisions make pages work better for more people."
+course: html
+status: published
+---
+
+Accessibility is not a separate layer you add after finishing the HTML. Much of web accessibility starts with the HTML itself.
+
+If your markup is semantic, labeled, and well-structured, many accessibility benefits are already in place before CSS or JavaScript are involved.
+
+## What accessibility means in practice
+
+Accessibility means more people can use the page successfully.
+
+That includes people who:
+
+- use screen readers
+- navigate by keyboard
+- zoom text or use small screens
+- have low vision or color-vision differences
+- use voice control
+- have cognitive or reading difficulties
+- cannot rely on audio or fine motor precision
+
+HTML matters because it gives these tools and techniques something meaningful to work with.
+
+## Semantic HTML is an accessibility tool
+
+When you use elements that match the content, you help assistive technologies understand the page.
+
+Examples:
+
+- a real `<nav>` tells the user where navigation is
+- a real `<button>` behaves like a button
+- a real `<label>` gives a form control an accessible name
+- a real heading structure helps users scan the page
+
+This is one reason semantic HTML is worth learning well. It is not only a cleanliness preference.
+
+## Headings and landmarks help people navigate
+
+Many users do not read a page from top to bottom in order. They navigate by structure.
+
+Headings let users jump through the outline of the page.
+
+Landmarks such as:
+
+- `<header>`
+- `<nav>`
+- `<main>`
+- `<aside>`
+- `<footer>`
+
+help users move between major regions quickly.
+
+If the page is built from generic containers with no real structure, that kind of navigation becomes much harder.
+
+## Labels, names, and instructions
+
+Form controls need clear labels. Images need alt text when they carry meaning. Tables need headers. Links need descriptive text.
+
+These are all forms of the same larger idea: important interface parts need understandable names.
+
+Good:
+
+```html
+<label for="email">Email address</label>
+<input type="email" id="email" name="email" />
+```
+
+Weak:
+
+```html
+<input type="email" placeholder="Email" />
+```
+
+Good:
+
+```html
+<a href="/classes.html">View upcoming classes</a>
+```
+
+Weak:
+
+```html
+<a href="/classes.html">Read more</a>
+```
+
+HTML gives you the tools to make content understandable. You still have to use them carefully.
+
+## Buttons and links are not interchangeable
+
+This point matters for accessibility as much as semantics.
+
+- links take users to destinations
+- buttons trigger actions
+
+When you use the wrong element, users get the wrong behavior and the wrong expectations.
+
+A link is announced and handled like navigation. A button is announced and handled like an action control. HTML gives you those meanings for free if you choose correctly.
+
+## Language and document metadata
+
+The language of the page should be declared:
+
+```html
+<html lang="en">
+```
+
+This helps screen readers pronounce content more accurately and helps browsers process text correctly.
+
+Document metadata like a useful `<title>` also improves orientation. Users should always be able to tell what page they are on.
+
+## Keyboard awareness
+
+HTML elements come with built-in keyboard behavior:
+
+- links can be focused and followed
+- buttons can be focused and activated
+- form controls can be reached and edited
+
+That is another reason native HTML is so powerful. When you replace real controls with generic elements, you often lose built-in accessibility behavior and have to recreate it yourself.
+
+Start with native elements whenever possible.
+
+## Images and media accessibility
+
+Accessibility also applies to non-text content:
+
+- informative images need alt text
+- decorative images should use `alt=""`
+- videos with speech should have captions
+- audio content should have transcripts when appropriate
+
+The goal is not to describe every visual detail. The goal is to preserve the meaning a user would otherwise miss.
+
+## Native HTML first, ARIA second
+
+There are accessibility attributes beyond core HTML, especially ARIA. They have valid uses, but beginners often reach for them too early.
+
+A strong default rule is:
+
+- prefer native HTML semantics first
+- add ARIA only when native HTML does not express what you need
+
+For example, a real `<button>` is usually better than a styled `<div role="button">`.
+
+Native HTML is simpler and more reliable.
+
+## A practical accessibility checklist for HTML
+
+Before calling a page "done," ask:
+
+- does the page have a useful title?
+- does the document declare its language?
+- is there a clear heading structure?
+- are landmarks such as header, nav, and main used appropriately?
+- do links make sense out of context?
+- do form controls have labels?
+- do images have meaningful alt text or empty alt text when decorative?
+- do tables have headers and captions when needed?
+- are native elements used for native jobs?
+
+This checklist is not everything in accessibility, but it is a strong HTML baseline.
+
+## What to carry forward
+
+- accessibility starts in the HTML, not after it
+- semantic elements, headings, landmarks, and labels all improve usability
+- links, buttons, inputs, images, and tables need clear accessible meaning
+- language and page titles help users orient themselves
+- native HTML comes with valuable built-in keyboard and assistive technology support
+- native semantics should usually come before ARIA workarounds
+- small structural choices in HTML affect whether a page is easy or hard to use
+
+The next lesson looks ahead to CSS and JavaScript without turning this into a styling or programming course: how to write HTML that other layers can build on cleanly.

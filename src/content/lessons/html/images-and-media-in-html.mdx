@@ -1,0 +1,196 @@
+---
+title: "Images and media in HTML"
+description: "Learn how to add images and media with meaningful alternative text and document structure that stays accessible."
+course: html
+status: published
+---
+
+Images and media often carry important information, but they are still part of the document. Good HTML for media is not about file formats or visual polish first. It is about meaning, context, and accessibility.
+
+## The `img` element
+
+The basic image element looks like this:
+
+```html
+<img
+  src="/images/sourdough-loaf.jpg"
+  alt="Round sourdough loaf cooling on a wooden rack"
+/>
+```
+
+The two most important attributes are:
+
+- `src`, which points to the image file
+- `alt`, which provides alternative text
+
+`alt` is required because images need a text alternative or an explicit indication that they are decorative.
+
+## What good alt text does
+
+Alt text should communicate the image's purpose in the page.
+
+If the image is informative, write alt text that conveys the same useful content a sighted reader gets from it.
+
+Good:
+
+```html
+<img
+  src="/images/storefront.jpg"
+  alt="Front entrance of Maple Street Bakery with a blue awning and outdoor seating"
+/>
+```
+
+Less useful:
+
+```html
+<img src="/images/storefront.jpg" alt="image" />
+```
+
+Weak alt text usually happens when the author describes the file rather than the information.
+
+## Decorative images
+
+Some images are purely decorative. They do not add information, and the page still makes sense without them.
+
+In that case, use an empty alt attribute:
+
+```html
+<img src="/images/flourish.svg" alt="" />
+```
+
+This tells assistive technologies to ignore the image.
+
+Do not omit `alt`. Missing alt text creates ambiguity. An empty `alt=""` is a deliberate signal that the image is decorative.
+
+## Images in context
+
+Sometimes an image belongs with a caption. In that case, use `<figure>` and `<figcaption>`.
+
+```html
+<figure>
+  <img
+    src="/images/apricot-tart.jpg"
+    alt="Apricot tart with a glossy fruit topping on a ceramic plate"
+  />
+  <figcaption>Our spring apricot tart returns every Friday.</figcaption>
+</figure>
+```
+
+This is better than placing a loose paragraph under the image because the relationship is explicit in the markup.
+
+## Practical image habits
+
+When possible, also provide dimensions:
+
+```html
+<img
+  src="/images/storefront.jpg"
+  alt="Front entrance of Maple Street Bakery with a blue awning and outdoor seating"
+  width="1200"
+  height="800"
+/>
+```
+
+This helps the browser reserve space before the image finishes loading.
+
+For non-critical off-screen images, `loading="lazy"` can also be useful:
+
+```html
+<img
+  src="/images/pastry-case.jpg"
+  alt="Display case with croissants, buns, and fruit tarts"
+  width="1200"
+  height="800"
+  loading="lazy"
+/>
+```
+
+These are not replacements for good structure, but they are helpful modern defaults.
+
+## Avoid putting important text inside images
+
+If an image contains essential text, many users will have a harder time accessing it:
+
+- screen reader users may miss it
+- translation tools cannot work with it as easily
+- search engines cannot interpret it like normal text
+- the content is harder to adapt across devices
+
+Use real HTML text whenever the words matter. Use images for visual content, not for text that should have been in the document.
+
+## Audio and video, lightly
+
+HTML also provides media elements like `<audio>` and `<video>`.
+
+```html
+<audio controls src="/media/interview.mp3"></audio>
+```
+
+```html
+<video controls width="960" height="540">
+  <source src="/media/bread-shaping.mp4" type="video/mp4" />
+  <track
+    kind="captions"
+    src="/media/bread-shaping.en.vtt"
+    srclang="en"
+    label="English"
+  />
+</video>
+```
+
+For this course, the important ideas are:
+
+- use built-in media elements instead of inventing your own structure
+- provide controls when users need to play or pause media
+- provide captions or transcripts when the media contains speech
+- keep media in service of the document, not separate from it
+
+## Embedded content
+
+Sometimes pages include content from another source, such as a map or a video player. HTML supports this, but embedded content can introduce performance, privacy, and accessibility tradeoffs.
+
+When you embed something, ask:
+
+- does this content help the user complete the task?
+- is there a text alternative or fallback?
+- is the embed necessary, or would a normal link be better?
+
+Not every piece of media needs to be embedded directly into the page.
+
+## A realistic content example
+
+```html
+<article>
+  <h1>Visit our bakery</h1>
+  <p>Find us on the corner of Maple Street and 3rd Avenue.</p>
+
+  <figure>
+    <img
+      src="/images/storefront.jpg"
+      alt="Front entrance of Maple Street Bakery with a blue awning and outdoor seating"
+      width="1200"
+      height="800"
+    />
+    <figcaption>The front patio is open from spring through early autumn.</figcaption>
+  </figure>
+  
+  <p>
+    If you need step-free access, use the side entrance on Cedar Lane.
+  </p>
+</article>
+```
+
+The image adds useful context, but the page still communicates the important details in ordinary text.
+
+## What to carry forward
+
+- use `<img>` for images and always think carefully about `alt`
+- informative images need meaningful alt text
+- decorative images should use `alt=""`
+- `<figure>` and `<figcaption>` are useful when an image and its caption belong together
+- width, height, and lazy loading are helpful practical attributes
+- important text should usually be real HTML text, not text inside an image
+- audio and video should use native elements with controls and accessible alternatives when needed
+- media should support the document, not replace its structure
+
+The next lesson covers semantic page structure: how whole regions of a page should be marked up so the document makes sense beyond individual paragraphs and images.

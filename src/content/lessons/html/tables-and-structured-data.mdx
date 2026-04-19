@@ -1,0 +1,213 @@
+---
+title: "Tables and structured data"
+description: "Learn when tables are appropriate and how to mark up tabular data so it stays understandable and accessible."
+course: html
+status: published
+---
+
+Tables are useful when your information genuinely has row-and-column relationships.
+
+Examples:
+
+- opening hours by day
+- pricing comparisons
+- shipping rates
+- schedules
+- inventory lists
+
+Tables are not general layout tools. Modern HTML uses tables for data, not for arranging an entire page.
+
+## When a table is the right choice
+
+A good test is to ask:
+
+- does each row represent one item or record?
+- do the columns describe comparable categories?
+- would it make sense to read across and compare values?
+
+If yes, a table may fit.
+
+If the content is only a list, a card grid, or a page layout, a table is probably the wrong structure.
+
+## Basic table structure
+
+```html
+<table>
+  <tr>
+    <th>Day</th>
+    <th>Hours</th>
+  </tr>
+  <tr>
+    <td>Monday</td>
+    <td>7:00am to 3:00pm</td>
+  </tr>
+  <tr>
+    <td>Tuesday</td>
+    <td>7:00am to 3:00pm</td>
+  </tr>
+</table>
+```
+
+Important elements:
+
+- `<table>` wraps the table
+- `<tr>` defines a row
+- `<th>` defines a header cell
+- `<td>` defines a data cell
+
+Header cells matter because they give context to the data cells beneath or beside them.
+
+## Captions make tables easier to understand
+
+Use `<caption>` to label the table.
+
+```html
+<table>
+  <caption>Bakery opening hours</caption>
+  <tr>
+    <th>Day</th>
+    <th>Hours</th>
+  </tr>
+  <tr>
+    <td>Monday</td>
+    <td>7:00am to 3:00pm</td>
+  </tr>
+</table>
+```
+
+This is often better than placing a nearby paragraph and hoping the relationship is obvious.
+
+## `thead`, `tbody`, and `tfoot`
+
+Larger tables often benefit from grouping rows:
+
+```html
+<table>
+  <caption>Weekend class schedule</caption>
+  <thead>
+    <tr>
+      <th scope="col">Class</th>
+      <th scope="col">Day</th>
+      <th scope="col">Time</th>
+      <th scope="col">Spaces</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Introduction to sourdough</td>
+      <td>Saturday</td>
+      <td>10:00am</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>Laminated dough basics</td>
+      <td>Sunday</td>
+      <td>11:30am</td>
+      <td>8</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+These elements help define the logical parts of the table. They are especially useful in bigger or more complex data tables.
+
+## Use `scope` for clear header relationships
+
+Header cells should often include `scope`:
+
+- `scope="col"` for column headers
+- `scope="row"` for row headers
+
+Example with row headers:
+
+```html
+<table>
+  <caption>Delivery zones</caption>
+  <tr>
+    <th scope="col">Zone</th>
+    <th scope="col">Fee</th>
+  </tr>
+  <tr>
+    <th scope="row">Central</th>
+    <td>$5</td>
+  </tr>
+  <tr>
+    <th scope="row">Outer</th>
+    <td>$9</td>
+  </tr>
+</table>
+```
+
+This helps assistive technologies connect each data cell to the right header.
+
+## Keep tables simple when possible
+
+HTML supports more complex structures such as cells spanning multiple rows or columns, but complexity makes tables harder to understand and maintain.
+
+When possible:
+
+- keep headers clear
+- keep the grid regular
+- avoid merging cells unless the data truly requires it
+
+Simple tables are easier for everyone to interpret.
+
+## Do not use tables for page layout
+
+This is an important historical distinction.
+
+Older sites sometimes used tables to build page layouts with columns and sidebars. That is outdated and harms meaning and accessibility.
+
+Bad use:
+
+```html
+<table>
+  <tr>
+    <td>sidebar</td>
+    <td>main content</td>
+  </tr>
+</table>
+```
+
+That is not tabular data. It is page layout, and modern HTML has better structural elements for that.
+
+## A realistic table example
+
+```html
+<table>
+  <caption>Farmer's market schedule</caption>
+  <thead>
+    <tr>
+      <th scope="col">Location</th>
+      <th scope="col">Day</th>
+      <th scope="col">Hours</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Maple Square</th>
+      <td>Wednesday</td>
+      <td>8:00am to 1:00pm</td>
+    </tr>
+    <tr>
+      <th scope="row">Riverside Market</th>
+      <td>Saturday</td>
+      <td>9:00am to 2:00pm</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+This table communicates structured information more clearly than a list of loosely formatted sentences.
+
+## What to carry forward
+
+- use tables for real row-and-column data, not for general page layout
+- `<table>`, `<tr>`, `<th>`, and `<td>` form the basic table structure
+- `<caption>` helps label the table clearly
+- `<thead>` and `<tbody>` make larger tables easier to understand
+- `scope` improves header relationships for accessibility
+- simple tables are usually better than complex merged-cell layouts
+- layout tables are outdated and should be avoided
+
+The next lesson broadens the accessibility thread running through the course and shows how HTML decisions affect real users beyond visual presentation.

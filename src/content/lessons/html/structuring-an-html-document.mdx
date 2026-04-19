@@ -1,0 +1,214 @@
+---
+title: "Structuring an HTML document"
+description: "Learn the essential parts of an HTML document, what belongs in the head and body, and which metadata every page should include."
+course: html
+status: published
+---
+
+Every HTML page starts with the same core structure. Before you think about navigation, articles, or forms, you need a document the browser can interpret correctly.
+
+Here is a minimal modern HTML document:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maple Street Bakery</title>
+    <meta
+      name="description"
+      content="Fresh bread, pastries, and coffee in the center of town."
+    />
+  </head>
+  <body>
+    <h1>Maple Street Bakery</h1>
+    <p>Open daily from 7am to 3pm.</p>
+  </body>
+</html>
+```
+
+This is small, but it already contains most of the pieces every page needs.
+
+## `<!DOCTYPE html>`
+
+The document starts with:
+
+```html
+<!DOCTYPE html>
+```
+
+This tells the browser to use modern standards mode instead of older compatibility behavior. It does not describe the content of the page. It is there so the browser interprets the rest of the document correctly.
+
+Modern HTML pages should always include it.
+
+## The `<html>` element
+
+The `<html>` element wraps the whole document:
+
+```html
+<html lang="en">
+```
+
+This is the root element of the page. Everything else sits inside it.
+
+The `lang` attribute tells browsers and assistive technologies what human language the page uses. That helps screen readers pronounce content more accurately and helps browsers apply language-aware behavior.
+
+Use the language that matches the actual page, such as:
+
+- `en` for English
+- `es` for Spanish
+- `fr` for French
+- `en-US` for U.S. English when regional detail matters
+
+## The `<head>`
+
+The `<head>` contains metadata about the document. This is information for the browser, search engines, social platforms, and other tools. It is not page content that users read in the main document flow.
+
+Common head content includes:
+
+- the page title
+- character encoding
+- viewport settings
+- description metadata
+- links to stylesheets
+- references to scripts
+
+For this course, focus on the HTML purpose of the head: it configures and describes the page.
+
+### Character encoding
+
+```html
+<meta charset="utf-8" />
+```
+
+This tells the browser how text is encoded. UTF-8 is the standard choice because it supports a wide range of characters and symbols.
+
+### Viewport metadata
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+```
+
+This tells mobile browsers how to size the page. You will usually include it in modern pages so the browser renders the layout at the device width instead of pretending the page is much wider.
+
+Even though viewport behavior affects presentation, this metadata belongs in HTML because it is part of how the document is interpreted.
+
+### The page title
+
+```html
+<title>Maple Street Bakery</title>
+```
+
+The `<title>` is not the visible heading in the page body. It labels the document itself.
+
+Browsers use it in places like:
+
+- the browser tab
+- bookmarks
+- search result titles
+- history entries
+
+Every page should have a specific, useful title.
+
+### Meta description
+
+```html
+<meta
+  name="description"
+  content="Fresh bread, pastries, and coffee in the center of town."
+/>
+```
+
+This gives search engines and other tools a concise summary of the page. It does not always appear exactly as written in search results, but it is still worth including.
+
+## The `<body>`
+
+The `<body>` contains the actual document content: the parts users read, hear, and interact with.
+
+That includes things like:
+
+- headings and paragraphs
+- navigation
+- images
+- forms
+- tables
+- footers
+
+If it is part of the page's visible or interactive content, it usually belongs in the body.
+
+## Head vs body
+
+This distinction is worth making explicit:
+
+- the **head** describes the document
+- the **body** contains the document
+
+For example:
+
+- the page title belongs in the head
+- the main heading the user reads belongs in the body
+
+```html
+<head>
+  <title>Contact | Maple Street Bakery</title>
+</head>
+<body>
+  <h1>Contact us</h1>
+</body>
+```
+
+Those pieces may be related, but they do different jobs.
+
+## A page is loaded before it is styled or scripted
+
+When a browser receives an HTML document, it starts interpreting the structure immediately. That matters because HTML is the foundation other layers depend on.
+
+At a practical level:
+
+- the browser parses the HTML
+- it learns what the page contains
+- it reads metadata from the head
+- it builds the document tree
+- CSS and JavaScript can then style or enhance that structure
+
+That is why clean HTML matters even when you plan to add more later. CSS and JavaScript work best when the underlying document is already meaningful.
+
+## Keep the base document boring and reliable
+
+There is nothing flashy about the basic document structure, and that is a good thing. It should be predictable.
+
+For most pages, you should not have to invent this from scratch every time. Start with a solid skeleton, then put your attention into the content structure inside the body.
+
+## A practical starting template
+
+When you make a new page, a template like this is usually enough:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Page title</title>
+    <meta name="description" content="Short page summary." />
+  </head>
+  <body>
+    <!-- page content -->
+  </body>
+</html>
+```
+
+You will add more head metadata in some projects, but this is a strong default.
+
+## What to carry forward
+
+- every page should start with `<!DOCTYPE html>`
+- `<html>` wraps the whole document and should usually include `lang`
+- `<head>` contains metadata about the page
+- `<body>` contains the content users read and interact with
+- `<title>`, UTF-8 charset, and viewport metadata are standard essentials
+- the browser builds the document from HTML before CSS and JavaScript enhance it
+- a reliable document skeleton makes every later HTML decision easier
+
+The next lesson moves into the body of the page: headings, paragraphs, lists, and other core content structure.

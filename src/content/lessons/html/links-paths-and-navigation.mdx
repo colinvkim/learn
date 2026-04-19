@@ -1,0 +1,216 @@
+---
+title: "Links, paths, and navigation"
+description: "Learn how links work, when to use relative and absolute URLs, and how to think in multi-page sites instead of isolated files."
+course: html
+status: published
+---
+
+The web is built from connected documents. A page becomes part of a site when it links to other pages, other files, and other parts of itself.
+
+That makes links one of the defining features of HTML.
+
+## The anchor element
+
+Links are created with the anchor element:
+
+```html
+<a href="/menu.html">View the menu</a>
+```
+
+The important parts are:
+
+- `<a>` marks the content as a link
+- `href` tells the browser where the link goes
+- the text inside the element is what the user activates
+
+Without `href`, an anchor is not a useful page link.
+
+## Good link text
+
+Link text should tell the user where the link leads.
+
+Good:
+
+```html
+<a href="/workshops.html">View upcoming workshops</a>
+```
+
+Less useful:
+
+```html
+<a href="/workshops.html">Click here</a>
+```
+
+Descriptive link text helps:
+
+- sighted users scanning the page
+- screen reader users navigating by links
+- anyone trying to understand the page quickly
+
+## Relative and absolute URLs
+
+Two common kinds of URLs appear in HTML:
+
+- **relative URLs** point to something based on the current file location
+- **absolute URLs** include the full address
+
+Relative example:
+
+```html
+<a href="about.html">About</a>
+<a href="../index.html">Home</a>
+<a href="/contact.html">Contact</a>
+```
+
+Absolute example:
+
+```html
+<a href="https://maps.example.com/maple-street-bakery">Find us on the map</a>
+```
+
+Use relative URLs for pages and assets within your own site. They are easier to move between environments and better express internal site structure.
+
+Use absolute URLs for external destinations.
+
+## Thinking in files and folders
+
+When you build a multi-page site, links reflect the file structure.
+
+For example:
+
+```text
+site/
+├── index.html
+├── about.html
+├── contact.html
+└── menu/
+    └── index.html
+```
+
+From `index.html`:
+
+```html
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+<a href="menu/">Menu</a>
+```
+
+From `menu/index.html` back to the homepage:
+
+```html
+<a href="../index.html">Home</a>
+```
+
+Understanding paths is part of understanding the site itself.
+
+## Navigation is a document feature, not only a design feature
+
+Most sites repeat a set of important links across pages. In HTML, that group usually belongs inside `<nav>`.
+
+```html
+<nav aria-label="Primary">
+  <ul>
+    <li><a href="/index.html">Home</a></li>
+    <li><a href="/menu/">Menu</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+  </ul>
+</nav>
+```
+
+This tells the browser and assistive technologies that the links form a navigation region.
+
+Navigation is not just "some links that happen to be near the top." It has a meaningful role in the page structure.
+
+## Linking within the same page
+
+Links can also jump to another part of the current page using fragment identifiers.
+
+First, give an element an `id`:
+
+```html
+<h2 id="hours">Opening hours</h2>
+```
+
+Then link to it:
+
+```html
+<a href="#hours">Jump to opening hours</a>
+```
+
+This is useful for:
+
+- tables of contents
+- "skip to main content" links
+- long documentation pages
+- FAQ pages
+
+## Links vs buttons
+
+This is a basic but important HTML distinction:
+
+- use a **link** when the user goes somewhere
+- use a **button** when the user does something
+
+Examples:
+
+- "Read our story" should be a link
+- "Open search panel" should be a button
+- "Download menu PDF" should be a link
+- "Submit form" should be a button
+
+Choosing the right element affects accessibility, keyboard behavior, and the expectations users bring to the page.
+
+## External links
+
+Sometimes a link goes to another site and should open in a new tab:
+
+```html
+<a
+  href="https://instagram.com/maplestreetbakery"
+  target="_blank"
+  rel="noopener"
+>
+  Visit our Instagram
+</a>
+```
+
+Use this sparingly. Many links should stay in the same tab.
+
+If you do open a new tab, `rel="noopener"` is a good safety habit.
+
+## A realistic navigation example
+
+```html
+<header>
+  <h1>Maple Street Bakery</h1>
+  <nav aria-label="Primary">
+    <ul>
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/menu/">Menu</a></li>
+      <li><a href="/classes.html">Classes</a></li>
+      <li><a href="/contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+```
+
+This is plain HTML, but it already does important work:
+
+- it identifies the site
+- it gives users a clear path through the pages
+- it provides navigation semantics
+- it creates a structure CSS can style later
+
+## What to carry forward
+
+- links are created with `<a href="...">`
+- descriptive link text is more useful than vague text like "click here"
+- relative URLs connect pages inside a site; absolute URLs point to full addresses
+- file and folder structure affects how links are written
+- repeated navigation links usually belong inside `<nav>`
+- fragment links use `id` values to jump within a page
+- links are for navigation and buttons are for actions
+- opening a new tab is optional and should be used deliberately
+
+The next lesson covers images and media: how to add visual content without losing meaning or accessibility.

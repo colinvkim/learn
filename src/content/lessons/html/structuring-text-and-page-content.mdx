@@ -1,0 +1,222 @@
+---
+title: "Structuring text and page content"
+description: "Learn how headings, paragraphs, lists, emphasis, and other core content elements create readable document structure."
+course: html
+status: published
+---
+
+Once the document skeleton is in place, most HTML work becomes a content-structuring problem. You are deciding what each piece of content is and how it relates to the rest of the page.
+
+This lesson focuses on the elements that shape ordinary written content.
+
+## Headings create hierarchy
+
+Headings are one of the most important structural tools in HTML. They divide content into sections and communicate hierarchy.
+
+HTML provides six heading levels:
+
+- `<h1>`
+- `<h2>`
+- `<h3>`
+- `<h4>`
+- `<h5>`
+- `<h6>`
+
+Think of them as levels in an outline, not as visual size choices.
+
+```html
+<h1>Maple Street Bakery</h1>
+<h2>Seasonal menu</h2>
+<h3>April pastries</h3>
+```
+
+That structure says:
+
+- the page is about Maple Street Bakery
+- one major section is the seasonal menu
+- a subsection inside that is April pastries
+
+Do not choose heading levels because you want text to "look smaller" or "look bigger." CSS handles appearance. Headings express structure.
+
+## A practical heading habit
+
+Most pages work well with:
+
+- one main page heading that identifies the document
+- lower levels used in order as the document branches into sections
+
+You do not need to force every page into all six levels. Many pages only need `h1` through `h3`.
+
+The main goal is a sensible hierarchy without skipping levels for no reason.
+
+## Paragraphs are for paragraphs
+
+Use `<p>` for ordinary prose:
+
+```html
+<p>We bake small batches of sourdough every morning.</p>
+<p>Weekend orders should be placed before Friday at noon.</p>
+```
+
+This may sound obvious, but beginners often reach for line breaks and generic containers when a paragraph is the right answer.
+
+If a piece of text is a paragraph in the document, use `<p>`.
+
+## Lists group related items
+
+Lists are for sets of related items. HTML provides:
+
+- `<ul>` for unordered lists
+- `<ol>` for ordered lists
+- `<li>` for list items
+
+Use an unordered list when order does not matter:
+
+```html
+<ul>
+  <li>Sourdough loaf</li>
+  <li>Almond croissant</li>
+  <li>Cardamom bun</li>
+</ul>
+```
+
+Use an ordered list when sequence matters:
+
+```html
+<ol>
+  <li>Choose a pickup date</li>
+  <li>Submit your order</li>
+  <li>Collect it at the front counter</li>
+</ol>
+```
+
+Lists are useful well beyond menus. They work for:
+
+- steps
+- feature sets
+- schedules
+- grouped navigation items
+- summaries of key points
+
+## Emphasis and importance inside text
+
+HTML also lets you mark up meaning inside a sentence.
+
+Use `<strong>` for strong importance:
+
+```html
+<p><strong>Pre-orders close at noon on Friday.</strong></p>
+```
+
+Use `<em>` for stress emphasis:
+
+```html
+<p>Please tell us if the cake must be <em>completely</em> nut-free.</p>
+```
+
+These elements are often displayed with bold and italic text, but their purpose is meaning, not appearance.
+
+That distinction matters because assistive technologies may announce emphasis differently, and CSS can change the visual presentation later.
+
+## Inline and block content
+
+You will often hear HTML elements described as **block** or **inline**.
+
+At a practical level:
+
+- block-level content usually starts on a new line and takes up its own chunk of space
+- inline content fits inside a line of text
+
+Examples:
+
+- block-like content: headings, paragraphs, lists
+- inline content: links, emphasis, code snippets inside a sentence
+
+This concept is helpful for understanding document flow, but do not use it as a substitute for semantics. Pick elements for meaning first.
+
+## Quotations and code fragments
+
+Real documents often include quotations or technical text.
+
+Use `<blockquote>` for extended quotations:
+
+```html
+<blockquote>
+  <p>
+    Good bread takes time. Rushing fermentation usually means giving up flavor.
+  </p>
+</blockquote>
+```
+
+Use `<code>` for code, commands, filenames, or literal technical text:
+
+```html
+<p>Edit the <code>index.html</code> file in your project folder.</p>
+```
+
+If you need a block of code, combine `<pre>` and `<code>`:
+
+```html
+<pre><code>&lt;h1&gt;Hello&lt;/h1&gt;</code></pre>
+```
+
+This preserves whitespace and line breaks.
+
+## Line breaks are not layout tools
+
+HTML includes a line break element:
+
+```html
+<br />
+```
+
+It exists for content where a line break is part of the meaning, such as:
+
+- poetry
+- song lyrics
+- addresses
+
+Do not use `<br />` to create spacing between paragraphs or to shape layout. If the content is a new paragraph, use `<p>`. If the issue is visual spacing, that belongs to CSS.
+
+## A realistic content example
+
+Here is a small event announcement with several content elements working together:
+
+```html
+<article>
+  <h1>Saturday bread workshop</h1>
+  <p>
+    Join us for a hands-on introduction to mixing, shaping, and baking a basic
+    country loaf.
+  </p>
+
+  <h2>What you will learn</h2>
+  <ul>
+    <li>How fermentation affects flavor</li>
+    <li>How to shape a dough without tearing it</li>
+    <li>How to read a loaf as it bakes</li>
+  </ul>
+
+  <p><strong>Booking is required.</strong> Spaces are limited to twelve.</p>
+</article>
+```
+
+Notice what is not here:
+
+- no presentational tags for making text big or small
+- no generic containers where a more specific element fits
+- no line breaks used to fake paragraphs
+
+The HTML is simple because the structure is clear.
+
+## What to carry forward
+
+- headings create document hierarchy and should be chosen by structure, not appearance
+- paragraphs are for ordinary prose
+- lists group related items, with ordered or unordered structure depending on meaning
+- `<strong>` and `<em>` add meaning inside text, not just visual styling
+- block and inline concepts help explain document flow, but semantics come first
+- `<blockquote>`, `<code>`, and `<pre>` handle common real-world content patterns
+- `<br />` is for meaningful line breaks, not layout or spacing
+
+The next lesson covers links and navigation: how pages connect to each other to form a site instead of a single isolated document.

@@ -1,0 +1,277 @@
+---
+title: "Building a small multi-page site"
+description: "Bring the course together by planning and marking up a small site with shared navigation, consistent structure, and accessible pages."
+course: html
+status: published
+---
+
+Real HTML work is rarely one page floating by itself. More often, you are building a small connected set of pages that share structure and help users move through a task.
+
+This lesson pulls the course together by planning a simple multi-page bakery site:
+
+- a homepage
+- a menu page
+- a classes page
+- a contact page
+
+The goal is not to make it visually polished. The goal is to make the structure correct, consistent, and ready for CSS and JavaScript later.
+
+## Start with the information architecture
+
+Before writing tags, decide what pages exist and what each page is for.
+
+Example:
+
+```text
+site/
+├── index.html
+├── menu.html
+├── classes.html
+└── contact.html
+```
+
+Each page has one clear job:
+
+- `index.html` introduces the bakery
+- `menu.html` shows products and seasonal offerings
+- `classes.html` explains workshops and schedules
+- `contact.html` gives location details and a contact form
+
+This kind of planning keeps pages focused.
+
+## Keep shared structure consistent
+
+Most pages in a site should share the same broad shell:
+
+- a header with the site name
+- primary navigation
+- one main content region
+- a footer with reference information
+
+That consistency helps users orient themselves as they move through the site.
+
+```html
+<body>
+  <header>
+    <p><a href="/index.html">Maple Street Bakery</a></p>
+    <nav aria-label="Primary">
+      <ul>
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/menu.html">Menu</a></li>
+        <li><a href="/classes.html">Classes</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- page-specific content -->
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Maple Street Bakery</p>
+  </footer>
+</body>
+```
+
+## Give each page a specific title
+
+The document title should change per page:
+
+```html
+<title>Home | Maple Street Bakery</title>
+<title>Menu | Maple Street Bakery</title>
+<title>Classes | Maple Street Bakery</title>
+<title>Contact | Maple Street Bakery</title>
+```
+
+The visible page heading inside `<main>` should also match the page's actual purpose.
+
+## Mark the current page in navigation
+
+When the user is already on a page, the matching navigation link can be marked with `aria-current="page"`:
+
+```html
+<nav aria-label="Primary">
+  <ul>
+    <li><a href="/index.html">Home</a></li>
+    <li><a href="/menu.html">Menu</a></li>
+    <li><a href="/classes.html" aria-current="page">Classes</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+  </ul>
+</nav>
+```
+
+This is a small detail, but it improves orientation.
+
+## Example homepage structure
+
+```html
+<main>
+  <h1>Maple Street Bakery</h1>
+
+  <section>
+    <h2>Fresh bread and pastries every morning</h2>
+    <p>
+      We bake sourdough, laminated pastries, and seasonal cakes in small batches
+      from Tuesday through Sunday.
+    </p>
+    <p><a href="/menu.html">Browse the menu</a></p>
+  </section>
+
+  <section>
+    <h2>Weekend workshops</h2>
+    <p>Join our beginner-friendly baking classes in the upstairs studio.</p>
+    <p><a href="/classes.html">See upcoming classes</a></p>
+  </section>
+</main>
+```
+
+The homepage introduces major paths through the site instead of trying to contain everything.
+
+## Example menu page structure
+
+```html
+<main>
+  <h1>Menu</h1>
+
+  <section>
+    <h2>Breads</h2>
+    <ul>
+      <li>Country sourdough</li>
+      <li>Seeded rye</li>
+      <li>Olive focaccia</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Seasonal pastries</h2>
+    <figure>
+      <img
+        src="/images/apricot-tart.jpg"
+        alt="Apricot tart with glazed fruit slices and a crisp pastry shell"
+        width="1200"
+        height="800"
+      />
+      <figcaption>Available on Fridays and Saturdays in spring.</figcaption>
+    </figure>
+  </section>
+</main>
+```
+
+The menu page focuses on product structure, not site-wide introduction.
+
+## Example classes page structure
+
+```html
+<main>
+  <h1>Classes</h1>
+
+  <article>
+    <h2>Introduction to sourdough</h2>
+    <p>A half-day class covering mixing, fermentation, and shaping.</p>
+  </article>
+
+  <table>
+    <caption>Upcoming class dates</caption>
+    <thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Session</th>
+        <th scope="col">Spaces</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>April 26</td>
+        <td>Morning</td>
+        <td>12</td>
+      </tr>
+      <tr>
+        <td>May 3</td>
+        <td>Afternoon</td>
+        <td>8</td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+```
+
+This page combines article-like content with tabular schedule data.
+
+## Example contact page structure
+
+```html
+<main>
+  <h1>Contact</h1>
+
+  <section>
+    <h2>Visit us</h2>
+    <p>12 Maple Street, Riverton</p>
+    <p>Step-free entrance on Cedar Lane.</p>
+  </section>
+
+  <section>
+    <h2>Send a message</h2>
+    <form action="/contact" method="post">
+      <p>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required />
+      </p>
+
+      <p>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+      </p>
+
+      <p>
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required></textarea>
+      </p>
+
+      <button type="submit">Send message</button>
+    </form>
+  </section>
+</main>
+```
+
+The page combines ordinary content with a task-focused form.
+
+## Think in pages, not fragments
+
+One common beginner habit is to build isolated snippets without considering how they fit into a real page or site.
+
+A better habit is to ask:
+
+- what is this page for?
+- what is the main content?
+- what other pages does it connect to?
+- what should stay consistent across the site?
+- what metadata and headings identify this page clearly?
+
+That page-level thinking leads to stronger HTML than collecting random examples element by element.
+
+## A final workflow for writing HTML
+
+When building a new page, a practical order is:
+
+1. define the page purpose
+2. choose the document title
+3. set up the basic HTML document structure
+4. outline the main sections with headings
+5. choose semantic elements that match each region
+6. add links, images, tables, or forms where they truly belong
+7. review the page for clarity and accessibility
+
+This workflow keeps structure ahead of styling and meaning ahead of syntax trivia.
+
+## What to carry forward
+
+- good HTML usually belongs to a small site structure, not an isolated fragment
+- pages should have clear jobs, useful titles, and consistent navigation
+- shared header, nav, main, and footer patterns help users orient themselves
+- each page should still have unique main content and a unique heading
+- multi-page HTML work combines structure, semantics, links, media, forms, tables, and accessibility
+- the best final check is simple: does the site make sense as a set of documents before any styling or scripting is added?
+
+At this point, you should be able to structure real pages with HTML, choose semantic elements more naturally, build accessible markup, and create document foundations that CSS and JavaScript can build on cleanly.

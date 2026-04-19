@@ -1,0 +1,262 @@
+---
+title: "Semantic page structure"
+description: "Learn when to use header, nav, main, section, article, aside, footer, div, and span, and why those choices matter."
+course: html
+status: published
+---
+
+HTML becomes much more powerful when you stop thinking only in paragraphs and lists and start thinking in page regions.
+
+Most real pages are made of recurring structural parts:
+
+- a header
+- one or more navigation areas
+- a main content region
+- sections within that content
+- side content
+- a footer
+
+Semantic HTML gives those parts names. Choosing those names well makes the document easier to understand for browsers, assistive technologies, search engines, and future developers.
+
+## Why semantic structure matters
+
+Compare these two patterns.
+
+Generic version:
+
+```html
+<div class="top">
+  <div class="menu">...</div>
+</div>
+<div class="content">...</div>
+<div class="side">...</div>
+<div class="bottom">...</div>
+```
+
+Semantic version:
+
+```html
+<header>
+  <nav>...</nav>
+</header>
+<main>...</main>
+<aside>...</aside>
+<footer>...</footer>
+```
+
+Both can look identical after CSS is applied. But only the second version tells you what each region actually is.
+
+That meaning is what semantic HTML adds.
+
+## `<header>`
+
+Use `<header>` for introductory content for a page or a section.
+
+Common things inside a header:
+
+- the site name or logo
+- a page heading
+- introductory text
+- primary navigation
+
+```html
+<header>
+  <h1>Maple Street Bakery</h1>
+  <p>Fresh bread, pastries, and coffee each morning.</p>
+</header>
+```
+
+A page can have more than one header. An article can have its own header inside the main page structure.
+
+## `<nav>`
+
+Use `<nav>` for a group of major navigational links.
+
+```html
+<nav aria-label="Primary">
+  <ul>
+    <li><a href="/index.html">Home</a></li>
+    <li><a href="/menu/">Menu</a></li>
+    <li><a href="/classes.html">Classes</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+  </ul>
+</nav>
+```
+
+Not every group of links needs `<nav>`. Use it for substantial navigation regions, not for every list of links in the page.
+
+## `<main>`
+
+`<main>` marks the primary content of the document.
+
+```html
+<main>
+  <h1>Saturday classes</h1>
+  <p>Join us for small-group baking sessions each weekend.</p>
+</main>
+```
+
+There should only be one main content region per page. This is a useful landmark for keyboard and screen reader navigation.
+
+Site-wide headers, sidebars, and footers usually sit outside main.
+
+## `<section>`
+
+Use `<section>` for a thematic grouping of content, usually with its own heading.
+
+```html
+<section>
+  <h2>Upcoming workshops</h2>
+  <p>We run beginner and intermediate baking classes every month.</p>
+</section>
+```
+
+`<section>` is often overused. Do not wrap every random chunk of content in a section.
+
+A practical rule:
+
+- if the content is a meaningful section of the document and would reasonably have a heading, `<section>` may fit
+- if it is only a generic wrapper for layout or styling, use `<div>` instead
+
+## `<article>`
+
+Use `<article>` for self-contained content that could stand on its own or be reused separately.
+
+Common examples:
+
+- a blog post
+- a news item
+- a product review
+- a forum post
+- an event listing
+
+```html
+<article>
+  <h2>Spring pastry class now open</h2>
+  <p>Bookings are now open for our April pastry class.</p>
+</article>
+```
+
+An article usually makes sense even if you lift it out of the surrounding page.
+
+## `<aside>`
+
+Use `<aside>` for content that is related to the main content but not part of its main flow.
+
+Examples:
+
+- a sidebar
+- related links
+- glossary notes
+- author details
+- supplementary information
+
+```html
+<aside>
+  <h2>Before you book</h2>
+  <p>Please tell us about allergies when reserving a class.</p>
+</aside>
+```
+
+If the content is essential to understanding the main page, it probably belongs in main content rather than an aside.
+
+## `<footer>`
+
+Use `<footer>` for closing or reference information about a page or section.
+
+Common content:
+
+- copyright
+- contact details
+- related links
+- legal information
+
+```html
+<footer>
+  <p>&copy; 2026 Maple Street Bakery</p>
+  <p><a href="/contact.html">Contact us</a></p>
+</footer>
+```
+
+Like header, footer can appear for a whole page or for a nested article or section.
+
+## `<div>` and `<span>`
+
+`<div>` and `<span>` are generic elements.
+
+- `<div>` is a generic block-level container
+- `<span>` is a generic inline container
+
+They are useful when:
+
+- no semantic element matches the content
+- you need a hook for CSS or JavaScript
+- you need a wrapper for part of the document without assigning new meaning
+
+```html
+<p>
+  Pick up your order at
+  <span class="location">12 Maple Street</span>.
+</p>
+```
+
+Generic elements are not bad. They are just not the first choice when a semantic element already exists.
+
+## A realistic page structure
+
+```html
+<body>
+  <header>
+    <h1>Maple Street Bakery</h1>
+    <nav aria-label="Primary">
+      <ul>
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/menu/">Menu</a></li>
+        <li><a href="/classes.html">Classes</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <header>
+        <h2>Weekend sourdough workshop</h2>
+        <p>Learn mixing, fermentation, and shaping in a small group class.</p>
+      </header>
+
+      <section>
+        <h3>What is included</h3>
+        <ul>
+          <li>Ingredients and equipment</li>
+          <li>Printed recipe notes</li>
+          <li>One loaf to take home</li>
+        </ul>
+      </section>
+    </article>
+
+    <aside>
+      <h2>Need a beginner option?</h2>
+      <p>Try our Thursday evening introduction class.</p>
+    </aside>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Maple Street Bakery</p>
+  </footer>
+</body>
+```
+
+This structure is readable before any CSS exists. That is a good test for semantic HTML.
+
+## What to carry forward
+
+- semantic elements describe page regions and document structure
+- `<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<aside>`, and `<footer>` each have distinct jobs
+- `<main>` marks the primary content of the page and should appear once
+- `<section>` is for thematic groupings, usually with headings
+- `<article>` is for self-contained content that could stand on its own
+- `<div>` and `<span>` are valid generic containers when no more specific element fits
+- semantic HTML helps accessibility, maintainability, and clarity even before CSS or JavaScript are added
+
+The next lesson covers forms, where structure and meaning matter even more because the user is sending data through the page.

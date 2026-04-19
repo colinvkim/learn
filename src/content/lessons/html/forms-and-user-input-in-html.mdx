@@ -1,0 +1,278 @@
+---
+title: "Forms and user input in HTML"
+description: "Learn how to build forms with labels, fieldsets, input types, buttons, and browser validation that work well for real users."
+course: html
+status: published
+---
+
+Forms are how users send information through the web. Search boxes, signups, checkouts, login pages, booking flows, and contact pages all depend on HTML forms.
+
+This is one place where correct markup matters immediately. A form can look acceptable and still be confusing, inaccessible, or hard to use if the structure is poor.
+
+## The basic form structure
+
+A form groups controls that are submitted together.
+
+```html
+<form action="/subscribe" method="post">
+  <label for="email">Email address</label>
+  <input type="email" id="email" name="email" />
+
+  <button type="submit">Subscribe</button>
+</form>
+```
+
+Important parts:
+
+- `<form>` groups the controls
+- `action` tells the browser where to send the data
+- `method` tells it how to send the data
+- form controls such as `<input>` collect user input
+- `<button type="submit">` submits the form
+
+Even if JavaScript later enhances the form, this HTML foundation still matters.
+
+## Labels are essential
+
+Every meaningful form control needs a label.
+
+```html
+<label for="name">Full name</label>
+<input type="text" id="name" name="name" />
+```
+
+The `for` attribute on the label matches the input's `id`. That association helps:
+
+- screen reader users
+- people using voice input
+- users who click the label text to focus the field
+- anyone trying to understand the form quickly
+
+Do not rely on placeholder text as the label.
+
+Bad pattern:
+
+```html
+<input type="email" placeholder="Email address" />
+```
+
+Placeholders disappear as the user types and are not a full replacement for labels.
+
+## `name` matters for submission
+
+An input's `id` helps label it. Its `name` identifies the field in submitted form data.
+
+```html
+<input type="email" id="email" name="email" />
+```
+
+Without `name`, the control usually will not be included in the submitted data.
+
+This is a common beginner mistake.
+
+## Common input types
+
+Use input types that match the kind of data you want:
+
+- `text` for general short text
+- `email` for email addresses
+- `password` for passwords
+- `tel` for phone numbers
+- `number` for numeric input
+- `date` for dates
+- `checkbox` for independent on/off choices
+- `radio` for choosing one option from a set
+- `file` for uploads
+
+Example:
+
+```html
+<label for="guests">Number of guests</label>
+<input type="number" id="guests" name="guests" min="1" max="12" />
+```
+
+The input type helps browsers offer better keyboards, validation, and interaction patterns.
+
+## Textareas and select menus
+
+Use `<textarea>` for multi-line text:
+
+```html
+<label for="notes">Dietary notes</label>
+<textarea id="notes" name="notes"></textarea>
+```
+
+Use `<select>` when the user should choose from a known set of options:
+
+```html
+<label for="class-level">Class level</label>
+<select id="class-level" name="classLevel">
+  <option value="">Choose a level</option>
+  <option value="beginner">Beginner</option>
+  <option value="intermediate">Intermediate</option>
+</select>
+```
+
+Do not use a select menu when free text would be more appropriate. Match the control to the task.
+
+## Group related controls with `fieldset` and `legend`
+
+When several controls belong to one question, group them with `<fieldset>` and label the group with `<legend>`.
+
+```html
+<fieldset>
+  <legend>Preferred pickup day</legend>
+
+  <label>
+    <input type="radio" name="pickupDay" value="friday" />
+    Friday
+  </label>
+
+  <label>
+    <input type="radio" name="pickupDay" value="saturday" />
+    Saturday
+  </label>
+</fieldset>
+```
+
+This is especially important for radio buttons and related checkboxes.
+
+## Buttons
+
+Use `<button>` for actions inside forms.
+
+```html
+<button type="submit">Send request</button>
+<button type="reset">Clear form</button>
+<button type="button">Show price estimate</button>
+```
+
+Common button types:
+
+- `submit` submits the form
+- `reset` resets the controls to their initial values
+- `button` does nothing by default and is useful when JavaScript adds behavior later
+
+Inside forms, being explicit about `type` is a good habit.
+
+## Basic built-in validation
+
+HTML provides useful validation features without JavaScript:
+
+```html
+<input
+  type="email"
+  id="email"
+  name="email"
+  required
+  autocomplete="email"
+/>
+```
+
+Helpful attributes include:
+
+- `required`
+- `minlength`
+- `maxlength`
+- `min`
+- `max`
+- `pattern`
+- `autocomplete`
+
+These do not replace all validation, especially server-side validation, but they improve the default experience.
+
+## A realistic form example
+
+```html
+<form action="/classes/register" method="post">
+  <h2>Register for a class</h2>
+
+  <p>
+    <label for="full-name">Full name</label>
+    <input
+      type="text"
+      id="full-name"
+      name="fullName"
+      required
+      autocomplete="name"
+    />
+  </p>
+
+  <p>
+    <label for="email">Email address</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      autocomplete="email"
+    />
+  </p>
+
+  <p>
+    <label for="class-level">Class level</label>
+    <select id="class-level" name="classLevel" required>
+      <option value="">Choose a level</option>
+      <option value="beginner">Beginner</option>
+      <option value="intermediate">Intermediate</option>
+    </select>
+  </p>
+
+  <fieldset>
+    <legend>Preferred session</legend>
+
+    <label>
+      <input type="radio" name="session" value="morning" required />
+      Morning
+    </label>
+
+    <label>
+      <input type="radio" name="session" value="afternoon" />
+      Afternoon
+    </label>
+  </fieldset>
+
+  <p>
+    <label for="notes">Dietary notes or accessibility needs</label>
+    <textarea id="notes" name="notes"></textarea>
+  </p>
+
+  <p>
+    <label>
+      <input type="checkbox" name="updates" value="yes" />
+      Send me future class updates
+    </label>
+  </p>
+
+  <button type="submit">Register</button>
+</form>
+```
+
+This form is still plain HTML, but it already supports a useful real task.
+
+## Default browser behavior is a feature
+
+One helpful mental model: forms work without JavaScript.
+
+By default, the browser:
+
+- tracks field values
+- supports keyboard navigation
+- associates labels
+- runs built-in validation rules
+- submits data to the URL in `action`
+
+JavaScript can improve forms later, but it should usually enhance this base rather than replace it carelessly.
+
+## What to carry forward
+
+- forms group controls that submit data together
+- labels are essential and should be properly associated with inputs
+- `name` matters for submitted data
+- use input types that match the kind of information you want
+- `<textarea>`, `<select>`, `<fieldset>`, and `<legend>` solve common real-world form needs
+- button types should be explicit inside forms
+- built-in HTML validation and autocomplete improve usability
+- a good form should make sense and work before JavaScript is added
+
+The next lesson covers tables: how to mark up structured data when rows and columns really are the right model.

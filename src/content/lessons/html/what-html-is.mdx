@@ -1,0 +1,163 @@
+---
+title: "What HTML is"
+description: "Learn what HTML does, how browsers turn it into a document tree, and why HTML is about structure and meaning rather than styling or behavior."
+course: html
+status: published
+---
+
+HTML is the language used to describe the structure and meaning of content on the web. It tells the browser what a page contains: headings, paragraphs, navigation, images, forms, tables, and other parts of a document.
+
+HTML is not a styling language. That is CSS.
+
+HTML is not a programming language. That is where JavaScript enters.
+
+HTML answers a different question: what is this content, and how is it related?
+
+## HTML as structure
+
+When you look at a web page, you can separate it into three layers:
+
+- **HTML** gives the page structure and meaning
+- **CSS** controls presentation
+- **JavaScript** adds behavior
+
+For example, a page might contain:
+
+- a site header
+- a main article
+- a navigation menu
+- a form for subscribing to updates
+
+HTML defines those parts and their relationships. CSS later decides how they look. JavaScript later decides how they respond to interaction.
+
+That separation matters because browsers, search engines, screen readers, and other tools all depend on HTML to understand what the page is.
+
+## Elements, tags, and attributes
+
+HTML is made of **elements**. Most elements have:
+
+- an opening tag
+- content
+- a closing tag
+
+```html
+<p>Welcome to our bakery.</p>
+```
+
+In that example:
+
+- `<p>` is the opening tag
+- `Welcome to our bakery.` is the content
+- `</p>` is the closing tag
+- the whole thing is the paragraph element
+
+Elements can also have **attributes**, which add extra information:
+
+```html
+<a href="/menu.html">View our menu</a>
+```
+
+Here, `href` is an attribute. It tells the browser where the link goes.
+
+## Documents are trees
+
+HTML is not a flat list of tags. It is a hierarchy. Elements contain other elements, and that creates a tree.
+
+```html
+<main>
+  <article>
+    <h1>Summer pastries</h1>
+    <p>Our seasonal menu is now available.</p>
+  </article>
+</main>
+```
+
+This produces a structure like:
+
+```text
+main
+└── article
+    ├── h1
+    └── p
+```
+
+That hierarchy matters because meaning often comes from position:
+
+- a heading belongs to a section
+- a list item belongs to a list
+- a label belongs to a form control
+- a navigation link belongs to a navigation region
+
+Thinking in trees is one of the most important HTML habits to build early.
+
+## Browsers parse HTML into a document
+
+When a browser loads a page, it reads the HTML and turns it into a document tree in memory. JavaScript later works with that tree through the DOM, but the source of that structure is still HTML.
+
+At a high level, the process looks like this:
+
+1. the browser receives the HTML file
+2. it parses the tags and attributes
+3. it builds a tree representing the document
+4. it uses that tree to render the page
+
+You do not need to understand every parsing rule yet. The important idea is that the browser is not reading "text with angle brackets." It is building a structured document from what you wrote.
+
+## HTML is forgiving, but you should still be precise
+
+Browsers are designed to keep pages working even when the markup is imperfect. If you forget a closing tag or nest elements incorrectly, the browser often tries to repair the structure.
+
+That forgiveness is useful for users, but it can hide mistakes from authors.
+
+For example:
+
+```html
+<p>Welcome to our shop <strong>today</p></strong>
+```
+
+A browser may still render something readable, but the document structure is wrong. Screen readers, CSS selectors, and JavaScript code may not behave as you expect.
+
+Good HTML is not "whatever the browser tolerates." Good HTML is clear, well-structured, and intentional.
+
+## HTML is about meaning, not memorizing every tag
+
+Beginners often try to learn HTML as a long list of elements. That leads to shallow knowledge.
+
+The better approach is:
+
+1. understand what kind of content you are marking up
+2. choose the element whose meaning best matches that content
+3. arrange the page into a clear document structure
+
+If you know that a piece of content is navigation, you can reach for `<nav>`.
+
+If you know that a piece of content is a heading for a section, you can reach for `<h2>`.
+
+If you know that something is just a generic wrapper with no special meaning, you can use `<div>`.
+
+The goal is not to memorize random tags. The goal is to recognize document structure naturally.
+
+## Where HTML shows up in real work
+
+HTML is used whenever you:
+
+- build a static page
+- create templates in a framework
+- write content in a CMS
+- structure forms for login, search, or checkout
+- define the markup that CSS styles
+- define the markup that JavaScript enhances
+
+Even when a framework generates the HTML for you, the underlying concepts stay the same. If you do not understand HTML, it is much harder to build accessible and maintainable frontend work later.
+
+## What to carry forward
+
+- HTML describes structure and meaning on the web
+- CSS handles presentation and JavaScript handles behavior
+- HTML is made of elements, tags, and attributes
+- documents are trees, not flat lists of tags
+- browsers parse HTML into a structured document
+- browsers are forgiving, but correct markup still matters
+- good HTML comes from choosing elements by meaning, not by memorizing tags in isolation
+
+The next lesson covers the basic structure every HTML document starts with.

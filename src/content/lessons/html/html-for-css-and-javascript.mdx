@@ -1,0 +1,201 @@
+---
+title: "HTML for CSS and JavaScript"
+description: "Learn how classes, IDs, data attributes, and clean markup make HTML easier to style and enhance without mixing responsibilities."
+course: html
+status: published
+---
+
+HTML does not live alone for long. In real projects, CSS styles the document and JavaScript may enhance or update parts of it.
+
+That does not change HTML's job. HTML should still describe structure and meaning first. But it should do so in a way that gives other layers clean places to attach.
+
+## Separation of concerns
+
+The healthy default is:
+
+- HTML describes the content and structure
+- CSS describes the presentation
+- JavaScript describes the behavior
+
+This separation is not absolute in every detail, but it is a very useful design principle.
+
+When HTML starts carrying styling decisions or behavior logic directly, documents usually become harder to understand and maintain.
+
+## Classes and IDs as hooks
+
+Two common HTML attributes help other layers target parts of the page:
+
+- `class`
+- `id`
+
+Example:
+
+```html
+<section class="featured-products">
+  <h2 id="spring-menu">Spring menu</h2>
+  <p>Fruit tarts, citrus cakes, and laminated pastries.</p>
+</section>
+```
+
+These attributes do not change the meaning of the content by themselves. They provide hooks.
+
+Typical uses:
+
+- CSS selects elements by class or id
+- JavaScript finds elements to read or update
+- links jump to elements by id
+- labels connect to form controls by id
+
+## When to use `id`
+
+Use `id` when an element needs a unique identifier within the page.
+
+Common cases:
+
+- fragment links like `href="#hours"`
+- form label associations with `for`
+- unique page regions or controls
+
+Each `id` value should be unique in the document.
+
+```html
+<h2 id="hours">Opening hours</h2>
+<a href="#hours">Jump to opening hours</a>
+```
+
+## When to use `class`
+
+Use `class` when several elements may share the same role or need the same styling or enhancement hook.
+
+```html
+<article class="event-card">
+  <h2>Saturday bread workshop</h2>
+  <p>Hands-on class for beginner bakers.</p>
+</article>
+
+<article class="event-card">
+  <h2>Sunday pastry session</h2>
+  <p>Learn laminated dough techniques.</p>
+</article>
+```
+
+Classes are reusable. That is their strength.
+
+## `data-*` attributes
+
+HTML also supports custom data attributes:
+
+```html
+<button type="button" data-plan="family">Choose family plan</button>
+```
+
+These are useful when JavaScript needs structured extra information tied to an element.
+
+For example:
+
+- product IDs
+- filter categories
+- state names
+- analytics labels
+
+`data-*` attributes are often a cleaner choice than inventing class names for information that is not really about styling.
+
+## Avoid mixing presentation into the markup
+
+Older HTML practices often mixed presentation directly into the document with patterns like:
+
+- presentational tags
+- inline styling
+- layout tables
+
+Modern HTML generally avoids that.
+
+For example, this mixes styling into the content:
+
+```html
+<p style="color: red;">Orders close at noon.</p>
+```
+
+This keeps the content cleaner:
+
+```html
+<p class="notice">Orders close at noon.</p>
+```
+
+The HTML says what kind of content this is. CSS can decide how a notice looks later.
+
+## Avoid mixing behavior into the markup
+
+Inline event handlers are another place where concerns get tangled:
+
+```html
+<button onclick="openMenu()">Open menu</button>
+```
+
+That works, but it mixes behavior into the HTML.
+
+A cleaner long-term pattern is:
+
+- use HTML to mark up the button
+- let JavaScript attach behavior separately
+
+```html
+<button type="button" id="menu-toggle">Open menu</button>
+```
+
+JavaScript can then find `#menu-toggle` and enhance it.
+
+You do not need to learn the JavaScript wiring yet. The HTML lesson is that your markup should provide sensible hooks without turning into a script file.
+
+## Clean markup patterns
+
+Good HTML for later CSS and JavaScript usually has these qualities:
+
+- semantic elements come first
+- classes and ids are purposeful, not random
+- wrappers are used only when needed
+- content still makes sense if styles fail to load
+- forms still work if JavaScript does not run
+
+This is a strong test:
+
+If you remove the styling, does the document still make sense?
+
+If you remove the scripting, does the core task still mostly work?
+
+For many pages, good HTML makes the answer yes.
+
+## A realistic example
+
+```html
+<article class="class-card" data-level="beginner">
+  <h2 id="bread-basics">Bread basics</h2>
+  <p>Learn mixing, fermentation, and shaping in one morning session.</p>
+  <p>
+    <a href="/classes/bread-basics.html">Read class details</a>
+  </p>
+  <button type="button" class="save-button" data-class-id="bread-basics">
+    Save for later
+  </button>
+</article>
+```
+
+This markup does several jobs cleanly:
+
+- semantic structure comes from `article`, headings, paragraphs, links, and button
+- classes provide reusable styling or scripting hooks
+- `id` can support deep links
+- `data-*` carries small extra information for JavaScript
+
+The HTML is still understandable on its own.
+
+## What to carry forward
+
+- HTML should remain the structure-and-meaning layer even when CSS and JavaScript are added
+- `id` values are unique page identifiers and are useful for labels and fragment links
+- `class` values are reusable hooks for styling or enhancement
+- `data-*` attributes are useful for small extra bits of element-specific data
+- avoid mixing presentation or behavior directly into markup when cleaner separation is possible
+- good HTML still makes sense if CSS or JavaScript fail
+
+The final lesson brings the course together in a small multi-page site so these patterns can work as one coherent whole.
