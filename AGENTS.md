@@ -27,6 +27,50 @@ pnpm astro ...
 
 **Content authoring guidelines:** Read [CONTENT-PREFERENCES.md](./CONTENT-PREFERENCES.md) before writing or editing content.
 
+## MDX Content Components
+
+Lessons can use shared MDX components from `src/components/content/`.
+
+- Use `Note` for clarifications, important distinctions, or contextual information that supports the main explanation.
+- Use `Tip` for practical advice, shortcuts, or workflow recommendations.
+- Use `Warning` for common mistakes, risky actions, or easy-to-misunderstand behavior.
+- Use `Steps` when the learner should follow a short ordered sequence.
+- Import these explicitly in each `.mdx` lesson file when needed, for example:
+
+```mdx
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+import Warning from "../../../components/content/Warning.astro";
+import Steps from "../../../components/content/Steps.astro";
+```
+
+## Quick Check Quizzes
+
+Lessons can also include the shared `Quiz` component from `src/components/content/Quiz.astro`. In the UI this renders as a `Quick Check`.
+
+- Import `Quiz` explicitly in any lesson that uses it.
+- Use for short single-answer comprehension checks that reinforce a key concept or distinction.
+- Prefer quizzes that test understanding, not trivia or wording recall.
+- Keep each quiz focused on one idea.
+- Provide a short explanation when it helps the learner understand why the correct answer is right.
+- Follow the existing prop shape:
+
+```mdx
+import Quiz from "../../../components/content/Quiz.astro";
+
+<Quiz
+  id="q-example"
+  question="What does git init create?"
+  options={[
+    "A local .git directory",
+    "A GitHub repository",
+    "A package.json file",
+  ]}
+  correctIndex={0}
+  explanation="git init creates a local Git repository by creating the .git directory."
+/>
+```
+
 ## Workflow
 
 - Always run `pnpm build` after making changes to verify the build passes before committing.
