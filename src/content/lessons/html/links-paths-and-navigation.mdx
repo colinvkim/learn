@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 The web is built from connected documents. A page becomes part of a site when it links to other pages, other files, and other parts of itself.
 
 That makes links one of the defining features of HTML.
@@ -212,5 +214,17 @@ This is plain HTML, but it already does important work:
 - fragment links use `id` values to jump within a page
 - links are for navigation and buttons are for actions
 - opening a new tab is optional and should be used deliberately
+
+<Quiz
+  id="q-html-links-vs-buttons"
+  question="Which element should you use for 'Read class details' when it takes the user to another page?"
+  options={[
+    "<a>",
+    "<button>",
+    "<div>",
+  ]}
+  correctIndex={0}
+  explanation="Use a link when the user is going somewhere. Buttons are for actions on the current page."
+/>
 
 The next lesson covers images and media: how to add visual content without losing meaning or accessibility.

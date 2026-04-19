@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 Every HTML page starts with the same core structure. Before you think about navigation, articles, or forms, you need a document the browser can interpret correctly.
 
 Here is a minimal modern HTML document:
@@ -210,5 +212,17 @@ You will add more head metadata in some projects, but this is a strong default.
 - `<title>`, UTF-8 charset, and viewport metadata are standard essentials
 - the browser builds the document from HTML before CSS and JavaScript enhance it
 - a reliable document skeleton makes every later HTML decision easier
+
+<Quiz
+  id="q-html-head-vs-body"
+  question="Which item belongs in the `<head>` rather than the `<body>`?"
+  options={[
+    "The page title shown in the browser tab",
+    "The visible main heading the user reads in the page",
+    "The navigation links users click in the document",
+  ]}
+  correctIndex={0}
+  explanation="The `<head>` holds document metadata such as `<title>`. Visible document content like headings and navigation belongs in the `<body>`."
+/>
 
 The next lesson moves into the body of the page: headings, paragraphs, lists, and other core content structure.

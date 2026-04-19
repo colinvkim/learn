@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 Tables are useful when your information genuinely has row-and-column relationships.
 
 Examples:
@@ -209,5 +211,17 @@ This table communicates structured information more clearly than a list of loose
 - `scope` improves header relationships for accessibility
 - simple tables are usually better than complex merged-cell layouts
 - layout tables are outdated and should be avoided
+
+<Quiz
+  id="q-html-table-purpose"
+  question="Which situation is the best fit for a real HTML table?"
+  options={[
+    "A schedule with rows for dates and columns for session details",
+    "A page layout with a sidebar on the left and content on the right",
+    "A group of promotional cards on a homepage",
+  ]}
+  correctIndex={0}
+  explanation="Tables are for true row-and-column data. Layouts and card groups should use other structural elements."
+/>
 
 The next lesson broadens the accessibility thread running through the course and shows how HTML decisions affect real users beyond visual presentation.

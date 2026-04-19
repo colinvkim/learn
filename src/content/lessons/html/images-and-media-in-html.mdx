@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 Images and media often carry important information, but they are still part of the document. Good HTML for media is not about file formats or visual polish first. It is about meaning, context, and accessibility.
 
 ## The `img` element
@@ -192,5 +194,17 @@ The image adds useful context, but the page still communicates the important det
 - important text should usually be real HTML text, not text inside an image
 - audio and video should use native elements with controls and accessible alternatives when needed
 - media should support the document, not replace its structure
+
+<Quiz
+  id="q-html-decorative-image-alt"
+  question="What should the `alt` attribute be for a purely decorative image that adds no information?"
+  options={[
+    "An empty string: `alt=\"\"`",
+    "A short label like `alt=\"decorative image\"`",
+    "Leave out the `alt` attribute entirely",
+  ]}
+  correctIndex={0}
+  explanation="Decorative images should use an empty alt attribute so assistive technologies can ignore them deliberately."
+/>
 
 The next lesson covers semantic page structure: how whole regions of a page should be marked up so the document makes sense beyond individual paragraphs and images.

@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 Once the document skeleton is in place, most HTML work becomes a content-structuring problem. You are deciding what each piece of content is and how it relates to the rest of the page.
 
 This lesson focuses on the elements that shape ordinary written content.
@@ -218,5 +220,17 @@ The HTML is simple because the structure is clear.
 - block and inline concepts help explain document flow, but semantics come first
 - `<blockquote>`, `<code>`, and `<pre>` handle common real-world content patterns
 - `<br />` is for meaningful line breaks, not layout or spacing
+
+<Quiz
+  id="q-html-headings-structure"
+  question="Why should you choose heading levels like `<h1>` and `<h2>`?"
+  options={[
+    "To express document hierarchy",
+    "To make text larger or smaller",
+    "To decide how much margin the browser adds",
+  ]}
+  correctIndex={0}
+  explanation="Heading elements describe the outline of the page. Their job is structure, not visual sizing."
+/>
 
 The next lesson covers links and navigation: how pages connect to each other to form a site instead of a single isolated document.
