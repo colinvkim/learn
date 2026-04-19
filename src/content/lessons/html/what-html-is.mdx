@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Note from "../../../components/content/Note.astro";
+
 HTML is the language used to describe the structure and meaning of content on the web. It tells the browser what a page contains: headings, paragraphs, navigation, images, forms, tables, and other parts of a document.
 
 HTML is not a styling language. That is CSS.
@@ -93,6 +95,12 @@ Thinking in trees is one of the most important HTML habits to build early.
 ## Browsers parse HTML into a document
 
 When a browser loads a page, it reads the HTML and turns it into a document tree in memory. JavaScript later works with that tree through the DOM, but the source of that structure is still HTML.
+
+<Note title="HTML and the DOM are related, but not identical">
+  <p>
+    HTML is the source document you write. The DOM is the structured tree the browser builds from that HTML. This course focuses on writing good HTML; the JavaScript course covers how code works with the DOM later.
+  </p>
+</Note>
 
 At a high level, the process looks like this:
 

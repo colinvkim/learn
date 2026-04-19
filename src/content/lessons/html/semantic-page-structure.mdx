@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 HTML becomes much more powerful when you stop thinking only in paragraphs and lists and start thinking in page regions.
 
 Most real pages are made of recurring structural parts:
@@ -258,5 +260,17 @@ This structure is readable before any CSS exists. That is a good test for semant
 - `<article>` is for self-contained content that could stand on its own
 - `<div>` and `<span>` are valid generic containers when no more specific element fits
 - semantic HTML helps accessibility, maintainability, and clarity even before CSS or JavaScript are added
+
+<Quiz
+  id="q-html-semantic-article"
+  question="Which element best fits a self-contained event listing that could appear on its own page or in a feed?"
+  options={[
+    "<article>",
+    "<section>",
+    "<span>",
+  ]}
+  correctIndex={0}
+  explanation="`<article>` is meant for self-contained content that can stand on its own, such as a post, review, listing, or news item."
+/>
 
 The next lesson covers forms, where structure and meaning matter even more because the user is sending data through the page.

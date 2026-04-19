@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 HTML does not live alone for long. In real projects, CSS styles the document and JavaScript may enhance or update parts of it.
 
 That does not change HTML's job. HTML should still describe structure and meaning first. But it should do so in a way that gives other layers clean places to attach.
@@ -197,5 +199,17 @@ The HTML is still understandable on its own.
 - `data-*` attributes are useful for small extra bits of element-specific data
 - avoid mixing presentation or behavior directly into markup when cleaner separation is possible
 - good HTML still makes sense if CSS or JavaScript fail
+
+<Quiz
+  id="q-html-hooks-separation"
+  question="Which choice best follows separation of concerns when JavaScript needs to enhance a button later?"
+  options={[
+    "Use a real `<button>` in HTML and let JavaScript attach behavior separately",
+    "Use a `<div>` and add behavior directly because it is more flexible",
+    "Put the JavaScript behavior inline in the HTML because it keeps everything in one place",
+  ]}
+  correctIndex={0}
+  explanation="Start with the semantic HTML element that matches the job. Then let JavaScript enhance it. That preserves structure, accessibility, and maintainability."
+/>
 
 The final lesson brings the course together in a small multi-page site so these patterns can work as one coherent whole.

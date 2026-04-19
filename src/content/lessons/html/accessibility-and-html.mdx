@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Tip from "../../../components/content/Tip.astro";
+
 Accessibility is not a separate layer you add after finishing the HTML. Much of web accessibility starts with the HTML itself.
 
 If your markup is semantic, labeled, and well-structured, many accessibility benefits are already in place before CSS or JavaScript are involved.
@@ -147,6 +149,12 @@ A strong default rule is:
 For example, a real `<button>` is usually better than a styled `<div role="button">`.
 
 Native HTML is simpler and more reliable.
+
+<Tip title="Start with native HTML before reaching for ARIA">
+  <p>
+    If HTML already has an element for the job, use it. Links, buttons, form controls, tables, and landmarks come with meaning and behavior built in, which is usually more reliable than recreating them with generic elements.
+  </p>
+</Tip>
 
 ## A practical accessibility checklist for HTML
 

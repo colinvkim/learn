@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Warning from "../../../components/content/Warning.astro";
+
 Forms are how users send information through the web. Search boxes, signups, checkouts, login pages, booking flows, and contact pages all depend on HTML forms.
 
 This is one place where correct markup matters immediately. A form can look acceptable and still be confusing, inaccessible, or hard to use if the structure is poor.
@@ -57,6 +59,12 @@ Bad pattern:
 ```
 
 Placeholders disappear as the user types and are not a full replacement for labels.
+
+<Warning title="Placeholder text is not a label">
+  <p>
+    Use placeholder text only for small extra hints when needed. The actual field name should still be a real <code>&lt;label&gt;</code> so the control stays understandable and accessible.
+  </p>
+</Warning>
 
 ## `name` matters for submission
 
