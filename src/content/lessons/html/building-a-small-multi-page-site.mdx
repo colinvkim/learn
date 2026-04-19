@@ -5,6 +5,8 @@ course: html
 status: published
 ---
 
+import Quiz from "../../../components/content/Quiz.astro";
+
 Real HTML work is rarely one page floating by itself. More often, you are building a small connected set of pages that share structure and help users move through a task.
 
 This lesson pulls the course together by planning a simple multi-page bakery site:
@@ -273,5 +275,17 @@ This workflow keeps structure ahead of styling and meaning ahead of syntax trivi
 - each page should still have unique main content and a unique heading
 - multi-page HTML work combines structure, semantics, links, media, forms, tables, and accessibility
 - the best final check is simple: does the site make sense as a set of documents before any styling or scripting is added?
+
+<Quiz
+  id="q-html-capstone-page-thinking"
+  question="Which choice best shows good page-level HTML thinking for a small multi-page site?"
+  options={[
+    "Keep a consistent site shell, give each page a clear job, and make the main content unique per page",
+    "Put most content on the homepage and use other pages mainly as copies with different filenames",
+    "Design each page as an isolated fragment first and worry about navigation and titles later",
+  ]}
+  correctIndex={0}
+  explanation="Strong HTML sites are sets of clear documents: shared structure where consistency helps, unique main content where page purpose changes, and navigation that connects the whole site."
+/>
 
 At this point, you should be able to structure real pages with HTML, choose semantic elements more naturally, build accessible markup, and create document foundations that CSS and JavaScript can build on cleanly.

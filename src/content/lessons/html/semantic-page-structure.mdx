@@ -5,6 +5,7 @@ course: html
 status: published
 ---
 
+import Note from "../../../components/content/Note.astro";
 import Quiz from "../../../components/content/Quiz.astro";
 
 HTML becomes much more powerful when you stop thinking only in paragraphs and lists and start thinking in page regions.
@@ -120,6 +121,12 @@ A practical rule:
 - if the content is a meaningful section of the document and would reasonably have a heading, `<section>` may fit
 - if it is only a generic wrapper for layout or styling, use `<div>` instead
 
+<Note title="Do not use `section` as default wrapper">
+  <p>
+    <code>&lt;section&gt;</code> is not a more modern version of <code>&lt;div&gt;</code>. Use it when the content is a real thematic section of the document. If you only need a generic container for grouping, layout, or styling hooks, <code>&lt;div&gt;</code> is usually the better choice.
+  </p>
+</Note>
+
 ## `<article>`
 
 Use `<article>` for self-contained content that could stand on its own or be reused separately.
@@ -203,6 +210,12 @@ They are useful when:
 ```
 
 Generic elements are not bad. They are just not the first choice when a semantic element already exists.
+
+<Note title="`div` is neutral, not wrong">
+  <p>
+    Avoiding <code>&lt;div&gt;</code> entirely is not good HTML. The real goal is to use semantic elements when they fit, and use generic elements when no semantic meaning is being added.
+  </p>
+</Note>
 
 ## A realistic page structure
 
