@@ -1,12 +1,4 @@
 ---
-type ControlValue = string | number | boolean;
-
-type ControlPreset = {
-  label: string;
-  description?: string;
-  values: Record<string, ControlValue>;
-};
-
 type ColorState = {
   foreground?: string;
   background?: string;
@@ -16,20 +8,14 @@ type ColorState = {
 };
 
 interface Props {
-  title?: string;
-  description?: string;
   sampleText?: string;
   initial?: ColorState;
-  presets?: ControlPreset[];
   showColorMix?: boolean;
 }
 
 const {
-  title = "Color lab",
-  description = "Change foreground and background colors, then check contrast.",
   sampleText = "Readable interface text",
   initial = {},
-  presets = [],
   showColorMix = true,
 } = Astro.props;
 
@@ -50,27 +36,8 @@ const data = { state };
   data-state={JSON.stringify(data)}
   class="my-8 overflow-hidden rounded-panel border border-line/80 bg-panel/92 shadow-soft"
 >
-  <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
-    <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">CSS Lab</p>
-    <h3 class="mt-2 text-lg font-semibold tracking-[-0.02em] text-ink">{title}</h3>
-    {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
-  </header>
-
   <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.82fr)]">
     <div class="min-w-0 space-y-4">
-      {presets.length > 0 && (
-        <div class="space-y-2">
-          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Presets</p>
-          <div class="flex flex-wrap gap-2">
-            {presets.map((preset) => (
-              <button type="button" data-color-preset={JSON.stringify(preset.values)} class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle" title={preset.description}>
-                {preset.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       <div class="grid gap-3 sm:grid-cols-2">
         <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
           <span class="font-medium text-ink">foreground</span>
@@ -188,13 +155,6 @@ const data = { state };
         };
 
         root.querySelectorAll("[data-color-control]").forEach((control) => control.addEventListener("input", render));
-        root.querySelectorAll("[data-color-preset]").forEach((button) => {
-          button.addEventListener("click", () => {
-            Object.assign(state, JSON.parse(button.dataset.colorPreset || "{}"));
-            writeControls();
-            render();
-          });
-        });
         writeControls();
         render();
       });

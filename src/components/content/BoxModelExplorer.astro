@@ -1,12 +1,4 @@
 ---
-type ControlValue = string | number | boolean;
-
-type ControlPreset = {
-  label: string;
-  description?: string;
-  values: Record<string, ControlValue>;
-};
-
 type BoxState = {
   width?: number;
   height?: number;
@@ -26,25 +18,19 @@ type ControlRanges = {
 };
 
 interface Props {
-  title?: string;
-  description?: string;
   previewContent?: string;
   selector?: string;
   initial?: BoxState;
   ranges?: ControlRanges;
-  presets?: ControlPreset[];
   showHeight?: boolean;
   showOverflow?: boolean;
 }
 
 const {
-  title = "Box model explorer",
-  description = "Change content size, padding, border, and margin.",
   previewContent = "Preview element",
   selector = ".card",
   initial = {},
   ranges = {},
-  presets = [],
   showHeight = true,
   showOverflow = true,
 } = Astro.props;
@@ -76,29 +62,8 @@ const hasSlot = Astro.slots.has("default");
   data-state={JSON.stringify(data)}
   class="my-8 overflow-hidden rounded-panel border border-line/80 bg-panel/92 shadow-soft"
 >
-  <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
-    <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">CSS Lab</p>
-    <h3 class="mt-2 text-lg font-semibold tracking-[-0.02em] text-ink">{title}</h3>
-    {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
-  </header>
-
   <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.82fr)]">
     <div class="min-w-0 space-y-4">
-      {
-        presets.length > 0 && (
-          <div class="space-y-2">
-            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Presets</p>
-            <div class="flex flex-wrap gap-2">
-              {presets.map((preset) => (
-                <button type="button" data-box-preset={JSON.stringify(preset.values)} class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle" title={preset.description}>
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )
-      }
-
       <div class="grid gap-3">
         {(["width", "height", "padding", "border", "margin"] as const).map((key) => (
           (key !== "height" || showHeight) && (
@@ -245,13 +210,6 @@ const hasSlot = Astro.slots.has("default");
         };
 
         root.querySelectorAll("[data-box-control]").forEach((control) => control.addEventListener("input", render));
-        root.querySelectorAll("[data-box-preset]").forEach((button) => {
-          button.addEventListener("click", () => {
-            Object.assign(state, JSON.parse(button.dataset.boxPreset || "{}"));
-            writeControls();
-            render();
-          });
-        });
         writeControls();
         render();
       });

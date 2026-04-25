@@ -1,12 +1,6 @@
 ---
 type ControlValue = string | number | boolean;
 
-type ControlPreset = {
-  label: string;
-  description?: string;
-  values: Record<string, ControlValue>;
-};
-
 type MotionState = {
   duration?: number;
   timing?: string;
@@ -22,20 +16,14 @@ type MotionWarning = {
 };
 
 interface Props {
-  title?: string;
-  description?: string;
   previewContent?: string;
   initial?: MotionState;
-  presets?: ControlPreset[];
   warnings?: MotionWarning[];
 }
 
 const {
-  title = "Motion lab",
-  description = "Tune motion and compare transition, keyframe, and entry-style snippets.",
   previewContent = "Motion target",
   initial = {},
-  presets = [],
   warnings = [
     { when: { transform: "layout-shift" }, text: "Animating layout properties is usually more disruptive than animating transform or opacity." },
     { when: { duration: 1000 }, text: "Long motion can slow people down. Keep UI feedback brief unless the motion is the content." },
@@ -61,27 +49,8 @@ const hasSlot = Astro.slots.has("default");
   data-state={JSON.stringify(data)}
   class="my-8 overflow-hidden rounded-panel border border-line/80 bg-panel/92 shadow-soft"
 >
-  <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
-    <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">CSS Lab</p>
-    <h3 class="mt-2 text-lg font-semibold tracking-[-0.02em] text-ink">{title}</h3>
-    {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
-  </header>
-
   <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.82fr)]">
     <div class="min-w-0 space-y-4">
-      {presets.length > 0 && (
-        <div class="space-y-2">
-          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Presets</p>
-          <div class="flex flex-wrap gap-2">
-            {presets.map((preset) => (
-              <button type="button" data-motion-preset={JSON.stringify(preset.values)} class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle" title={preset.description}>
-                {preset.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       <fieldset class="rounded-[1rem] border border-line/80 bg-canvas/45 p-4">
         <legend class="px-1 text-sm font-semibold text-ink">Snippet mode</legend>
         <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Motion mode">
@@ -230,13 +199,6 @@ const hasSlot = Astro.slots.has("default");
 
         root.querySelectorAll("[data-motion-control]").forEach((control) => control.addEventListener("input", render));
         root.querySelector("[data-motion-play]")?.addEventListener("click", play);
-        root.querySelectorAll("[data-motion-preset]").forEach((button) => {
-          button.addEventListener("click", () => {
-            Object.assign(state, JSON.parse(button.dataset.motionPreset || "{}"));
-            writeControls();
-            render();
-          });
-        });
         writeControls();
         render();
       });

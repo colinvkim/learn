@@ -1,12 +1,6 @@
 ---
 type ControlValue = string | number | boolean;
 
-type ControlPreset = {
-  label: string;
-  description?: string;
-  values: Record<string, ControlValue>;
-};
-
 type CascadeRule = {
   id?: string;
   label: string;
@@ -28,20 +22,15 @@ type Explanation = {
 };
 
 interface Props {
-  title?: string;
-  description?: string;
   property?: string;
   targetLabel?: string;
   previewContent?: string;
   rules?: CascadeRule[];
-  presets?: ControlPreset[];
   initial?: Record<string, ControlValue>;
   explanations?: Explanation[];
 }
 
 const {
-  title = "Cascade inspector",
-  description = "Toggle competing declarations and see which one wins.",
   property = "color",
   targetLabel = "Selected element",
   previewContent = "Button label",
@@ -67,7 +56,6 @@ const {
       enabled: true,
     },
   ],
-  presets = [],
   initial = {},
   explanations = [],
 } = Astro.props;
@@ -82,36 +70,8 @@ const data = { property, rules, initial, explanations };
   data-state={JSON.stringify(data)}
   class="my-8 overflow-hidden rounded-panel border border-line/80 bg-panel/92 shadow-soft"
 >
-  <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
-    <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">
-      CSS Lab
-    </p>
-    <h3 class="mt-2 text-lg font-semibold tracking-[-0.02em] text-ink">{title}</h3>
-    {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
-  </header>
-
   <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.82fr)]">
     <div class="min-w-0 space-y-4">
-      {
-        presets.length > 0 && (
-          <div class="space-y-2">
-            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Presets</p>
-            <div class="flex flex-wrap gap-2">
-              {presets.map((preset) => (
-                <button
-                  type="button"
-                  data-cascade-preset={JSON.stringify(preset.values)}
-                  class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle"
-                  title={preset.description}
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )
-      }
-
       <fieldset class="space-y-3 rounded-[1rem] border border-line/80 bg-canvas/45 p-4">
         <legend class="px-1 text-sm font-semibold text-ink">Cascade axes</legend>
         <label class="flex items-center gap-3 text-sm text-muted">
@@ -323,20 +283,6 @@ const data = { property, rules, initial, explanations };
 
         root.querySelectorAll("[data-cascade-rule] input").forEach((input) => {
           input.addEventListener("change", render);
-        });
-
-        root.querySelectorAll("[data-cascade-preset]").forEach((button) => {
-          button.addEventListener("click", () => {
-            const values = JSON.parse(button.dataset.cascadePreset || "{}");
-            Object.entries(values).forEach(([key, value]) => {
-              const axis = root.querySelector(`[data-cascade-axis="${key}"]`);
-              if (axis instanceof HTMLInputElement) {
-                axis.checked = Boolean(value);
-                state.axes[key] = Boolean(value);
-              }
-            });
-            render();
-          });
         });
 
         render();
