@@ -1,12 +1,14 @@
 ---
-title: CSS
-description: Learn CSS as the design system of the web, from selectors and cascade to resilient layouts, responsive components, accessible states, and modern motion.
+title: CSS and Tailwind
+description: Learn CSS as the design system of the web, from selectors and cascade to resilient layouts, responsive components, accessible states, and modern motion. Then build fast with Tailwind CSS v4.
 status: published
 sortOrder: 3
 topics:
   - CSS
+  - Tailwind
 tags:
   - CSS
+  - Tailwind CSS
   - web development
   - frontend
   - responsive design
