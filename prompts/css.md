@@ -257,7 +257,7 @@ Possible lesson list
 
 Interactive component opportunities
 
-Use prompts/css-components.md before or during course writing if interactive MDX components would help. Good candidates:
+Take a look at the interactive css components if interactive MDX components would help. Good candidates:
 
 - CascadeInspector: specificity, source order, inheritance, @layer, !important
 - BoxModelExplorer: content, padding, border, margin, box-sizing, overflow
