@@ -1,0 +1,62 @@
+---
+title: Persistence and app data
+description: "Learn basic storage choices: UserDefaults, files, and databases at a practical level."
+course: swift
+status: published
+---
+
+Persistence means data survives after the app closes. Choose storage based on what the data means and how it will be queried.
+
+## UserDefaults
+
+`UserDefaults` stores small preferences:
+
+```swift
+UserDefaults.standard.set(true, forKey: "notificationsEnabled")
+
+let enabled = UserDefaults.standard.bool(forKey: "notificationsEnabled")
+```
+
+Use it for settings, flags, simple preferences, and lightweight values. Do not use it as a database.
+
+Wrap keys so strings do not spread through the app:
+
+```swift
+enum DefaultsKey {
+    static let notificationsEnabled = "notificationsEnabled"
+}
+```
+
+## Files
+
+Files are useful for documents, cached JSON, exports, and user-created content:
+
+```swift
+let data = try JSONEncoder().encode(draft)
+try data.write(to: fileURL)
+```
+
+Reading and writing files can throw, so handle errors. File storage is explicit and flexible, but you must design paths, formats, and migration carefully.
+
+## Databases
+
+Use a database when data is structured, related, searchable, or large. On Apple platforms, common choices include SwiftData, Core Data, SQLite-based libraries, and cloud-backed storage.
+
+This course does not go deep into databases because database choice depends heavily on app needs. The modeling habits still apply: define clear types, validate external data, and keep persistence details out of views.
+
+## Cache vs source of truth
+
+A cache stores data you can recreate or fetch again. A source of truth stores data the app relies on as authoritative.
+
+Treat them differently. It is safe to delete a cache. It is not safe to silently delete a user's saved work.
+
+## What to carry forward
+
+- persistence keeps data beyond app lifetime
+- `UserDefaults` is for small preferences
+- file storage works for explicit documents and cached data
+- databases fit structured, queryable, or larger data
+- separate persistence code from views
+- know whether data is cache or source of truth
+
+Next, you will bring the course ideas together in a small app.

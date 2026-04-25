@@ -1,0 +1,99 @@
+---
+title: Navigation, lists, and components
+description: Learn NavigationStack, list rows, detail views, and reusable SwiftUI components.
+course: swift
+status: published
+---
+
+Most apps move between screens and display collections. SwiftUI's common tools are `NavigationStack`, `List`, and reusable view components.
+
+## NavigationStack
+
+Use `NavigationStack` for modern navigation:
+
+```swift
+struct ArticleListView: View {
+    let articles: [Article]
+
+    var body: some View {
+        NavigationStack {
+            List(articles) { article in
+                NavigationLink(article.title) {
+                    ArticleDetailView(article: article)
+                }
+            }
+            .navigationTitle("Articles")
+        }
+    }
+}
+```
+
+This creates a list where tapping a row pushes a detail view.
+
+## List rows
+
+Rows should be small, focused components:
+
+```swift
+struct ArticleRow: View {
+    let article: Article
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(article.title)
+                .font(.headline)
+            Text(article.authorName)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+```
+
+Then use the row in a list:
+
+```swift
+List(articles) { article in
+    NavigationLink {
+        ArticleDetailView(article: article)
+    } label: {
+        ArticleRow(article: article)
+    }
+}
+```
+
+## Passing data down
+
+Most detail views should receive the model they need:
+
+```swift
+struct ArticleDetailView: View {
+    let article: Article
+
+    var body: some View {
+        ScrollView {
+            Text(article.body)
+        }
+        .navigationTitle(article.title)
+    }
+}
+```
+
+Avoid making every view reach into global app state. Passing data makes dependencies visible.
+
+## Reusable components
+
+Extract components when they represent a concept in the UI: `ArticleRow`, `EmptyStateView`, `LoadingView`, `ErrorBanner`.
+
+Do not extract only because a body is a few lines long. Extraction should make the code easier to understand.
+
+## What to carry forward
+
+- `NavigationStack` is the modern navigation container
+- `NavigationLink` moves to detail views
+- `List` handles scrollable collections
+- rows should be focused components
+- pass data down instead of hiding dependencies
+- extract components around meaningful UI concepts
+
+Next, you will connect SwiftUI screens to network data.

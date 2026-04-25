@@ -1,0 +1,81 @@
+---
+title: "Collections: arrays, dictionaries, and sets"
+description: Learn Swift's main collection types and when to use each one.
+course: swift
+status: published
+---
+
+Collections store multiple values. Swift's everyday collection types are arrays, dictionaries, and sets.
+
+## Arrays
+
+An array stores ordered values of the same type:
+
+```swift
+let tasks = ["Write tests", "Fix layout", "Ship build"]
+let firstTask = tasks[0]
+```
+
+Use arrays when order matters or when duplicates are allowed.
+
+Prefer safe access when an index may be out of range:
+
+```swift
+if tasks.indices.contains(2) {
+    print(tasks[2])
+}
+```
+
+## Dictionaries
+
+A dictionary stores values by key:
+
+```swift
+let scores = [
+    "Maya": 92,
+    "Noah": 88,
+]
+
+let mayaScore = scores["Maya"]
+```
+
+Dictionary lookup returns an optional because the key might not exist.
+
+Use dictionaries when you need fast lookup by an identifier, name, or other stable key.
+
+## Sets
+
+A set stores unique values with no guaranteed order:
+
+```swift
+var selectedIDs: Set<String> = []
+selectedIDs.insert("article-1")
+selectedIDs.insert("article-1")
+```
+
+The value appears only once. Use sets when uniqueness matters more than order.
+
+## Transforming collections
+
+Swift collections support useful transformations:
+
+```swift
+let prices = [12.0, 18.5, 7.25]
+
+let discounted = prices.map { $0 * 0.9 }
+let affordable = prices.filter { $0 < 15 }
+let total = prices.reduce(0, +)
+```
+
+These methods are helpful when they make intent clearer. Use a loop when step-by-step logic is easier to read.
+
+## What to carry forward
+
+- arrays store ordered values
+- dictionaries store values by key
+- sets store unique values
+- dictionary lookups return optionals
+- collection transforms are useful when they express intent clearly
+- choose collection types by access pattern, not habit
+
+Next, you will learn how closures make transformations and callbacks possible.

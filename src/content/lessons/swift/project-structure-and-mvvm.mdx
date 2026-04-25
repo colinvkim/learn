@@ -1,0 +1,96 @@
+---
+title: Project structure and MVVM
+description: Learn practical app organization, feature folders, Swift Package Manager, and MVVM.
+course: swift
+status: published
+---
+
+Small SwiftUI apps can live in a few files. Real apps need structure so models, views, networking, and business rules do not blend together.
+
+## Feature-based organization
+
+Prefer grouping by feature as projects grow:
+
+```text
+Features/
+  Articles/
+    Article.swift
+    ArticleService.swift
+    ArticleListView.swift
+    ArticleDetailView.swift
+    ArticleListViewModel.swift
+Shared/
+  Networking/
+  Persistence/
+  DesignSystem/
+```
+
+This keeps related files close. A feature can be understood without jumping across many technical folders.
+
+## MVVM, practically
+
+MVVM means Model, View, ViewModel.
+
+**Model** represents app data and rules:
+
+```swift
+struct Article: Identifiable, Codable {
+    let id: String
+    let title: String
+    let body: String
+}
+```
+
+**View** describes UI:
+
+```swift
+struct ArticleListView: View {
+    @StateObject private var viewModel = ArticleListViewModel()
+
+    var body: some View {
+        List(viewModel.articles) { article in
+            Text(article.title)
+        }
+    }
+}
+```
+
+**ViewModel** coordinates loading, user actions, and UI-facing state:
+
+```swift
+@MainActor
+final class ArticleListViewModel: ObservableObject {
+    @Published private(set) var articles: [Article] = []
+
+    func refresh() async {
+        // Load, validate, and publish state.
+    }
+}
+```
+
+## Keep views honest
+
+Views should not parse JSON, build URLs, decide business rules, or contain large workflows. They should render state and send actions.
+
+Good view code answers: what should appear?
+
+Good view model code answers: what state should the view show next?
+
+Good model code answers: what data is valid?
+
+## Swift Package Manager
+
+Swift Package Manager, or SPM, is Swift's built-in dependency and package tool. In Xcode, you can add packages through package dependencies. In command-line packages, dependencies live in `Package.swift`.
+
+Use dependencies for clear value: networking helpers, database libraries, image loading, testing tools. Do not add a package for code that is smaller and clearer to write yourself.
+
+## What to carry forward
+
+- group larger apps by feature
+- models describe valid data
+- views render state
+- view models coordinate actions and UI-facing state
+- keep business logic out of SwiftUI bodies
+- SPM manages Swift packages and dependencies
+
+Next, you will test and debug Swift code.

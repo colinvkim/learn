@@ -1,0 +1,63 @@
+---
+title: What Swift is
+description: Learn where Swift is used, how it runs, and why safety is central to the language.
+course: swift
+status: published
+---
+
+Swift is a compiled, type-safe programming language designed for building reliable software. It is best known as the main language for Apple platforms, but it is not only an app language. Swift can also be used for command-line tools, server programs, scripts, and libraries.
+
+Swift's design goal is practical safety. The language tries to catch common mistakes before code runs: using a value that might be missing, passing the wrong type to a function, forgetting to handle a possible error, or sharing mutable data in unsafe ways.
+
+## Where Swift runs
+
+Swift is used on iOS, iPadOS, macOS, watchOS, tvOS, and visionOS. Those platforms provide frameworks such as SwiftUI, Foundation, and SwiftData. Swift can also run on Linux, where it is often used for server-side projects and tooling.
+
+Most Apple app development happens in Xcode. You write Swift source files, the compiler checks them, and the build system produces an app or executable.
+
+## Compiled and type-safe
+
+Swift is a **compiled language**. Before your program runs, the compiler reads your code and turns it into machine code or an app binary.
+
+Swift is also **statically typed**. Every value has a type known at compile time:
+
+```swift
+let name: String = "Maya"
+let score: Int = 42
+```
+
+The compiler uses those types to prevent mismatches:
+
+```swift
+func greet(_ name: String) {
+    print("Hello, \(name)")
+}
+
+greet("Sam") // OK
+greet(42)    // Error
+```
+
+This does not make every program correct. It does remove a large class of mistakes before users see them.
+
+## Swift and real applications
+
+Swift is expressive enough for small scripts and structured enough for large apps. Real Swift code often combines several styles:
+
+- procedural code for clear step-by-step work
+- value-oriented modeling with structs and enums
+- protocol-based abstraction
+- object references where shared identity is useful
+- declarative UI with SwiftUI
+- asynchronous work with `async` and `await`
+
+This is why Swift is called multi-paradigm. It gives you several ways to organize code, but good Swift usually starts with clear data models and simple functions.
+
+## What to carry forward
+
+- Swift is compiled before it runs
+- Swift checks types at compile time
+- Swift is used heavily for Apple apps but works beyond Apple UI code
+- safety is a language design goal, not an afterthought
+- this course treats Swift as a general-purpose language first
+
+Next, you will learn how Swift represents values, variables, constants, and types.

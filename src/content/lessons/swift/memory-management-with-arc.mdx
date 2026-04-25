@@ -1,0 +1,98 @@
+---
+title: Memory management with ARC
+description: Learn how Automatic Reference Counting works and how to avoid retain cycles.
+course: swift
+status: published
+---
+
+Swift manages memory automatically for class instances using **Automatic Reference Counting**, usually called ARC.
+
+## What ARC does
+
+ARC tracks how many strong references point to a class instance. When the count reaches zero, Swift frees the instance.
+
+```swift
+class ImageCache {}
+
+var cache: ImageCache? = ImageCache()
+cache = nil
+```
+
+After `cache` becomes `nil`, no strong references remain, so the instance can be released.
+
+Value types like structs and enums do not use ARC in the same way. ARC matters most when classes, closures, and shared references are involved.
+
+## Strong references
+
+References are strong by default:
+
+```swift
+class UserSession {
+    let store: TokenStore
+
+    init(store: TokenStore) {
+        self.store = store
+    }
+}
+```
+
+As long as `UserSession` exists, it keeps `store` alive.
+
+## Retain cycles
+
+A retain cycle happens when two objects strongly keep each other alive:
+
+```swift
+class Parent {
+    var child: Child?
+}
+
+class Child {
+    var parent: Parent?
+}
+```
+
+If a parent points to a child and the child points back strongly, neither count reaches zero.
+
+## weak and unowned
+
+Use `weak` when a reference should not keep another object alive and can become `nil`:
+
+```swift
+class Child {
+    weak var parent: Parent?
+}
+```
+
+Use `unowned` only when the referenced object is guaranteed to outlive the holder. `weak` is safer for most app code.
+
+## Closures can capture strongly
+
+Closures capture values they use. In class-based code, a closure stored by an object can capture `self` and create a cycle:
+
+```swift
+class Loader {
+    var onComplete: (() -> Void)?
+
+    func start() {
+        onComplete = { [weak self] in
+            self?.finish()
+        }
+    }
+
+    func finish() {}
+}
+```
+
+`[weak self]` prevents the closure from keeping the loader alive.
+
+## What to carry forward
+
+- ARC manages memory for class instances
+- strong references keep objects alive
+- retain cycles prevent objects from being released
+- `weak` breaks cycles and becomes optional
+- `unowned` is for stricter lifetime guarantees
+- closures can capture `self` strongly
+
+Next, you will write asynchronous Swift with `async` and `await`.

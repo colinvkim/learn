@@ -1,0 +1,101 @@
+---
+title: SwiftUI layout and modifiers
+description: Learn the core layout containers and how modifier order affects views.
+course: swift
+status: published
+---
+
+SwiftUI layout is built from small containers. You combine them to describe how views sit on screen.
+
+## Stacks
+
+Use stacks for one-dimensional layout:
+
+```swift
+VStack(alignment: .leading, spacing: 12) {
+    Text(article.title)
+        .font(.headline)
+
+    Text(article.summary)
+        .foregroundStyle(.secondary)
+}
+```
+
+`VStack` arranges vertically. `HStack` arranges horizontally. `ZStack` overlays views.
+
+## Spacers and alignment
+
+`Spacer` consumes available space:
+
+```swift
+HStack {
+    Text("Inbox")
+    Spacer()
+    Text("12")
+}
+```
+
+Prefer explicit alignment and spacing over trial-and-error padding.
+
+## Lists
+
+Use `List` for scrollable rows:
+
+```swift
+List(articles) { article in
+    Text(article.title)
+}
+```
+
+The element type must be identifiable, or you must provide an ID.
+
+## Modifier order
+
+Modifier order can change the result:
+
+```swift
+Text("Save")
+    .padding()
+    .background(.blue)
+```
+
+This adds padding before the background, so the blue area includes the padding.
+
+```swift
+Text("Save")
+    .background(.blue)
+    .padding()
+```
+
+This puts padding outside the blue background.
+
+## Extracting components
+
+When a view section has a clear role, extract it:
+
+```swift
+struct ArticleRow: View {
+    let article: Article
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(article.title)
+            Text(article.authorName)
+                .font(.caption)
+        }
+    }
+}
+```
+
+Extraction should improve naming and reuse, not scatter tiny fragments.
+
+## What to carry forward
+
+- stacks handle basic layout
+- `Spacer` pushes views apart
+- `List` displays scrollable collections
+- modifier order affects appearance and layout
+- extract components around meaningful UI roles
+- keep layout explicit and readable
+
+Next, you will learn how state moves through SwiftUI views.

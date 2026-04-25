@@ -1,0 +1,94 @@
+---
+title: Control flow with if, switch, and loops
+description: Learn how Swift chooses between paths and repeats work.
+course: swift
+status: published
+---
+
+Control flow lets a program choose what to do. Swift uses familiar tools: `if`, `else`, `switch`, `for-in`, and `while`.
+
+## if and else
+
+Use `if` when code should run only when a condition is true:
+
+```swift
+let temperature = 34
+
+if temperature <= 32 {
+    print("Freezing")
+} else {
+    print("Above freezing")
+}
+```
+
+Conditions must be booleans. Swift does not treat `0`, empty strings, or empty arrays as false.
+
+## switch
+
+Use `switch` when a value can be handled in several distinct ways:
+
+```swift
+let statusCode = 404
+
+switch statusCode {
+case 200:
+    print("OK")
+case 400..<500:
+    print("Client error")
+case 500..<600:
+    print("Server error")
+default:
+    print("Unknown response")
+}
+```
+
+Swift `switch` statements must be exhaustive. Every possible value must be handled, either by specific cases or by `default`. That requirement pushes you to think through states instead of ignoring them.
+
+## guard for early exits
+
+`guard` is used when code cannot continue unless a condition is true:
+
+```swift
+func showProfile(username: String) {
+    guard !username.isEmpty else {
+        print("Missing username")
+        return
+    }
+
+    print("Loading profile for \(username)")
+}
+```
+
+This keeps the successful path less nested. You will use `guard` often with optionals.
+
+## Loops
+
+Use `for-in` to iterate over a sequence:
+
+```swift
+let names = ["Ava", "Noah", "Mia"]
+
+for name in names {
+    print(name)
+}
+```
+
+Use `while` when repetition depends on a condition:
+
+```swift
+var attempts = 0
+
+while attempts < 3 {
+    attempts += 1
+}
+```
+
+## What to carry forward
+
+- `if` handles simple branches
+- `switch` handles multiple known cases and must be exhaustive
+- `guard` exits early when required conditions fail
+- `for-in` loops over collections and ranges
+- `while` repeats while a condition stays true
+
+Next, you will package reusable work into functions.

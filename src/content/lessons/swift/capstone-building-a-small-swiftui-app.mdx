@@ -1,0 +1,95 @@
+---
+title: "Capstone: build a small SwiftUI app"
+description: Plan a small app that combines models, optionals, Codable, async loading, SwiftUI state, and MVVM.
+course: swift
+status: published
+---
+
+The capstone is a small article reader app. It is intentionally modest, but it uses the same patterns as larger SwiftUI apps.
+
+## App goal
+
+Build an app that:
+
+- loads a list of articles from JSON
+- shows loading, success, and error states
+- displays article details
+- lets the user favorite articles
+- persists favorite article IDs
+- keeps networking and persistence out of views
+
+## Model the data first
+
+```swift
+struct Article: Identifiable, Codable {
+    let id: String
+    let title: String
+    let summary: String
+    let body: String
+    let authorName: String
+}
+
+enum ArticleListState {
+    case idle
+    case loading
+    case loaded([Article])
+    case failed(message: String)
+}
+```
+
+The enum prevents unclear combinations like "loading and failed and loaded."
+
+## Separate responsibilities
+
+Use small types with clear jobs:
+
+```text
+Article.swift              model
+ArticleService.swift       network fetch and decode
+FavoritesStore.swift       persisted favorite IDs
+ArticleListViewModel.swift state and user actions
+ArticleListView.swift      list UI
+ArticleDetailView.swift    detail UI
+ArticleRow.swift           reusable row
+```
+
+This structure keeps each file understandable.
+
+## Data flow
+
+One practical flow:
+
+1. `ArticleListView` appears.
+2. `.task` calls `await viewModel.load()`.
+3. View model asks `ArticleService` for articles.
+4. Service fetches data and decodes `[Article]`.
+5. View model publishes `ArticleListState`.
+6. View renders loading, list, or error UI.
+7. User taps favorite.
+8. View model updates `FavoritesStore`.
+
+The view does not know how networking or persistence works. It only renders state and sends actions.
+
+## What success looks like
+
+By the end, you should be able to explain:
+
+- why models are structs
+- why loading state is an enum
+- where optionals are appropriate
+- where errors are appropriate
+- why async work is visible in function signatures
+- which view owns state
+- which views receive bindings or values
+- how favorite IDs persist
+
+## What to carry forward
+
+- build apps from clear models outward
+- use enums for important state machines
+- keep side effects in services and stores
+- keep views focused on rendering and actions
+- prefer explicit data flow over hidden shared state
+- small apps can practice production habits
+
+You now have the core Swift foundation needed to keep learning SwiftUI and building real Apple-platform apps.

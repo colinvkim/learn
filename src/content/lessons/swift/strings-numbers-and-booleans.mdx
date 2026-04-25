@@ -1,0 +1,90 @@
+---
+title: Strings, numbers, and booleans
+description: Learn Swift's common primitive types and how to choose among them.
+course: swift
+status: published
+---
+
+Swift programs use small built-in types constantly. The most common are `String`, `Int`, `Double`, and `Bool`.
+
+## Strings
+
+A `String` stores text:
+
+```swift
+let firstName = "Maya"
+let message = "Welcome, \(firstName)"
+```
+
+The `\(firstName)` syntax is **string interpolation**. Swift evaluates the expression inside the parentheses and inserts it into the string.
+
+Strings are values, not loose character bags. Swift handles Unicode correctly, which matters for names, emoji, accented characters, and text from real users.
+
+## Numbers
+
+Use `Int` for whole numbers:
+
+```swift
+let unreadMessages = 12
+let page = 1
+```
+
+Use `Double` for decimal values:
+
+```swift
+let price = 19.99
+let progress = 0.75
+```
+
+Swift does not automatically mix numeric types:
+
+```swift
+let count = 3
+let price = 9.99
+
+let total = Double(count) * price
+```
+
+The conversion is explicit because it can change meaning. Swift prefers visible conversions over hidden surprises.
+
+## Booleans
+
+A `Bool` is either `true` or `false`:
+
+```swift
+let isLoggedIn = true
+let hasUnreadMessages = false
+```
+
+Booleans are useful when they answer a clear yes-or-no question. Name them that way: `isEnabled`, `hasPermission`, `canRetry`.
+
+## Avoid stringly typed state
+
+Do not use strings for values that have a limited set of valid states:
+
+```swift
+let status = "loading"
+```
+
+This is easy to mistype and hard for the compiler to protect. Later, you will use enums for this:
+
+```swift
+enum LoadingState {
+    case idle
+    case loading
+    case failed
+}
+```
+
+This is a core Swift habit: use the type system to model what is valid.
+
+## What to carry forward
+
+- `String` stores text
+- `Int` stores whole numbers
+- `Double` stores decimal numbers
+- `Bool` stores true-or-false state
+- Swift requires explicit numeric conversions
+- prefer meaningful types over magic strings
+
+Next, you will use these values in control flow.

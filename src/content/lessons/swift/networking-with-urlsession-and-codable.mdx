@@ -1,0 +1,98 @@
+---
+title: Networking with URLSession and Codable
+description: Learn how to fetch JSON with async/await, decode it, and update UI state.
+course: swift
+status: published
+---
+
+Networking combines several Swift ideas: async functions, throwing errors, optionals, Codable models, and UI state.
+
+## A service type
+
+Keep networking out of views:
+
+```swift
+struct ArticleService {
+    func fetchArticles() async throws -> [Article] {
+        guard let url = URL(string: "https://example.com/articles.json") else {
+            throw ArticleServiceError.invalidURL
+        }
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let http = response as? HTTPURLResponse,
+              (200..<300).contains(http.statusCode) else {
+            throw ArticleServiceError.badResponse
+        }
+
+        return try JSONDecoder().decode([Article].self, from: data)
+    }
+}
+
+enum ArticleServiceError: Error {
+    case invalidURL
+    case badResponse
+}
+```
+
+The service owns URL creation, network calls, response validation, and decoding.
+
+## View model loading state
+
+```swift
+@MainActor
+final class ArticleListViewModel: ObservableObject {
+    @Published private(set) var articles: [Article] = []
+    @Published private(set) var isLoading = false
+    @Published private(set) var errorMessage: String?
+
+    private let service = ArticleService()
+
+    func load() async {
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        do {
+            articles = try await service.fetchArticles()
+        } catch {
+            errorMessage = "Could not load articles."
+        }
+    }
+}
+```
+
+The view model translates technical errors into UI-friendly state.
+
+## View usage
+
+```swift
+struct ArticleListView: View {
+    @StateObject private var viewModel = ArticleListViewModel()
+
+    var body: some View {
+        List(viewModel.articles) { article in
+            Text(article.title)
+        }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+            }
+        }
+        .task {
+            await viewModel.load()
+        }
+    }
+}
+```
+
+## What to carry forward
+
+- networking belongs in services, not directly in view bodies
+- `URLSession` has async APIs
+- validate HTTP responses before decoding
+- decode JSON into `Codable` models
+- view models expose loading, data, and error state
+- UI errors should be meaningful to users
+
+Next, you will organize real Swift app projects.

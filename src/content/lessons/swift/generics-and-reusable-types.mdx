@@ -1,0 +1,82 @@
+---
+title: Generics and reusable types
+description: Learn how generics let Swift code work with many types while staying type-safe.
+course: swift
+status: published
+---
+
+Generics let you write code that works with many types without giving up type safety.
+
+## A generic function
+
+```swift
+func firstValue<T>(_ values: [T]) -> T? {
+    values.first
+}
+
+let name = firstValue(["Maya", "Noah"])
+let score = firstValue([98, 87])
+```
+
+`T` is a placeholder for a concrete type. When the function is called, Swift knows whether `T` is `String`, `Int`, or something else.
+
+## Generic types
+
+Generic types are useful for reusable containers:
+
+```swift
+struct Page<Item> {
+    let items: [Item]
+    let nextPageToken: String?
+}
+
+let articlePage = Page(items: articles, nextPageToken: "next")
+```
+
+The page structure is reusable, but `items` remains strongly typed.
+
+## Constraints
+
+Constraints say what a generic type must be able to do:
+
+```swift
+func containsID<Item: Identifiable>(
+    _ item: Item,
+    in items: [Item]
+) -> Bool {
+    items.contains { $0.id == item.id }
+}
+```
+
+This works because `Identifiable` guarantees an `id` property.
+
+## where clauses
+
+Use `where` when constraints get more specific:
+
+```swift
+func printNames<C: Collection>(_ values: C) where C.Element == String {
+    for value in values {
+        print(value)
+    }
+}
+```
+
+This accepts any collection whose elements are strings.
+
+## Keep generics earned
+
+Generics are powerful, but they can make code harder to read. Start concrete. Add generics when repeated code has the same shape and type safety matters.
+
+For app code, common generic use cases include reusable API responses, paginated data, result containers, and shared view components.
+
+## What to carry forward
+
+- generics use placeholders for types
+- Swift replaces placeholders with concrete types at compile time
+- generic structs and functions stay type-safe
+- constraints require capabilities
+- `where` expresses precise requirements
+- make code generic when reuse is real, not speculative
+
+Next, you will use protocols and composition together.

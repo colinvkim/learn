@@ -1,0 +1,80 @@
+---
+title: Protocol-oriented design
+description: Learn how Swift uses protocols and composition to build flexible code.
+course: swift
+status: published
+---
+
+Protocol-oriented design means modeling capabilities with protocols, then composing types from those capabilities.
+
+It is not a rule that every type needs a protocol. It is a way to avoid rigid class hierarchies when shared behavior can be expressed as smaller pieces.
+
+## Start with concrete types
+
+Begin with the real model:
+
+```swift
+struct Article {
+    let id: String
+    let title: String
+    let body: String
+}
+```
+
+Do not create a protocol until another type or boundary needs the same capability.
+
+## Extract a capability
+
+```swift
+protocol Searchable {
+    var searchableText: String { get }
+}
+
+extension Article: Searchable {
+    var searchableText: String {
+        "\(title) \(body)"
+    }
+}
+```
+
+Now search code can work with anything searchable:
+
+```swift
+func search<T: Searchable>(_ values: [T], query: String) -> [T] {
+    values.filter {
+        $0.searchableText.localizedCaseInsensitiveContains(query)
+    }
+}
+```
+
+## Composition over inheritance
+
+Instead of creating a deep hierarchy, combine small protocols:
+
+```swift
+protocol Archivable {
+    var archivedAt: Date? { get }
+}
+
+protocol Syncable {
+    var lastSyncedAt: Date? { get }
+}
+```
+
+A type can conform to one, both, or neither. The model stays flexible.
+
+## Avoid protocol noise
+
+Protocols add indirection. Avoid one-off protocols that have only one conforming type and no clear boundary. They can make code harder to navigate.
+
+Good protocol boundaries often appear around services, persistence, networking, test doubles, and reusable capabilities.
+
+## What to carry forward
+
+- protocol-oriented design favors capabilities over class trees
+- start concrete, then extract shared behavior
+- compose small protocols when types need different combinations
+- protocols are useful at boundaries and for testability
+- avoid protocols that exist only for ceremony
+
+Next, you will learn how Swift manages memory for reference types.

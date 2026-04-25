@@ -101,6 +101,49 @@ export const courseLessonOrder: Record<string, string[]> = {
     "npm-and-pnpm-troubleshooting-common-problems",
     "pnpm-reference",
   ],
+  swift: [
+    // Module 1: Swift mental model
+    "what-swift-is",
+    "values-variables-and-types",
+    "strings-numbers-and-booleans",
+    "control-flow-with-if-switch-and-loops",
+    "functions-parameters-and-return-values",
+    // Module 2: Safety and everyday data
+    "optionals-and-modeling-absence",
+    "safe-unwrapping-and-optional-chaining",
+    "collections-arrays-dictionaries-and-sets",
+    "closures-and-higher-order-functions",
+    "value-vs-reference-semantics",
+    // Module 3: Modeling with Swift types
+    "structs-properties-and-methods",
+    "classes-and-shared-reference-state",
+    "enums-and-associated-values",
+    "pattern-matching-with-switch",
+    "protocols-and-shared-behavior",
+    "extensions-and-code-organization",
+    "errors-throw-try-catch",
+    "codable-json-and-api-models",
+    "command-line-swift",
+    // Module 4: Reuse, memory, and concurrency
+    "generics-and-reusable-types",
+    "protocol-oriented-design",
+    "memory-management-with-arc",
+    "async-await-and-throwing-async-code",
+    "structured-concurrency",
+    "actors-and-shared-state",
+    // Module 5: SwiftUI app development
+    "swiftui-declarative-views",
+    "swiftui-layout-and-modifiers",
+    "swiftui-state-and-bindings",
+    "observable-state-and-data-flow",
+    "navigation-lists-and-components",
+    "networking-with-urlsession-and-codable",
+    // Module 6: Production practice
+    "project-structure-and-mvvm",
+    "testing-debugging-and-quality",
+    "persistence-and-app-data",
+    "capstone-building-a-small-swiftui-app",
+  ],
   typescript: [
     // Module 1: TypeScript mental model
     "what-typescript-adds",

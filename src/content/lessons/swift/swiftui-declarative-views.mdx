@@ -1,0 +1,82 @@
+---
+title: SwiftUI declarative views
+description: Learn SwiftUI's declarative model and how views describe app UI from state.
+course: swift
+status: published
+---
+
+SwiftUI is Apple's modern UI framework. It is **declarative**, which means you describe what the interface should look like for current state. SwiftUI figures out how to update the screen when that state changes.
+
+## A basic view
+
+```swift
+import SwiftUI
+
+struct ProfileView: View {
+    let name: String
+
+    var body: some View {
+        Text("Hello, \(name)")
+            .font(.title)
+            .padding()
+    }
+}
+```
+
+A SwiftUI view is usually a struct. Its `body` returns another view.
+
+## Views are values
+
+SwiftUI views are descriptions, not long-lived screen objects. The system can recreate view values often. That is normal.
+
+This is why state matters. Data that must survive view recreation should live in the right state storage, not in random stored properties.
+
+```swift
+struct CounterView: View {
+    @State private var count = 0
+
+    var body: some View {
+        Button("Count: \(count)") {
+            count += 1
+        }
+    }
+}
+```
+
+`@State` gives SwiftUI ownership of the stored value so it persists across body recalculations.
+
+## Modifiers
+
+Modifiers return modified views:
+
+```swift
+Text("Saved")
+    .font(.headline)
+    .foregroundStyle(.green)
+    .padding()
+```
+
+Order matters because each modifier wraps or transforms the previous view.
+
+## Keep logic out of body
+
+`body` should describe UI. Move formatting, validation, networking, and business rules into models, helper methods, or view models.
+
+```swift
+var title: String {
+    article.title.isEmpty ? "Untitled" : article.title
+}
+```
+
+Small computed properties can make view code readable. Large workflows belong elsewhere.
+
+## What to carry forward
+
+- SwiftUI is declarative
+- views describe UI for current state
+- views are value descriptions and may be recreated often
+- `body` should stay focused on UI structure
+- modifiers transform views and order can matter
+- state needs explicit ownership
+
+Next, you will learn layout and modifiers in more detail.

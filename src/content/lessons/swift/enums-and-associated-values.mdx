@@ -1,0 +1,80 @@
+---
+title: Enums and associated values
+description: Learn how enums model finite states and data-rich alternatives.
+course: swift
+status: published
+---
+
+An enum defines a type with a fixed set of possible cases. Enums are one of Swift's best tools for making invalid states unrepresentable.
+
+## Basic enums
+
+```swift
+enum Theme {
+    case system
+    case light
+    case dark
+}
+
+let theme = Theme.system
+```
+
+This is safer than using strings like `"system"` or `"dark"`. The compiler knows every valid case.
+
+## Enums with associated values
+
+Associated values let each case carry different data:
+
+```swift
+enum LoadingState {
+    case idle
+    case loading
+    case loaded([Article])
+    case failed(message: String)
+}
+```
+
+This model prevents impossible combinations. You cannot have both `isLoading = true` and `errorMessage = "Failed"` and `articles = [...]` at the same time. There is exactly one state.
+
+## Switching over enums
+
+```swift
+func render(_ state: LoadingState) {
+    switch state {
+    case .idle:
+        print("Nothing loaded yet")
+    case .loading:
+        print("Loading...")
+    case .loaded(let articles):
+        print("Loaded \(articles.count) articles")
+    case .failed(let message):
+        print(message)
+    }
+}
+```
+
+Swift checks that every case is handled. If you add a new case later, the compiler points to switches that need updating.
+
+## Raw values
+
+Enums can also have raw values:
+
+```swift
+enum SortOrder: String {
+    case newest
+    case oldest
+    case mostRead
+}
+```
+
+Raw values are useful when you need stable strings for storage, APIs, or debugging. Do not use raw values when associated values better model the data.
+
+## What to carry forward
+
+- enums model a fixed set of valid cases
+- associated values attach data to specific cases
+- enums reduce invalid combinations of state
+- `switch` makes enum handling explicit
+- raw values are useful at storage or API boundaries
+
+Next, you will go deeper on pattern matching with `switch`.

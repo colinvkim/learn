@@ -1,0 +1,95 @@
+---
+title: Codable, JSON, and API models
+description: Learn how Swift encodes and decodes data with Codable.
+course: swift
+status: published
+---
+
+Apps often exchange data as JSON. Swift's `Codable` protocols let you convert between JSON and Swift types.
+
+## A Codable model
+
+```swift
+struct Article: Codable {
+    let id: String
+    let title: String
+    let authorName: String
+}
+```
+
+If JSON keys match property names and property types are also `Codable`, Swift can synthesize encoding and decoding code.
+
+## Decoding JSON
+
+```swift
+let json = """
+{
+    "id": "a-1",
+    "title": "Swift optionals",
+    "authorName": "Maya"
+}
+"""
+
+let data = Data(json.utf8)
+
+let article = try JSONDecoder().decode(Article.self, from: data)
+```
+
+The result is a real `Article`, not a loose dictionary. After decoding succeeds, the compiler knows `article.id` is a `String`.
+
+## Mapping API names
+
+APIs often use snake_case keys:
+
+```json
+{
+  "author_name": "Maya"
+}
+```
+
+You can configure a decoder:
+
+```swift
+let decoder = JSONDecoder()
+decoder.keyDecodingStrategy = .convertFromSnakeCase
+```
+
+Or define custom coding keys:
+
+```swift
+struct Article: Codable {
+    let authorName: String
+
+    enum CodingKeys: String, CodingKey {
+        case authorName = "author_name"
+    }
+}
+```
+
+## API models vs domain models
+
+An API shape is not always the best app shape. It is common to decode a transport model, then convert it:
+
+```swift
+struct ArticleResponse: Codable {
+    let id: String
+    let title: String?
+}
+
+struct Article {
+    let id: String
+    let title: String
+}
+```
+
+This lets the app enforce stronger rules internally, such as "an article title is always present."
+
+## What to carry forward
+
+- `Codable` combines `Encodable` and `Decodable`
+- JSON can be decoded into typed Swift models
+- decoding can fail, so it uses `try`
+- API naming can be mapped with decoder strategies or coding keys
+- separate API models from app models when external data is messy
+
+Next, you will run simple Swift programs from the command line.

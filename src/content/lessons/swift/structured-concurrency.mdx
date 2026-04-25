@@ -1,0 +1,78 @@
+---
+title: Structured concurrency
+description: Learn Task, async let, and task groups at a practical level.
+course: swift
+status: published
+---
+
+Structured concurrency keeps asynchronous work tied to a clear lifetime. Child tasks belong to a parent task, and cancellation can flow through that structure.
+
+## Task
+
+Use `Task` to start async work from synchronous code:
+
+```swift
+Task {
+    do {
+        let articles = try await fetchArticles()
+        print(articles.count)
+    } catch {
+        print(error)
+    }
+}
+```
+
+In SwiftUI, `.task` is often better than creating a task manually because SwiftUI manages the task with the view's lifetime.
+
+## async let
+
+Use `async let` for a small fixed number of independent async operations:
+
+```swift
+async let user = fetchUser()
+async let recommendations = fetchRecommendations()
+
+let screen = try await HomeScreenData(
+    user: user,
+    recommendations: recommendations
+)
+```
+
+Both operations start before either result is awaited. This is useful when operations do not depend on each other.
+
+## Task groups
+
+Task groups handle a dynamic number of child tasks:
+
+```swift
+let images = try await withThrowingTaskGroup(of: Image.self) { group in
+    for url in imageURLs {
+        group.addTask {
+            try await loadImage(from: url)
+        }
+    }
+
+    var result: [Image] = []
+    for try await image in group {
+        result.append(image)
+    }
+    return result
+}
+```
+
+Use task groups when the number of concurrent jobs depends on runtime data.
+
+## Cancellation matters
+
+Concurrent work should be cancellable. Swift tasks can be cancelled, and many system APIs observe cancellation automatically. Long-running custom code should check `Task.isCancelled` or call `try Task.checkCancellation()`.
+
+## What to carry forward
+
+- structured concurrency ties async work to clear lifetimes
+- `Task` starts async work from synchronous contexts
+- SwiftUI `.task` is often the right view-level tool
+- `async let` handles a small fixed number of independent operations
+- task groups handle dynamic concurrent work
+- cancellation is part of correct async design
+
+Next, you will protect shared mutable state with actors.

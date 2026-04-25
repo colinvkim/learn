@@ -1,0 +1,86 @@
+---
+title: Errors with throw, try, and catch
+description: Learn how Swift represents failed operations and handles recoverable errors.
+course: swift
+status: published
+---
+
+Some operations can fail even when your code is correct: files may be missing, network requests may fail, and data may be invalid. Swift uses throwing functions for recoverable failures.
+
+## Defining error types
+
+Errors are often enums:
+
+```swift
+enum LoginError: Error {
+    case missingEmail
+    case invalidPassword
+    case serverUnavailable
+}
+```
+
+Enums work well because many error domains have a known set of cases.
+
+## Throwing errors
+
+Mark a function with `throws` if it can throw:
+
+```swift
+func validate(email: String, password: String) throws {
+    guard !email.isEmpty else {
+        throw LoginError.missingEmail
+    }
+
+    guard password.count >= 8 else {
+        throw LoginError.invalidPassword
+    }
+}
+```
+
+The function either completes normally or throws an error.
+
+## Calling throwing functions
+
+Use `try` inside `do` and handle errors with `catch`:
+
+```swift
+do {
+    try validate(email: email, password: password)
+    print("Valid")
+} catch LoginError.missingEmail {
+    print("Email is required")
+} catch LoginError.invalidPassword {
+    print("Password is too short")
+} catch {
+    print("Unexpected error: \(error)")
+}
+```
+
+`try?` converts success to an optional value and failure to `nil`. Use it when the specific error does not matter.
+
+Avoid `try!` in normal app code. It crashes if an error is thrown.
+
+## Optionals vs errors
+
+Use an optional when absence is expected:
+
+```swift
+func cachedUser(id: String) -> User?
+```
+
+Use `throws` when an operation can fail and callers need to know why:
+
+```swift
+func loadUser(id: String) async throws -> User
+```
+
+## What to carry forward
+
+- throwing functions model recoverable failure
+- errors are often enums
+- `throw` exits a function with an error
+- `try` marks calls that may fail
+- `catch` handles errors
+- use errors when failure reason matters
+
+Next, you will decode external data into Swift models.

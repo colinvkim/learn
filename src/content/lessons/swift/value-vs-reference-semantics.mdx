@@ -1,0 +1,77 @@
+---
+title: Value vs reference semantics
+description: Understand copying, shared state, and why Swift prefers value types.
+course: swift
+status: published
+---
+
+One of Swift's most important ideas is the difference between value semantics and reference semantics.
+
+## Value semantics
+
+With value semantics, each variable has its own independent value:
+
+```swift
+struct Counter {
+    var count: Int
+}
+
+var first = Counter(count: 0)
+var second = first
+
+second.count = 10
+
+print(first.count)  // 0
+print(second.count) // 10
+```
+
+Changing `second` does not change `first`. This is predictable and safe.
+
+Swift structs, enums, arrays, dictionaries, sets, strings, and numbers are value types.
+
+## Reference semantics
+
+With reference semantics, variables can point to the same object:
+
+```swift
+class SharedCounter {
+    var count: Int
+
+    init(count: Int) {
+        self.count = count
+    }
+}
+
+let first = SharedCounter(count: 0)
+let second = first
+
+second.count = 10
+
+print(first.count)  // 10
+print(second.count) // 10
+```
+
+Both names refer to the same instance. This can be useful when shared identity matters, but it also creates shared mutable state.
+
+## Stack and heap, lightly
+
+Value types are often stored directly where they are used. Reference type instances live on the heap, and variables hold references to them. Swift's optimizer can change details, so do not treat stack vs heap as a rule for writing code.
+
+The practical rule is simpler: ask whether copies should be independent or shared.
+
+## Prefer values first
+
+Most Swift models should start as structs. They are easier to test, pass around, compare, and reason about.
+
+Use classes when you need identity, shared mutable state, inheritance from a framework type, or reference-based lifetime behavior.
+
+## What to carry forward
+
+- value semantics means copies are independent
+- reference semantics means names can share one instance
+- structs and enums are value types
+- classes are reference types
+- Swift code usually starts with value types
+- shared mutable state should be intentional
+
+Next, you will build models with structs, properties, and methods.

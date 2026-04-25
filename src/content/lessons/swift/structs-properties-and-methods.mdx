@@ -1,0 +1,92 @@
+---
+title: Structs, properties, and methods
+description: Learn how structs model data with stored properties, computed properties, and methods.
+course: swift
+status: published
+---
+
+A struct is Swift's default tool for modeling data. It groups related values and behavior into one type.
+
+## Stored properties
+
+Stored properties hold data:
+
+```swift
+struct Article {
+    let id: String
+    let title: String
+    var isFavorite: Bool
+}
+
+let article = Article(id: "a-1", title: "Swift basics", isFavorite: false)
+```
+
+Use `let` for properties that should not change after creation. Use `var` only when mutation is part of the model.
+
+## Computed properties
+
+A computed property calculates a value instead of storing it:
+
+```swift
+struct ReadingProgress {
+    let completedPages: Int
+    let totalPages: Int
+
+    var percentage: Double {
+        Double(completedPages) / Double(totalPages)
+    }
+}
+```
+
+Computed properties are useful for values derived from other stored data. They avoid storing duplicated state that can drift out of sync.
+
+## Methods
+
+Methods are functions attached to a type:
+
+```swift
+struct Cart {
+    var items: [String]
+
+    func contains(_ item: String) -> Bool {
+        items.contains(item)
+    }
+}
+```
+
+If a method changes a struct, mark it as `mutating`:
+
+```swift
+struct Counter {
+    private(set) var value = 0
+
+    mutating func increment() {
+        value += 1
+    }
+}
+```
+
+`private(set)` means code outside the struct can read `value` but cannot set it directly. This keeps mutation behind a clear method.
+
+## Static members
+
+Static members belong to the type itself, not an instance:
+
+```swift
+struct AppConfig {
+    static let supportEmail = "support@example.com"
+}
+```
+
+Use static constants for shared facts that do not depend on one instance.
+
+## What to carry forward
+
+- structs are Swift's default modeling tool
+- stored properties hold data
+- computed properties derive data
+- methods attach behavior to data
+- `mutating` marks methods that change a struct
+- static members belong to the type
+
+Next, you will compare structs with classes.

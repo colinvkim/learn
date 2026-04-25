@@ -1,0 +1,76 @@
+---
+title: Protocols and shared behavior
+description: Learn how protocols define capabilities that many types can adopt.
+course: swift
+status: published
+---
+
+A protocol describes behavior or data a type must provide. It says what a type can do without saying exactly how it does it.
+
+## Defining a protocol
+
+```swift
+protocol IdentifiableItem {
+    var id: String { get }
+}
+```
+
+Any type that conforms must provide an `id` property.
+
+```swift
+struct Article: IdentifiableItem {
+    let id: String
+    let title: String
+}
+```
+
+## Protocols describe capabilities
+
+Good protocols are usually small and capability-based:
+
+```swift
+protocol Searchable {
+    var searchableText: String { get }
+}
+```
+
+This says "this type can be searched." It does not force a class hierarchy or shared storage.
+
+## Using protocols as constraints
+
+Protocols let functions work with many concrete types:
+
+```swift
+func printID<T: IdentifiableItem>(_ item: T) {
+    print(item.id)
+}
+```
+
+The function can accept any type with an `id`.
+
+## Protocol conformance
+
+Types can conform to several protocols:
+
+```swift
+struct User: IdentifiableItem, Searchable {
+    let id: String
+    let name: String
+
+    var searchableText: String {
+        name
+    }
+}
+```
+
+This is composition. A type gains capabilities by conforming to small protocols.
+
+## What to carry forward
+
+- protocols describe required behavior
+- structs, enums, and classes can conform
+- small capability protocols are easier to reuse
+- protocols help avoid rigid inheritance trees
+- conformance should communicate what a type can safely do
+
+Next, you will organize behavior with extensions.

@@ -1,0 +1,83 @@
+---
+title: Command-line Swift
+description: Learn how Swift can run outside apps through simple command-line programs.
+course: swift
+status: published
+---
+
+Swift is not limited to Xcode apps. You can write small command-line programs for scripts, experiments, and tools.
+
+## A simple program
+
+A Swift file can contain top-level code:
+
+```swift
+let name = "Swift"
+print("Hello, \(name)")
+```
+
+Save it as `main.swift`, then run it:
+
+```bash
+swift main.swift
+```
+
+For larger tools, create a Swift package:
+
+```bash
+swift package init --type executable
+swift run
+```
+
+Swift Package Manager creates files for a buildable command-line project.
+
+## Reading arguments
+
+Command-line arguments are available through `CommandLine.arguments`:
+
+```swift
+let arguments = CommandLine.arguments
+
+if arguments.count > 1 {
+    print("Hello, \(arguments[1])")
+} else {
+    print("Usage: greet <name>")
+}
+```
+
+The first argument is the executable path. User-provided arguments start after that.
+
+## Basic input and output
+
+Use `print` for output:
+
+```swift
+print("Enter your name:")
+```
+
+Use `readLine()` for simple input:
+
+```swift
+if let name = readLine(), !name.isEmpty {
+    print("Hello, \(name)")
+}
+```
+
+`readLine()` returns an optional because input may be unavailable.
+
+## Why CLI practice helps app work
+
+Command-line Swift removes UI concerns. You can practice types, optionals, functions, decoding, errors, and tests in a smaller environment before adding SwiftUI.
+
+This is also useful for app tooling: data importers, local build helpers, migration scripts, and small developer utilities.
+
+## What to carry forward
+
+- Swift can run as scripts or executable packages
+- `swift main.swift` runs a simple file
+- Swift Package Manager can create command-line tools
+- `CommandLine.arguments` reads CLI arguments
+- `readLine()` returns an optional
+- CLI programs are useful for practicing core Swift without UI
+
+Next, you will learn generics for reusable typed code.

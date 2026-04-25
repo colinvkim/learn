@@ -1,0 +1,83 @@
+---
+title: SwiftUI state and bindings
+description: Learn @State, @Binding, and how local UI state moves between views.
+course: swift
+status: published
+---
+
+SwiftUI updates the interface when data changes. The key question is ownership: which view owns the data, and which views can read or change it?
+
+## @State
+
+Use `@State` for view-owned, temporary UI state:
+
+```swift
+struct SettingsView: View {
+    @State private var notificationsEnabled = true
+
+    var body: some View {
+        Toggle("Notifications", isOn: $notificationsEnabled)
+    }
+}
+```
+
+`@State` is for state that belongs to this view's position in the hierarchy. It is not persistent storage.
+
+## Binding
+
+A binding is a two-way connection to state owned elsewhere:
+
+```swift
+struct NotificationToggle: View {
+    @Binding var isOn: Bool
+
+    var body: some View {
+        Toggle("Notifications", isOn: $isOn)
+    }
+}
+```
+
+The parent owns the state:
+
+```swift
+struct SettingsView: View {
+    @State private var notificationsEnabled = true
+
+    var body: some View {
+        NotificationToggle(isOn: $notificationsEnabled)
+    }
+}
+```
+
+The `$` creates a binding.
+
+## One source of truth
+
+Do not duplicate the same state in multiple views. Store it in the least common ancestor that needs to coordinate it, then pass values or bindings down.
+
+Use a plain value when the child only needs to read:
+
+```swift
+ArticleRow(article: article)
+```
+
+Use a binding when the child should edit:
+
+```swift
+EditTitleField(title: $draftTitle)
+```
+
+## Keep state small
+
+Local state should be focused: selected tab, draft text, sheet visibility, toggle value, loading indicator. Data that belongs to the app or feature should move into a model or view model.
+
+## What to carry forward
+
+- `@State` stores view-owned temporary state
+- `@Binding` lets a child read and write state owned elsewhere
+- `$value` creates a binding
+- one source of truth prevents drift
+- read-only children should receive values, not bindings
+- persistent or feature-wide data belongs outside local view state
+
+Next, you will manage larger observable state.

@@ -1,0 +1,76 @@
+---
+title: Safe unwrapping and optional chaining
+description: Learn if let, guard let, nil coalescing, and optional chaining.
+course: swift
+status: published
+---
+
+An optional must be unwrapped before you use the value inside it. Swift gives you several safe tools for that.
+
+## if let
+
+Use `if let` when work should happen only if the value exists:
+
+```swift
+let avatarURL: URL? = URL(string: "https://example.com/avatar.png")
+
+if let avatarURL {
+    print("Load image from \(avatarURL)")
+} else {
+    print("Show placeholder")
+}
+```
+
+Inside the `if` block, `avatarURL` is a non-optional `URL`.
+
+## guard let
+
+Use `guard let` when the function cannot continue without the value:
+
+```swift
+func openProfile(id: String?) {
+    guard let id else {
+        print("Missing profile id")
+        return
+    }
+
+    print("Opening profile \(id)")
+}
+```
+
+`guard` keeps the main path at the left edge of the function.
+
+## Nil coalescing
+
+Use `??` when a default value is correct:
+
+```swift
+let displayName = nickname ?? fullName
+```
+
+This reads as: use `nickname` if it exists; otherwise use `fullName`.
+
+Only use a default when it preserves meaning. Replacing a missing price with `0` might be misleading. Replacing a missing subtitle with `""` may be fine.
+
+## Optional chaining
+
+Use `?.` to access a property or method only if the optional has a value:
+
+```swift
+let count = user.profile?.favoriteTags.count
+```
+
+If `profile` is `nil`, the whole expression becomes `nil` instead of crashing.
+
+Optional chaining is useful for display code, but do not let long chains hide important decisions. If missing data changes behavior, unwrap it and handle the case clearly.
+
+## What to carry forward
+
+- `if let` unwraps for a conditional block
+- `guard let` unwraps or exits early
+- `??` provides a default
+- `?.` safely continues through optional values
+- defaults should preserve meaning
+- visible handling beats hidden assumptions
+
+Next, you will store multiple values with Swift collections.

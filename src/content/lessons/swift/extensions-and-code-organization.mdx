@@ -1,0 +1,79 @@
+---
+title: Extensions and code organization
+description: Learn how extensions add behavior and keep Swift files organized.
+course: swift
+status: published
+---
+
+An extension adds functionality to an existing type. You can extend your own types, standard library types, and framework types.
+
+## Adding methods with extensions
+
+```swift
+struct Article {
+    let title: String
+    let body: String
+}
+
+extension Article {
+    var estimatedReadingMinutes: Int {
+        max(1, body.split(separator: " ").count / 200)
+    }
+}
+```
+
+This keeps derived behavior near the type without crowding the core stored properties.
+
+## Organizing protocol conformance
+
+Extensions are often used to group protocol conformance:
+
+```swift
+struct Article {
+    let id: String
+    let title: String
+}
+
+extension Article: Identifiable {}
+extension Article: Codable {}
+```
+
+This makes it easier to scan what the type supports.
+
+## Extending standard types
+
+You can add helpers to standard types:
+
+```swift
+extension String {
+    var trimmed: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+```
+
+Use this carefully. Extensions on common types are visible everywhere in a module, so they should be broadly useful and unsurprising.
+
+## File organization
+
+For small types, one file is enough. For larger features, group by feature instead of by technical layer:
+
+```text
+Features/
+  Articles/
+    Article.swift
+    ArticleListView.swift
+    ArticleViewModel.swift
+```
+
+Feature-based organization keeps related model, UI, and logic close together.
+
+## What to carry forward
+
+- extensions add behavior to existing types
+- computed properties and helper methods fit well in extensions
+- protocol conformance can be grouped in extensions
+- global extensions should be broadly useful
+- organize app code around features when projects grow
+
+Next, you will model operations that can fail with Swift errors.

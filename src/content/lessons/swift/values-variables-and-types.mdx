@@ -1,0 +1,78 @@
+---
+title: Values, variables, and types
+description: Learn how Swift names data with let and var, infers types, and uses immutability.
+course: swift
+status: published
+---
+
+Most Swift code starts by naming values. A **value** is a piece of data. A **constant** is a name that cannot be reassigned. A **variable** is a name that can be reassigned.
+
+Swift makes this distinction explicit with `let` and `var`.
+
+## Prefer let by default
+
+Use `let` when a name should not change:
+
+```swift
+let username = "colin"
+let maxAttempts = 3
+```
+
+Use `var` only when the value must change:
+
+```swift
+var attempts = 0
+attempts += 1
+```
+
+This habit matters. Immutable values are easier to reason about because readers know the name will keep the same value after it is created.
+
+## Type inference
+
+Swift can usually infer a type from the value:
+
+```swift
+let title = "Inbox"    // String
+let unreadCount = 12   // Int
+let isPinned = false   // Bool
+```
+
+Inference does not mean Swift is dynamically typed. The type is still fixed at compile time. Swift infers it once, then checks future uses against that type.
+
+```swift
+var count = 0
+count = 1      // OK
+count = "one"  // Error
+```
+
+## Explicit types
+
+Add a type annotation when it improves clarity or when Swift needs help:
+
+```swift
+let price: Double = 19
+let tags: [String] = []
+```
+
+The first example tells Swift that `19` should be treated as a `Double`, not an `Int`. The second example gives an empty array a specific element type.
+
+## Names should carry meaning
+
+Swift code is often read through types and names. Prefer names that explain the role of a value:
+
+```swift
+let retryDelaySeconds = 2
+let selectedArticleID = "a-204"
+```
+
+Avoid encoding type names into variable names unless it clarifies a boundary. `articleTitle` is better than `titleString` in most code.
+
+## What to carry forward
+
+- `let` creates a constant
+- `var` creates a variable
+- prefer `let` unless reassignment is needed
+- Swift infers types but still checks them at compile time
+- use explicit type annotations when they make intent clearer
+
+Next, you will work with Swift's most common primitive types.

@@ -1,0 +1,68 @@
+---
+title: Async, await, and throwing async code
+description: Learn how Swift writes asynchronous work clearly with async and await.
+course: swift
+status: published
+---
+
+Asynchronous code starts work now and finishes later. Network requests, file operations, timers, and long computations often behave this way.
+
+Swift uses `async` and `await` to make asynchronous code read like normal sequential code.
+
+## Async functions
+
+Mark a function `async` when callers must wait for its result:
+
+```swift
+func fetchArticles() async throws -> [Article] {
+    guard let url = URL(string: "https://example.com/articles") else {
+        throw URLError(.badURL)
+    }
+
+    let (data, _) = try await URLSession.shared.data(from: url)
+    return try JSONDecoder().decode([Article].self, from: data)
+}
+```
+
+This function is both asynchronous and throwing. It can suspend while waiting for the network, and it can fail.
+
+## Calling async functions
+
+Use `await` when calling an async function:
+
+```swift
+do {
+    let articles = try await fetchArticles()
+    print(articles.count)
+} catch {
+    print("Could not load articles: \(error)")
+}
+```
+
+`await` marks a possible suspension point. Other work may run while this function is waiting.
+
+## Sequential async work
+
+This code waits for each step before starting the next:
+
+```swift
+let user = try await fetchUser()
+let articles = try await fetchArticles(for: user.id)
+```
+
+Sequential work is right when the second operation depends on the first.
+
+## Keep async boundaries clear
+
+Do not hide network calls deep inside computed properties or random helpers. Async work should be visible in function signatures. That makes loading, errors, and UI states easier to reason about.
+
+## What to carry forward
+
+- `async` marks functions that can suspend
+- `await` marks calls that may wait
+- async functions can also be `throws`
+- use `do`, `try`, and `catch` with throwing async code
+- sequential awaits are correct when later work depends on earlier work
+- visible async boundaries make app behavior clearer
+
+Next, you will run independent async work concurrently.

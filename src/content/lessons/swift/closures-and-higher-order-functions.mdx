@@ -1,0 +1,94 @@
+---
+title: Closures and higher-order functions
+description: Learn closure syntax, trailing closures, captured values, and practical collection methods.
+course: swift
+status: published
+---
+
+A closure is a block of code that can be stored, passed around, and run later. Functions are named closures. Closure expressions are usually shorter and often appear as arguments.
+
+## Basic closure syntax
+
+```swift
+let double = { (number: Int) -> Int in
+    number * 2
+}
+
+double(4)
+```
+
+The `in` separates parameters and return type from the body.
+
+## Trailing closures
+
+When the last argument to a function is a closure, Swift lets you write it after the parentheses:
+
+```swift
+let names = ["Maya", "Noah", "Ava"]
+
+let shortNames = names.filter { name in
+    name.count <= 4
+}
+```
+
+This style is common in Swift and essential in SwiftUI.
+
+## Shorthand arguments
+
+For small closures, Swift provides `$0`, `$1`, and so on:
+
+```swift
+let uppercased = names.map { $0.uppercased() }
+```
+
+Use shorthand when the closure is obvious. Use named parameters when meaning would otherwise be hidden.
+
+## Capturing values
+
+Closures can capture values from surrounding scope:
+
+```swift
+func makePrefixer(prefix: String) -> (String) -> String {
+    { value in
+        "\(prefix)-\(value)"
+    }
+}
+
+let ticketID = makePrefixer(prefix: "ticket")
+ticketID("42")
+```
+
+The returned closure remembers `prefix` even after `makePrefixer` finishes.
+
+## Higher-order functions
+
+A higher-order function accepts a function or closure, or returns one. `map`, `filter`, and `reduce` are common examples:
+
+```swift
+struct Todo {
+    let title: String
+    let isDone: Bool
+}
+
+let tasks = [
+    Todo(title: "Review", isDone: true),
+    Todo(title: "Ship", isDone: false),
+]
+
+let remainingTitles = tasks
+    .filter { !$0.isDone }
+    .map { $0.title }
+```
+
+This reads as a data pipeline: keep unfinished tasks, then extract titles.
+
+## What to carry forward
+
+- closures are blocks of code you can pass around
+- trailing closures are common Swift style
+- shorthand arguments are useful for tiny closures
+- closures can capture surrounding values
+- `map`, `filter`, and `reduce` are tools for clear data transformations
+- prefer clarity over clever chains
+
+Next, you will learn why Swift cares so much about value and reference behavior.

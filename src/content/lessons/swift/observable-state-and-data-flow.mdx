@@ -1,0 +1,116 @@
+---
+title: Observable state and data flow
+description: Learn @StateObject, @ObservedObject, @Observable, and one-way data flow.
+course: swift
+status: published
+---
+
+Small views can use `@State`. Larger features often need a separate object that loads data, handles actions, and exposes state to views.
+
+## ObservableObject model
+
+This pattern is common in existing SwiftUI apps:
+
+```swift
+@MainActor
+final class ArticleListViewModel: ObservableObject {
+    @Published private(set) var articles: [Article] = []
+    @Published private(set) var isLoading = false
+
+    private let service: ArticleService
+
+    init(service: ArticleService = ArticleService()) {
+        self.service = service
+    }
+
+    func load() async {
+        isLoading = true
+        defer { isLoading = false }
+
+        do {
+            articles = try await service.fetchArticles()
+        } catch {
+            articles = []
+        }
+    }
+}
+```
+
+`@Published` tells SwiftUI that changes should update dependent views.
+
+## @StateObject
+
+Use `@StateObject` when a view creates and owns an observable object:
+
+```swift
+struct ArticleListView: View {
+    @StateObject private var viewModel = ArticleListViewModel()
+
+    var body: some View {
+        List(viewModel.articles) { article in
+            Text(article.title)
+        }
+        .task {
+            await viewModel.load()
+        }
+    }
+}
+```
+
+SwiftUI creates the object once for that view identity.
+
+## @ObservedObject
+
+Use `@ObservedObject` when a parent passes an existing observable object into a child:
+
+```swift
+struct ArticleToolbar: View {
+    @ObservedObject var viewModel: ArticleListViewModel
+
+    var body: some View {
+        Button("Refresh") {
+            Task { await viewModel.load() }
+        }
+    }
+}
+```
+
+The child observes but does not own the object.
+
+## Modern Observation
+
+On modern Apple platforms, Swift also has Observation:
+
+```swift
+import Observation
+
+@Observable
+final class ArticleStore {
+    var articles: [Article] = []
+}
+```
+
+Observation can work with SwiftUI state primitives such as `@State`. You will still see `ObservableObject`, `@Published`, `@StateObject`, and `@ObservedObject` in many real projects, especially when supporting older OS versions.
+
+## Data flow
+
+Prefer one-way data flow:
+
+- state lives in one owner
+- views render from state
+- user actions call methods
+- methods update state
+- SwiftUI re-renders affected views
+
+This makes bugs easier to trace.
+
+## What to carry forward
+
+- use observable objects for feature-level state
+- `@StateObject` creates and owns an `ObservableObject`
+- `@ObservedObject` observes an object owned elsewhere
+- `@Observable` is the newer Observation model on modern platforms
+- keep UI state updates on `@MainActor`
+- one-way data flow keeps SwiftUI apps understandable
+
+Next, you will build navigation, lists, and reusable components.

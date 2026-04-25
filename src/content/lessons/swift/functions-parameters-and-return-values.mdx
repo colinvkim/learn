@@ -1,0 +1,82 @@
+---
+title: Functions, parameters, and return values
+description: Learn how Swift functions name reusable behavior and communicate intent.
+course: swift
+status: published
+---
+
+A function gives a name to a piece of behavior. Good functions make code easier to read, test, and reuse.
+
+## Declaring a function
+
+Use `func`, then name the function, list parameters, and optionally return a value:
+
+```swift
+func greeting(for name: String) -> String {
+    return "Hello, \(name)"
+}
+
+let message = greeting(for: "Maya")
+```
+
+The `-> String` means the function returns a `String`.
+
+## Argument labels
+
+Swift separates parameter names from argument labels. Argument labels make call sites read like small sentences:
+
+```swift
+func sendEmail(to address: String, subject: String) {
+    print("Sending \(subject) to \(address)")
+}
+
+sendEmail(to: "maya@example.com", subject: "Welcome")
+```
+
+Inside the function, you use `address`. At the call site, you use `to:`.
+
+Use `_` when a label would add noise:
+
+```swift
+func square(_ number: Int) -> Int {
+    number * number
+}
+
+square(4)
+```
+
+## Default parameters
+
+Default values keep simple calls short while still allowing customization:
+
+```swift
+func log(_ message: String, level: String = "info") {
+    print("[\(level)] \(message)")
+}
+
+log("Started")
+log("Failed", level: "error")
+```
+
+## Functions should do one job
+
+Swift makes small functions pleasant. Prefer a function that validates one thing, formats one value, or performs one action over a large function that mixes rules, networking, and UI updates.
+
+```swift
+func isValidEmail(_ email: String) -> Bool {
+    email.contains("@") && email.contains(".")
+}
+```
+
+This function is not a perfect email validator, but it has a clear job and a clear result.
+
+## What to carry forward
+
+- functions name reusable behavior
+- parameters define inputs
+- return types define outputs
+- argument labels make call sites readable
+- default parameters reduce overloads and repeated code
+- small functions are easier to test and change
+
+Next, you will learn Swift's most important safety feature: optionals.

@@ -1,0 +1,76 @@
+---
+title: Actors and shared state
+description: Learn how actors protect mutable state in concurrent Swift code.
+course: swift
+status: published
+---
+
+Concurrency makes shared mutable state risky. If two tasks read and write the same value at the same time, behavior can become unpredictable.
+
+Actors protect state by allowing only one task at a time to access actor-isolated mutable data.
+
+## Defining an actor
+
+```swift
+actor DownloadTracker {
+    private var completedIDs: Set<String> = []
+
+    func markCompleted(id: String) {
+        completedIDs.insert(id)
+    }
+
+    func isCompleted(id: String) -> Bool {
+        completedIDs.contains(id)
+    }
+}
+```
+
+The set is isolated inside the actor.
+
+## Calling actor methods
+
+Access from outside the actor is asynchronous:
+
+```swift
+let tracker = DownloadTracker()
+
+await tracker.markCompleted(id: "file-1")
+let done = await tracker.isCompleted(id: "file-1")
+```
+
+`await` is required because another task may currently be using the actor.
+
+## When to use actors
+
+Use actors for shared mutable state that must be accessed from concurrent tasks:
+
+- in-memory caches
+- download progress trackers
+- shared counters
+- coordination services
+- background data stores
+
+Do not use actors for every model. Most app data can stay as structs passed through clear ownership paths.
+
+## MainActor
+
+UI updates belong on the main actor:
+
+```swift
+@MainActor
+final class ArticleViewModel: ObservableObject {
+    @Published private(set) var articles: [Article] = []
+}
+```
+
+`@MainActor` says this type's isolated state should be accessed on the main thread, which is where UI work happens.
+
+## What to carry forward
+
+- actors protect mutable state from concurrent access
+- actor-isolated state is accessed one task at a time
+- calls into actors often require `await`
+- use actors for shared mutable state, not ordinary data models
+- `@MainActor` is important for UI-facing state
+
+Next, you will move from Swift language foundations into SwiftUI.

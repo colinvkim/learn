@@ -1,0 +1,90 @@
+---
+title: Pattern matching with switch
+description: Learn practical pattern matching with enums, optionals, tuples, and conditions.
+course: swift
+status: published
+---
+
+Swift's `switch` does more than compare simple values. It can match shapes of data.
+
+## Matching enum data
+
+```swift
+enum LoginResult {
+    case success(userID: String)
+    case locked(until: Date)
+    case failed(reason: String)
+}
+
+switch result {
+case .success(let userID):
+    print("Welcome \(userID)")
+case .locked(let date):
+    print("Try again after \(date)")
+case .failed(let reason):
+    print(reason)
+}
+```
+
+Each case extracts only the data that exists for that state.
+
+## Matching optionals
+
+Optionals are enums under the hood. You can switch over them:
+
+```swift
+switch nickname {
+case .some(let value):
+    print(value)
+case .none:
+    print("No nickname")
+}
+```
+
+Most code uses `if let` or `guard let`, but seeing this helps explain why optionals fit Swift's model.
+
+## Matching tuples
+
+Tuples group a small number of values without defining a named type:
+
+```swift
+let response = (status: 404, hasCachedCopy: true)
+
+switch response {
+case (200, _):
+    print("Fresh data")
+case (400..<500, true):
+    print("Show cached copy")
+case (400..<500, false):
+    print("Show error")
+default:
+    print("Try again later")
+}
+```
+
+Use tuples for local grouping. Use structs when data crosses function boundaries or deserves a name.
+
+## Adding conditions
+
+Use `where` when a pattern also needs a condition:
+
+```swift
+switch articles.count {
+case 0:
+    print("No articles")
+case let count where count < 10:
+    print("Small list")
+default:
+    print("Large list")
+}
+```
+
+## What to carry forward
+
+- pattern matching checks data shape, not just equality
+- enum cases can extract associated values
+- optionals can be matched as `.some` and `.none`
+- tuples are useful for small local groupings
+- `where` adds a condition to a pattern
+
+Next, you will use protocols to describe shared behavior.

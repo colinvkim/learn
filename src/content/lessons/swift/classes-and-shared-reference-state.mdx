@@ -1,0 +1,79 @@
+---
+title: Classes and shared reference state
+description: Learn when classes are useful and why structs are usually preferred.
+course: swift
+status: published
+---
+
+Classes create reference types. Use them when shared identity matters.
+
+## Creating a class
+
+```swift
+class DownloadSession {
+    var progress: Double
+
+    init(progress: Double = 0) {
+        self.progress = progress
+    }
+}
+
+let first = DownloadSession()
+let second = first
+
+second.progress = 0.5
+print(first.progress) // 0.5
+```
+
+`first` and `second` refer to the same instance.
+
+## When identity matters
+
+Identity means "this exact object," not just equal data. A download session, database connection, audio player, cache, or long-lived view model may need identity.
+
+For plain data, identity is usually noise:
+
+```swift
+struct UserProfile {
+    let id: String
+    let name: String
+}
+```
+
+Two profiles with the same fields can be treated as the same data. A struct fits better.
+
+## Inheritance exists, but composition is often better
+
+Classes can inherit from other classes:
+
+```swift
+class Animal {}
+class Dog: Animal {}
+```
+
+Inheritance is less central in modern Swift than in older object-oriented code. Prefer small structs, protocols, and composition unless a framework requires subclassing or shared behavior is truly hierarchical.
+
+## Reference state needs care
+
+Shared mutable state can make bugs harder to trace:
+
+```swift
+final class SettingsStore {
+    var isDarkModeEnabled = false
+}
+```
+
+Any code with the same instance can change the setting. That may be correct, but make the ownership clear.
+
+Use `final` when a class is not designed for inheritance. It communicates intent and can help the compiler optimize.
+
+## What to carry forward
+
+- classes are reference types
+- multiple variables can share one class instance
+- use classes when identity or shared lifetime matters
+- prefer structs for plain data
+- prefer composition over inheritance in most Swift code
+- shared mutable state should have clear ownership
+
+Next, you will model limited states with enums.

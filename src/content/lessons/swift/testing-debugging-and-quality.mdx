@@ -1,0 +1,85 @@
+---
+title: Testing, debugging, and quality
+description: Learn where tests help, how to debug Swift code, and how to keep code readable.
+course: swift
+status: published
+---
+
+Testing and debugging are part of writing Swift, not cleanup after writing Swift. Good structure makes both easier.
+
+## Test logic first
+
+Unit tests are strongest when they target logic with clear inputs and outputs:
+
+```swift
+func testDisplayNameUsesNicknameWhenPresent() {
+    let user = User(firstName: "Maya", nickname: "Mo")
+
+    XCTAssertEqual(user.displayName, "Mo")
+}
+```
+
+Models, formatters, validators, parsers, services, and view models are easier to test than full UI flows.
+
+## Design for testability
+
+Inject dependencies instead of creating them deep inside methods:
+
+```swift
+@MainActor
+final class ArticleListViewModel: ObservableObject {
+    private let service: ArticleServiceProtocol
+
+    init(service: ArticleServiceProtocol) {
+        self.service = service
+    }
+}
+```
+
+Tests can pass a fake service that returns known data.
+
+## Debugging
+
+Use Xcode breakpoints to pause code and inspect values. Breakpoints are often better than adding many print statements because they let you explore state without changing source code.
+
+Use logging for events that matter after the app is running:
+
+```swift
+import os
+
+let logger = Logger(subsystem: "com.example.app", category: "networking")
+logger.info("Loaded articles")
+```
+
+Use error messages as clues. Swift compiler errors can be precise, but SwiftUI type errors can sometimes point near the problem instead of exactly at it. Simplify complex view bodies when errors become hard to read.
+
+## Code quality habits
+
+Prefer:
+
+- names that explain domain meaning
+- small functions with clear inputs and outputs
+- immutable values by default
+- structs and enums for data modeling
+- protocols at real boundaries
+- explicit error handling
+- readable code over clever code
+
+Avoid:
+
+- force unwraps in normal app code
+- hidden global state
+- massive view bodies
+- duplicating the same state in several places
+- generic abstractions before reuse exists
+
+## What to carry forward
+
+- test logic before UI
+- inject dependencies for test doubles
+- use breakpoints to inspect runtime state
+- use logging for meaningful app events
+- readable Swift favors clear names, small functions, and explicit state
+- code quality is mostly daily habits, not one final refactor
+
+Next, you will store app data.

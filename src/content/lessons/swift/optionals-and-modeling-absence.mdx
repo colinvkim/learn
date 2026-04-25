@@ -1,0 +1,84 @@
+---
+title: Optionals and modeling absence
+description: Learn what optionals are, why Swift uses them, and how they model missing values safely.
+course: swift
+status: published
+---
+
+Many real values can be missing. A user may not have a profile photo. A network response may not include a field. A search may find no result.
+
+Swift models that absence with **optionals**.
+
+## What an optional means
+
+An optional is a value that is either present or `nil`:
+
+```swift
+let nickname: String? = "Mo"
+let middleName: String? = nil
+```
+
+`String` and `String?` are different types. A plain `String` must contain text. A `String?` might contain text, or it might contain nothing.
+
+This difference is one of Swift's most important safety tools. If a value can be missing, the type says so.
+
+## Why Swift does this
+
+In many languages, `null` can appear almost anywhere. Code looks safe until a missing value appears at runtime and crashes the program.
+
+Swift makes missing values explicit:
+
+```swift
+func displayName(first: String, nickname: String?) -> String {
+    if let nickname {
+        return nickname
+    }
+
+    return first
+}
+```
+
+The compiler requires you to handle the optional before using it as a normal `String`.
+
+## Model absence, not failure
+
+Use optionals when absence is a normal possible state:
+
+```swift
+struct User {
+    let id: String
+    let name: String
+    let avatarURL: URL?
+}
+```
+
+An avatar may not exist. That is not necessarily an error.
+
+Do not use optionals to hide a problem that should be handled as an error:
+
+```swift
+func loadUser(id: String) async throws -> User
+```
+
+If loading can fail because the network is down or the server rejects the request, use errors. If a field may be missing by design, use an optional.
+
+## Avoid force unwraps
+
+`!` force unwraps an optional:
+
+```swift
+let name = nickname!
+```
+
+This says "trust me, it is present." If it is `nil`, the app crashes. Avoid force unwraps in normal code. They are rarely needed and often hide a missing model decision.
+
+## What to carry forward
+
+- `Type?` means a value may be present or `nil`
+- optionals make absence explicit in the type system
+- Swift requires safe handling before using optional values
+- use optionals for normal absence
+- use errors for failed operations
+- avoid force unwraps
+
+Next, you will practice safe ways to unwrap optionals.
