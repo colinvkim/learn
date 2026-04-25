@@ -1,0 +1,187 @@
+---
+type ControlValue = string | number | boolean;
+
+type ControlPreset = {
+  label: string;
+  description?: string;
+  values: Record<string, ControlValue>;
+};
+
+type ResponsiveState = {
+  viewport?: number;
+  container?: number;
+  mediaBreakpoint?: number;
+  containerBreakpoint?: number;
+};
+
+interface Props {
+  title?: string;
+  description?: string;
+  previewContent?: string;
+  mediaLabel?: string;
+  containerLabel?: string;
+  initial?: ResponsiveState;
+  presets?: ControlPreset[];
+}
+
+const {
+  title = "Responsive lab",
+  description = "Compare viewport media queries with component container queries.",
+  previewContent = "Component preview",
+  mediaLabel = "wide viewport",
+  containerLabel = "wide container",
+  initial = {},
+  presets = [],
+} = Astro.props;
+
+const id = `responsive-${crypto.randomUUID()}`;
+const state = {
+  viewport: initial.viewport ?? 760,
+  container: initial.container ?? 360,
+  mediaBreakpoint: initial.mediaBreakpoint ?? 700,
+  containerBreakpoint: initial.containerBreakpoint ?? 420,
+};
+const data = { state, mediaLabel, containerLabel };
+const hasSlot = Astro.slots.has("default");
+---
+
+<section
+  id={id}
+  data-responsive-lab
+  data-state={JSON.stringify(data)}
+  class="my-8 overflow-hidden rounded-3xl border border-line/80 bg-panel/92 shadow-soft"
+>
+  <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
+    <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">CSS Lab</p>
+    <h3 class="mt-2 text-lg font-semibold tracking-[-0.02em] text-ink">{title}</h3>
+    {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
+  </header>
+
+  <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+    <div class="min-w-0 space-y-4">
+      {presets.length > 0 && (
+        <div class="space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Presets</p>
+          <div class="flex flex-wrap gap-2">
+            {presets.map((preset) => (
+              <button type="button" data-responsive-preset={JSON.stringify(preset.values)} class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle" title={preset.description}>
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {(["viewport", "container", "mediaBreakpoint", "containerBreakpoint"] as const).map((key) => (
+        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <span class="flex items-center justify-between gap-3">
+            <span class="font-medium text-ink">
+              {key === "viewport" ? "Viewport width" : key === "container" ? "Container width" : key === "mediaBreakpoint" ? "@media breakpoint" : "@container breakpoint"}
+            </span>
+            <output data-responsive-output={key}>{state[key]}px</output>
+          </span>
+          <input data-responsive-control={key} type="range" min={key.includes("Breakpoint") ? 240 : 220} max={key === "viewport" || key === "mediaBreakpoint" ? 1100 : 760} value={state[key]} class="w-full accent-accent" />
+        </label>
+      ))}
+    </div>
+
+    <div class="min-w-0 space-y-4">
+      <div class="rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Preview</p>
+          <div class="flex flex-wrap gap-2 text-xs font-medium">
+            <span data-responsive-media-badge class="rounded-full border px-2 py-1"></span>
+            <span data-responsive-container-badge class="rounded-full border px-2 py-1"></span>
+          </div>
+        </div>
+
+        <div data-responsive-viewport class="mt-4 overflow-auto rounded-[1rem] border border-line/70 bg-panel/75 p-4">
+          <div data-responsive-container class="mx-auto rounded-[0.95rem] border border-accent/20 bg-accent-soft/40 p-3">
+            <div data-responsive-card class="grid gap-3 rounded-[0.85rem] border border-line/80 bg-panel p-4 shadow-soft">
+              <div class="min-h-20 rounded-[0.65rem] bg-accent/12"></div>
+              <div>
+                <p class="text-sm font-semibold text-ink">{hasSlot ? <slot /> : previewContent}</p>
+                <p data-responsive-copy class="mt-1 text-sm leading-6 text-muted"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <pre class="!my-0"><code data-responsive-css class="language-css"></code></pre>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const setBadge = (badge, active, text) => {
+      if (!badge) return;
+      badge.textContent = text;
+      badge.className = active
+        ? "rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-emerald-700 dark:text-emerald-300"
+        : "rounded-full border border-line bg-panel/70 px-2 py-1 text-muted";
+    };
+
+    const attach = () => {
+      document.querySelectorAll("[data-responsive-lab]").forEach((root) => {
+        if (!(root instanceof HTMLElement) || root.dataset.bound === "true") return;
+        root.dataset.bound = "true";
+        const config = JSON.parse(root.dataset.state || "{}");
+        const state = { ...config.state };
+        const viewport = root.querySelector("[data-responsive-viewport]");
+        const container = root.querySelector("[data-responsive-container]");
+        const card = root.querySelector("[data-responsive-card]");
+        const copy = root.querySelector("[data-responsive-copy]");
+        const mediaBadge = root.querySelector("[data-responsive-media-badge]");
+        const containerBadge = root.querySelector("[data-responsive-container-badge]");
+        const css = root.querySelector("[data-responsive-css]");
+
+        const read = () => {
+          root.querySelectorAll("[data-responsive-control]").forEach((control) => {
+            state[control.dataset.responsiveControl] = Number(control.value);
+          });
+        };
+        const writeControls = () => {
+          Object.entries(state).forEach(([key, value]) => {
+            const control = root.querySelector(`[data-responsive-control="${key}"]`);
+            if (control) control.value = value;
+          });
+        };
+        const render = () => {
+          read();
+          root.querySelectorAll("[data-responsive-output]").forEach((output) => {
+            output.textContent = `${state[output.dataset.responsiveOutput]}px`;
+          });
+          const mediaMatches = state.viewport >= state.mediaBreakpoint;
+          const containerMatches = state.container >= state.containerBreakpoint;
+          if (viewport instanceof HTMLElement) viewport.style.maxWidth = `${state.viewport}px`;
+          if (container instanceof HTMLElement) container.style.width = `${state.container}px`;
+          if (card instanceof HTMLElement) {
+            card.style.gridTemplateColumns = containerMatches ? "minmax(7rem, 0.8fr) 1fr" : "1fr";
+            card.style.backgroundColor = mediaMatches ? "color-mix(in oklch, var(--color-panel), var(--color-accent-soft) 34%)" : "";
+          }
+          setBadge(mediaBadge, mediaMatches, `@media ${mediaMatches ? "matches" : "off"}`);
+          setBadge(containerBadge, containerMatches, `@container ${containerMatches ? "matches" : "off"}`);
+          if (copy) copy.textContent = containerMatches
+            ? "Component changes because its own container has enough room."
+            : "Component stays compact until its container is wide enough.";
+          if (css) css.textContent = `@media (width >= ${state.mediaBreakpoint}px) {\n  .page {\n    --surface: var(--wide-surface);\n  }\n}\n\n.card-wrap {\n  container-type: inline-size;\n}\n\n@container (width >= ${state.containerBreakpoint}px) {\n  .card {\n    grid-template-columns: minmax(7rem, 0.8fr) 1fr;\n  }\n}`;
+        };
+
+        root.querySelectorAll("[data-responsive-control]").forEach((control) => control.addEventListener("input", render));
+        root.querySelectorAll("[data-responsive-preset]").forEach((button) => {
+          button.addEventListener("click", () => {
+            Object.assign(state, JSON.parse(button.dataset.responsivePreset || "{}"));
+            writeControls();
+            render();
+          });
+        });
+        writeControls();
+        render();
+      });
+    };
+    document.addEventListener("astro:page-load", attach);
+    attach();
+  })();
+</script>

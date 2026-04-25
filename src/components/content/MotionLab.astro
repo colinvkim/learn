@@ -1,0 +1,242 @@
+---
+type ControlValue = string | number | boolean;
+
+type ControlPreset = {
+  label: string;
+  description?: string;
+  values: Record<string, ControlValue>;
+};
+
+type MotionState = {
+  duration?: number;
+  timing?: string;
+  transform?: string;
+  opacity?: number;
+  mode?: "transition" | "keyframes" | "entry";
+  reduced?: boolean;
+};
+
+type MotionWarning = {
+  when: Record<string, ControlValue>;
+  text: string;
+};
+
+interface Props {
+  title?: string;
+  description?: string;
+  previewContent?: string;
+  initial?: MotionState;
+  presets?: ControlPreset[];
+  warnings?: MotionWarning[];
+}
+
+const {
+  title = "Motion lab",
+  description = "Tune motion and compare transition, keyframe, and entry-style snippets.",
+  previewContent = "Motion target",
+  initial = {},
+  presets = [],
+  warnings = [
+    { when: { transform: "layout-shift" }, text: "Animating layout properties is usually more disruptive than animating transform or opacity." },
+    { when: { duration: 1000 }, text: "Long motion can slow people down. Keep UI feedback brief unless the motion is the content." },
+  ],
+} = Astro.props;
+
+const id = `motion-${crypto.randomUUID()}`;
+const state = {
+  duration: initial.duration ?? 260,
+  timing: initial.timing ?? "ease",
+  transform: initial.transform ?? "translateY(-0.75rem)",
+  opacity: initial.opacity ?? 0.35,
+  mode: initial.mode ?? "transition",
+  reduced: initial.reduced ?? false,
+};
+const data = { state, warnings, reducedFromProps: initial.reduced !== undefined };
+const hasSlot = Astro.slots.has("default");
+---
+
+<section
+  id={id}
+  data-motion-lab
+  data-state={JSON.stringify(data)}
+  class="my-8 overflow-hidden rounded-3xl border border-line/80 bg-panel/92 shadow-soft"
+>
+  <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
+    <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">CSS Lab</p>
+    <h3 class="mt-2 text-lg font-semibold tracking-[-0.02em] text-ink">{title}</h3>
+    {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
+  </header>
+
+  <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+    <div class="min-w-0 space-y-4">
+      {presets.length > 0 && (
+        <div class="space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Presets</p>
+          <div class="flex flex-wrap gap-2">
+            {presets.map((preset) => (
+              <button type="button" data-motion-preset={JSON.stringify(preset.values)} class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle" title={preset.description}>
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <fieldset class="rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4">
+        <legend class="px-1 text-sm font-semibold text-ink">Snippet mode</legend>
+        <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Motion mode">
+          {(["transition", "keyframes", "entry"] as const).map((mode) => (
+            <label class="rounded-[0.9rem] border border-line/80 bg-panel/70 px-3 py-2 text-sm font-medium text-muted focus-within:ring-2 focus-within:ring-accent/25">
+              <input data-motion-control="mode" type="radio" name={`${id}-mode`} value={mode} class="sr-only" checked={state.mode === mode} />
+              <span class="capitalize">{mode}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+        <span class="flex items-center justify-between gap-3"><span class="font-medium text-ink">duration</span><output data-motion-output="duration">{state.duration}ms</output></span>
+        <input data-motion-control="duration" type="range" min="0" max="1200" step="20" value={state.duration} class="w-full accent-accent" />
+      </label>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <span class="font-medium text-ink">timing-function</span>
+          <select data-motion-control="timing" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+            {["ease", "linear", "ease-out", "cubic-bezier(0.22, 1, 0.36, 1)", "steps(4, end)"].map((value) => <option value={value} selected={state.timing === value}>{value}</option>)}
+          </select>
+        </label>
+        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <span class="font-medium text-ink">transform</span>
+          <select data-motion-control="transform" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+            {["translateY(-0.75rem)", "scale(0.94)", "rotate(-4deg)", "translateX(1rem)", "layout-shift"].map((value) => <option value={value} selected={state.transform === value}>{value}</option>)}
+          </select>
+        </label>
+      </div>
+
+      <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+        <span class="flex items-center justify-between gap-3"><span class="font-medium text-ink">starting opacity</span><output data-motion-output="opacity">{state.opacity}</output></span>
+        <input data-motion-control="opacity" type="range" min="0" max="1" step="0.05" value={state.opacity} class="w-full accent-accent" />
+      </label>
+
+      <label class="flex items-center gap-3 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+        <input data-motion-control="reduced" type="checkbox" class="h-4 w-4 accent-accent" checked={state.reduced} />
+        Simulate reduced motion
+      </label>
+    </div>
+
+    <div class="min-w-0 space-y-4">
+      <div class="rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Preview</p>
+          <button type="button" data-motion-play class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle">Replay</button>
+        </div>
+        <div class="mt-4 grid min-h-60 place-items-center rounded-[1rem] border border-line/70 bg-panel/75 p-5">
+          <div data-motion-target class="rounded-[0.95rem] border border-accent/20 bg-accent-soft/55 px-5 py-4 text-sm font-semibold text-ink shadow-soft">
+            {hasSlot ? <slot /> : previewContent}
+          </div>
+        </div>
+        <p data-motion-warning class="mt-3 rounded-[0.9rem] border border-amber-500/18 bg-amber-500/8 px-3 py-2 text-sm leading-6 text-amber-800 dark:text-amber-300" hidden></p>
+      </div>
+
+      <pre class="!my-0"><code data-motion-css class="language-css"></code></pre>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const attach = () => {
+      document.querySelectorAll("[data-motion-lab]").forEach((root) => {
+        if (!(root instanceof HTMLElement) || root.dataset.bound === "true") return;
+        root.dataset.bound = "true";
+        const config = JSON.parse(root.dataset.state || "{}");
+        const state = { ...config.state };
+        if (!config.reducedFromProps && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+          state.reduced = true;
+        }
+        const target = root.querySelector("[data-motion-target]");
+        const css = root.querySelector("[data-motion-css]");
+        const warning = root.querySelector("[data-motion-warning]");
+
+        const read = () => {
+          root.querySelectorAll("[data-motion-control]").forEach((control) => {
+            const key = control.dataset.motionControl;
+            if (control.type === "radio" && !control.checked) return;
+            state[key] = control.type === "checkbox" ? control.checked : control.type === "range" ? Number(control.value) : control.value;
+          });
+        };
+        const writeControls = () => {
+          root.querySelectorAll("[data-motion-control]").forEach((control) => {
+            const key = control.dataset.motionControl;
+            if (control.type === "radio") control.checked = control.value === state[key];
+            else if (control.type === "checkbox") control.checked = Boolean(state[key]);
+            else control.value = state[key];
+          });
+        };
+        const play = () => {
+          if (!(target instanceof HTMLElement)) return;
+          target.style.transition = "none";
+          target.style.opacity = String(state.reduced ? 1 : state.opacity);
+          if (state.transform === "layout-shift") {
+            target.style.marginInlineStart = state.reduced ? "0" : "2rem";
+            target.style.transform = "";
+          } else {
+            target.style.marginInlineStart = "0";
+            target.style.transform = state.reduced ? "none" : state.transform;
+          }
+          requestAnimationFrame(() => {
+            target.style.transition = state.reduced ? `opacity 80ms linear` : `opacity ${state.duration}ms ${state.timing}, transform ${state.duration}ms ${state.timing}, margin ${state.duration}ms ${state.timing}`;
+            target.style.opacity = "1";
+            target.style.transform = "none";
+            target.style.marginInlineStart = "0";
+          });
+        };
+        const render = () => {
+          read();
+          root.querySelectorAll("[data-motion-output]").forEach((output) => {
+            const key = output.dataset.motionOutput;
+            output.textContent = key === "duration" ? `${state.duration}ms` : String(state[key]);
+          });
+          root.querySelectorAll("[data-motion-control='mode']").forEach((input) => {
+            const label = input.closest("label");
+            label?.classList.toggle("border-accent/35", input.checked);
+            label?.classList.toggle("bg-accent-soft", input.checked);
+            label?.classList.toggle("text-ink", input.checked);
+          });
+          const activeWarning = (config.warnings || []).find((item) =>
+            Object.entries(item.when || {}).every(([key, value]) => {
+              if (key === "duration") return Number(state.duration) >= Number(value);
+              return state[key] === value;
+            }),
+          );
+          if (warning) {
+            warning.hidden = !activeWarning;
+            warning.textContent = activeWarning?.text || "";
+          }
+          if (css) {
+            const transform = state.transform === "layout-shift" ? "margin-inline-start: 2rem;" : `transform: ${state.transform};`;
+            if (state.mode === "transition") css.textContent = `.target {\n  transition:\n    opacity ${state.duration}ms ${state.timing},\n    transform ${state.duration}ms ${state.timing};\n}\n\n.target[data-state=\"entering\"] {\n  opacity: ${state.opacity};\n  ${transform}\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .target { transition-duration: 80ms; }\n}`;
+            if (state.mode === "keyframes") css.textContent = `@keyframes enter {\n  from {\n    opacity: ${state.opacity};\n    ${transform}\n  }\n}\n\n.target {\n  animation: enter ${state.duration}ms ${state.timing};\n}`;
+            if (state.mode === "entry") css.textContent = `.target {\n  transition:\n    opacity ${state.duration}ms ${state.timing},\n    transform ${state.duration}ms ${state.timing};\n\n  @starting-style {\n    opacity: ${state.opacity};\n    ${transform}\n  }\n}`;
+          }
+          play();
+        };
+
+        root.querySelectorAll("[data-motion-control]").forEach((control) => control.addEventListener("input", render));
+        root.querySelector("[data-motion-play]")?.addEventListener("click", play);
+        root.querySelectorAll("[data-motion-preset]").forEach((button) => {
+          button.addEventListener("click", () => {
+            Object.assign(state, JSON.parse(button.dataset.motionPreset || "{}"));
+            writeControls();
+            render();
+          });
+        });
+        writeControls();
+        render();
+      });
+    };
+    document.addEventListener("astro:page-load", attach);
+    attach();
+  })();
+</script>

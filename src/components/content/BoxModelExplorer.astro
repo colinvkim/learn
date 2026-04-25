@@ -1,0 +1,257 @@
+---
+type ControlValue = string | number | boolean;
+
+type ControlPreset = {
+  label: string;
+  description?: string;
+  values: Record<string, ControlValue>;
+};
+
+type BoxState = {
+  width?: number;
+  height?: number;
+  padding?: number;
+  border?: number;
+  margin?: number;
+  boxSizing?: "content-box" | "border-box";
+  overflow?: "visible" | "hidden" | "auto";
+};
+
+type ControlRanges = {
+  width?: [number, number];
+  height?: [number, number];
+  padding?: [number, number];
+  border?: [number, number];
+  margin?: [number, number];
+};
+
+interface Props {
+  title?: string;
+  description?: string;
+  previewContent?: string;
+  selector?: string;
+  initial?: BoxState;
+  ranges?: ControlRanges;
+  presets?: ControlPreset[];
+  showHeight?: boolean;
+  showOverflow?: boolean;
+}
+
+const {
+  title = "Box model explorer",
+  description = "Change content size, padding, border, and margin.",
+  previewContent = "Preview element",
+  selector = ".card",
+  initial = {},
+  ranges = {},
+  presets = [],
+  showHeight = true,
+  showOverflow = true,
+} = Astro.props;
+
+const id = `box-${crypto.randomUUID()}`;
+const state = {
+  width: initial.width ?? 220,
+  height: initial.height ?? 96,
+  padding: initial.padding ?? 20,
+  border: initial.border ?? 4,
+  margin: initial.margin ?? 16,
+  boxSizing: initial.boxSizing ?? "content-box",
+  overflow: initial.overflow ?? "visible",
+};
+const safeRanges = {
+  width: ranges.width ?? [120, 420],
+  height: ranges.height ?? [48, 220],
+  padding: ranges.padding ?? [0, 64],
+  border: ranges.border ?? [0, 20],
+  margin: ranges.margin ?? [0, 64],
+};
+const data = { state, selector };
+const hasSlot = Astro.slots.has("default");
+---
+
+<section
+  id={id}
+  data-box-model-explorer
+  data-state={JSON.stringify(data)}
+  class="my-8 overflow-hidden rounded-3xl border border-line/80 bg-panel/92 shadow-soft"
+>
+  <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
+    <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">CSS Lab</p>
+    <h3 class="mt-2 text-lg font-semibold tracking-[-0.02em] text-ink">{title}</h3>
+    {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
+  </header>
+
+  <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+    <div class="min-w-0 space-y-4">
+      {
+        presets.length > 0 && (
+          <div class="space-y-2">
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Presets</p>
+            <div class="flex flex-wrap gap-2">
+              {presets.map((preset) => (
+                <button type="button" data-box-preset={JSON.stringify(preset.values)} class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle" title={preset.description}>
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      <div class="grid gap-3">
+        {(["width", "height", "padding", "border", "margin"] as const).map((key) => (
+          (key !== "height" || showHeight) && (
+            <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+              <span class="flex items-center justify-between gap-3">
+                <span class="font-medium text-ink">{key}</span>
+                <output data-box-output={key}>{state[key]}px</output>
+              </span>
+              <input
+                data-box-control={key}
+                type="range"
+                min={safeRanges[key][0]}
+                max={safeRanges[key][1]}
+                value={state[key]}
+                class="w-full accent-accent"
+              />
+            </label>
+          )
+        ))}
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <span class="font-medium text-ink">box-sizing</span>
+          <select data-box-control="boxSizing" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+            <option value="content-box" selected={state.boxSizing === "content-box"}>content-box</option>
+            <option value="border-box" selected={state.boxSizing === "border-box"}>border-box</option>
+          </select>
+        </label>
+        {
+          showOverflow && (
+            <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+              <span class="font-medium text-ink">overflow</span>
+              <select data-box-control="overflow" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+                <option value="visible" selected={state.overflow === "visible"}>visible</option>
+                <option value="hidden" selected={state.overflow === "hidden"}>hidden</option>
+                <option value="auto" selected={state.overflow === "auto"}>auto</option>
+              </select>
+            </label>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="min-w-0 space-y-4">
+      <div class="rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4">
+        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Rendered element</p>
+        <div data-box-stage class="mt-4 min-h-76 overflow-auto rounded-[1rem] border border-line/70 bg-panel/75 p-4">
+          <div data-box-margin class="mx-auto bg-amber-400/12 p-[var(--box-margin)]">
+            <div data-box-border class="border-[length:var(--box-border)] border-sky-500/55 bg-sky-500/12 p-[var(--box-padding)]">
+              <div data-box-preview class="grid place-items-center rounded-[0.7rem] bg-panel px-3 text-center text-sm font-semibold text-ink shadow-soft">
+                {hasSlot ? <slot /> : previewContent}
+              </div>
+            </div>
+          </div>
+        </div>
+        <dl class="mt-3 grid gap-2 text-sm text-muted sm:grid-cols-2">
+          <div><dt class="font-medium text-ink">Outer size</dt><dd data-box-outer></dd></div>
+          <div><dt class="font-medium text-ink">Content box</dt><dd data-box-content></dd></div>
+        </dl>
+      </div>
+
+      <div class="grid grid-cols-4 gap-1 rounded-[1.15rem] border border-line/80 bg-canvas/58 p-3 text-center text-[0.7rem] font-semibold text-muted">
+        <div class="rounded-lg bg-amber-400/14 py-2">margin</div>
+        <div class="rounded-lg bg-sky-500/14 py-2">border</div>
+        <div class="rounded-lg bg-emerald-500/14 py-2">padding</div>
+        <div class="rounded-lg bg-panel py-2 text-ink">content</div>
+      </div>
+
+      <pre class="!my-0"><code data-box-css class="language-css"></code></pre>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const attach = () => {
+      document.querySelectorAll("[data-box-model-explorer]").forEach((root) => {
+        if (!(root instanceof HTMLElement) || root.dataset.bound === "true") return;
+        root.dataset.bound = "true";
+        const config = JSON.parse(root.dataset.state || "{}");
+        const state = { ...config.state };
+        const preview = root.querySelector("[data-box-preview]");
+        const margin = root.querySelector("[data-box-margin]");
+        const border = root.querySelector("[data-box-border]");
+        const outer = root.querySelector("[data-box-outer]");
+        const content = root.querySelector("[data-box-content]");
+        const css = root.querySelector("[data-box-css]");
+
+        const read = () => {
+          root.querySelectorAll("[data-box-control]").forEach((control) => {
+            const key = control.dataset.boxControl;
+            state[key] = control.type === "range" ? Number(control.value) : control.value;
+          });
+        };
+
+        const writeControls = () => {
+          Object.entries(state).forEach(([key, value]) => {
+            const control = root.querySelector(`[data-box-control="${key}"]`);
+            if (control) control.value = value;
+          });
+        };
+
+        const render = () => {
+          read();
+          root.querySelectorAll("[data-box-output]").forEach((output) => {
+            const key = output.dataset.boxOutput;
+            output.textContent = `${state[key]}px`;
+          });
+
+          const declaredWidth = state.width;
+          const declaredHeight = state.height;
+          const contentWidth = state.boxSizing === "border-box" ? Math.max(0, state.width - state.padding * 2 - state.border * 2) : state.width;
+          const contentHeight = state.boxSizing === "border-box" ? Math.max(0, state.height - state.padding * 2 - state.border * 2) : state.height;
+          const borderBoxWidth = state.boxSizing === "border-box" ? state.width : state.width + state.padding * 2 + state.border * 2;
+          const borderBoxHeight = state.boxSizing === "border-box" ? state.height : state.height + state.padding * 2 + state.border * 2;
+          const outerWidth = borderBoxWidth + state.margin * 2;
+          const outerHeight = borderBoxHeight + state.margin * 2;
+
+          if (root instanceof HTMLElement) {
+            root.style.setProperty("--box-margin", `${state.margin}px`);
+            root.style.setProperty("--box-padding", `${state.padding}px`);
+            root.style.setProperty("--box-border", `${state.border}px`);
+          }
+          if (preview instanceof HTMLElement) {
+            preview.style.width = `${contentWidth}px`;
+            preview.style.height = `${contentHeight}px`;
+            preview.style.overflow = state.overflow;
+          }
+          if (margin instanceof HTMLElement) margin.style.width = `${outerWidth}px`;
+          if (border instanceof HTMLElement) {
+            border.style.boxSizing = state.boxSizing;
+            border.style.width = `${declaredWidth}px`;
+            border.style.height = `${declaredHeight}px`;
+          }
+          if (outer) outer.textContent = `${outerWidth}px x ${outerHeight}px`;
+          if (content) content.textContent = `${contentWidth}px x ${contentHeight}px`;
+          if (css) css.textContent = `${config.selector} {\n  box-sizing: ${state.boxSizing};\n  width: ${state.width}px;\n  height: ${state.height}px;\n  padding: ${state.padding}px;\n  border: ${state.border}px solid currentColor;\n  margin: ${state.margin}px;\n  overflow: ${state.overflow};\n}`;
+        };
+
+        root.querySelectorAll("[data-box-control]").forEach((control) => control.addEventListener("input", render));
+        root.querySelectorAll("[data-box-preset]").forEach((button) => {
+          button.addEventListener("click", () => {
+            Object.assign(state, JSON.parse(button.dataset.boxPreset || "{}"));
+            writeControls();
+            render();
+          });
+        });
+        writeControls();
+        render();
+      });
+    };
+    document.addEventListener("astro:page-load", attach);
+    attach();
+  })();
+</script>

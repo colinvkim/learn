@@ -1,0 +1,344 @@
+---
+type ControlValue = string | number | boolean;
+
+type ControlPreset = {
+  label: string;
+  description?: string;
+  values: Record<string, ControlValue>;
+};
+
+type CascadeRule = {
+  id?: string;
+  label: string;
+  selector: string;
+  value: string;
+  specificity?: string | [number, number, number];
+  layer?: string;
+  layerRank?: number;
+  sourceOrder?: number;
+  important?: boolean;
+  inherited?: boolean;
+  enabled?: boolean;
+  note?: string;
+};
+
+type Explanation = {
+  when: Record<string, ControlValue>;
+  text: string;
+};
+
+interface Props {
+  title?: string;
+  description?: string;
+  property?: string;
+  targetLabel?: string;
+  previewContent?: string;
+  rules?: CascadeRule[];
+  presets?: ControlPreset[];
+  initial?: Record<string, ControlValue>;
+  explanations?: Explanation[];
+}
+
+const {
+  title = "Cascade inspector",
+  description = "Toggle competing declarations and see which one wins.",
+  property = "color",
+  targetLabel = "Selected element",
+  previewContent = "Button label",
+  rules = [
+    {
+      label: "Base button",
+      selector: "button",
+      value: "oklch(0.46 0.08 245)",
+      specificity: [0, 0, 1],
+      layer: "base",
+      layerRank: 1,
+      sourceOrder: 1,
+      enabled: true,
+    },
+    {
+      label: "Component class",
+      selector: ".button",
+      value: "oklch(0.52 0.12 150)",
+      specificity: [0, 1, 0],
+      layer: "components",
+      layerRank: 2,
+      sourceOrder: 2,
+      enabled: true,
+    },
+  ],
+  presets = [],
+  initial = {},
+  explanations = [],
+} = Astro.props;
+
+const id = `cascade-${crypto.randomUUID()}`;
+const data = { property, rules, initial, explanations };
+---
+
+<section
+  id={id}
+  data-cascade-inspector
+  data-state={JSON.stringify(data)}
+  class="my-8 overflow-hidden rounded-3xl border border-line/80 bg-panel/92 shadow-soft"
+>
+  <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
+    <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">
+      CSS Lab
+    </p>
+    <h3 class="mt-2 text-lg font-semibold tracking-[-0.02em] text-ink">{title}</h3>
+    {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
+  </header>
+
+  <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+    <div class="min-w-0 space-y-4">
+      {
+        presets.length > 0 && (
+          <div class="space-y-2">
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Presets</p>
+            <div class="flex flex-wrap gap-2">
+              {presets.map((preset) => (
+                <button
+                  type="button"
+                  data-cascade-preset={JSON.stringify(preset.values)}
+                  class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle"
+                  title={preset.description}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      <fieldset class="space-y-3 rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4">
+        <legend class="px-1 text-sm font-semibold text-ink">Cascade axes</legend>
+        <label class="flex items-center gap-3 text-sm text-muted">
+          <input data-cascade-axis="important" type="checkbox" class="h-4 w-4 accent-accent" checked={initial.important !== false} />
+          Honor <code>!important</code>
+        </label>
+        <label class="flex items-center gap-3 text-sm text-muted">
+          <input data-cascade-axis="layer" type="checkbox" class="h-4 w-4 accent-accent" checked={initial.layer !== false} />
+          Honor <code>@layer</code> order
+        </label>
+        <label class="flex items-center gap-3 text-sm text-muted">
+          <input data-cascade-axis="specificity" type="checkbox" class="h-4 w-4 accent-accent" checked={initial.specificity !== false} />
+          Honor specificity
+        </label>
+        <label class="flex items-center gap-3 text-sm text-muted">
+          <input data-cascade-axis="sourceOrder" type="checkbox" class="h-4 w-4 accent-accent" checked={initial.sourceOrder !== false} />
+          Honor source order
+        </label>
+      </fieldset>
+
+      <div class="space-y-3" data-cascade-rules>
+        {rules.map((rule, index) => (
+          <article
+            data-cascade-rule={index}
+            class="rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4"
+          >
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-semibold text-ink">{rule.label}</p>
+                <p class="mt-1 font-mono text-xs text-muted">{rule.selector} &#123; {property}: {rule.value}{rule.important ? " !important" : ""}; &#125;</p>
+              </div>
+              <label class="inline-flex items-center gap-2 text-xs font-medium text-muted">
+                <input data-cascade-rule-enabled type="checkbox" class="h-4 w-4 accent-accent" checked={rule.enabled !== false} />
+                Active
+              </label>
+            </div>
+            <div class="mt-3 grid gap-2 text-xs text-muted sm:grid-cols-2">
+              <label class="flex items-center gap-2">
+                <input data-cascade-rule-important type="checkbox" class="h-4 w-4 accent-accent" checked={rule.important} />
+                <code>!important</code>
+              </label>
+              <label class="flex items-center gap-2">
+                <input data-cascade-rule-inherited type="checkbox" class="h-4 w-4 accent-accent" checked={rule.inherited} />
+                Inherited
+              </label>
+              <span>Specificity <strong data-cascade-specificity class="font-semibold text-ink"></strong></span>
+              <span>Layer <strong class="font-semibold text-ink">{rule.layer ?? "none"}</strong></span>
+            </div>
+            {rule.note && <p class="mt-2 text-xs leading-5 text-muted">{rule.note}</p>}
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <div class="min-w-0 space-y-4">
+      <div class="rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4">
+        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Preview</p>
+        <div class="mt-4 grid min-h-38 place-items-center rounded-[1rem] border border-line/70 bg-panel/75 p-5">
+          <div data-cascade-preview class="rounded-[0.9rem] border border-current/25 bg-panel px-4 py-3 text-base font-semibold shadow-soft">
+            {previewContent}
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-muted">{targetLabel}</p>
+      </div>
+
+      <div class="rounded-[1.15rem] border border-line/80 bg-accent-soft/44 p-4">
+        <p class="text-sm font-semibold text-ink">Winning declaration</p>
+        <p data-cascade-winner class="mt-2 text-sm leading-6 text-muted" role="status"></p>
+        <p data-cascade-explanation class="mt-2 text-sm leading-6 text-muted"></p>
+      </div>
+
+      <pre class="!my-0"><code data-cascade-css class="language-css"></code></pre>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const specificityValue = (specificity) => {
+      if (Array.isArray(specificity)) return specificity;
+      if (typeof specificity === "string") {
+        return specificity.split(/[-,\s]+/).map((part) => Number.parseInt(part, 10) || 0).slice(0, 3);
+      }
+      return [0, 0, 0];
+    };
+
+    const compareSpecificity = (a, b) => {
+      for (let i = 0; i < 3; i += 1) {
+        if (a[i] !== b[i]) return a[i] - b[i];
+      }
+      return 0;
+    };
+
+    const axisReason = (winner, loser, axes) => {
+      if (axes.important && winner.important !== loser.important) return "`!important` outranks normal declarations.";
+      if (winner.inherited !== loser.inherited) return "Direct declarations beat inherited values.";
+      if (axes.layer && winner.layerRank !== loser.layerRank) {
+        return winner.important && loser.important
+          ? "Important declarations reverse normal layer order."
+          : "Later cascade layer wins among normal author rules.";
+      }
+      if (axes.specificity && compareSpecificity(winner.specificityScore, loser.specificityScore) !== 0) return "More specific selector wins.";
+      if (axes.sourceOrder && winner.sourceOrder !== loser.sourceOrder) return "Later source order wins after earlier ties.";
+      return "Enabled declarations tie closely; last active rule wins here.";
+    };
+
+    const attach = () => {
+      document.querySelectorAll("[data-cascade-inspector]").forEach((root) => {
+        if (!(root instanceof HTMLElement) || root.dataset.bound === "true") return;
+        root.dataset.bound = "true";
+        const config = JSON.parse(root.dataset.state || "{}");
+        const rules = config.rules || [];
+        const preview = root.querySelector("[data-cascade-preview]");
+        const winner = root.querySelector("[data-cascade-winner]");
+        const explanation = root.querySelector("[data-cascade-explanation]");
+        const css = root.querySelector("[data-cascade-css]");
+
+        const state = {
+          axes: {
+            important: config.initial?.important !== false,
+            layer: config.initial?.layer !== false,
+            specificity: config.initial?.specificity !== false,
+            sourceOrder: config.initial?.sourceOrder !== false,
+          },
+        };
+
+        rules.forEach((rule, index) => {
+          const row = root.querySelector(`[data-cascade-rule="${index}"]`);
+          if (!row) return;
+          const score = specificityValue(rule.specificity);
+          const scoreLabel = score.join("-");
+          const scoreNode = row.querySelector("[data-cascade-specificity]");
+          if (scoreNode) scoreNode.textContent = scoreLabel;
+        });
+
+        const readRules = () => rules.map((rule, index) => {
+          const row = root.querySelector(`[data-cascade-rule="${index}"]`);
+          const enabled = row?.querySelector("[data-cascade-rule-enabled]")?.checked ?? rule.enabled !== false;
+          const important = row?.querySelector("[data-cascade-rule-important]")?.checked ?? Boolean(rule.important);
+          const inherited = row?.querySelector("[data-cascade-rule-inherited]")?.checked ?? Boolean(rule.inherited);
+          return {
+            ...rule,
+            index,
+            enabled,
+            important,
+            inherited,
+            layerRank: Number(rule.layerRank ?? 0),
+            sourceOrder: Number(rule.sourceOrder ?? index + 1),
+            specificityScore: specificityValue(rule.specificity),
+          };
+        }).filter((rule) => rule.enabled);
+
+        const scoreRule = (rule) => [
+          state.axes.important && rule.important ? 1 : 0,
+          rule.inherited ? 0 : 1,
+          state.axes.layer ? (rule.important ? -rule.layerRank : rule.layerRank) : 0,
+          ...(state.axes.specificity ? rule.specificityScore : [0, 0, 0]),
+          state.axes.sourceOrder ? rule.sourceOrder : rule.index,
+        ];
+
+        const render = () => {
+          const active = readRules();
+          active.sort((a, b) => {
+            const left = scoreRule(a);
+            const right = scoreRule(b);
+            for (let i = 0; i < left.length; i += 1) {
+              if (left[i] !== right[i]) return left[i] - right[i];
+            }
+            return a.index - b.index;
+          });
+
+          const winning = active.at(-1);
+          if (preview instanceof HTMLElement) {
+            preview.style.removeProperty(config.property);
+            if (winning) preview.style.setProperty(config.property, winning.value);
+          }
+
+          if (!winning) {
+            if (winner) winner.textContent = "No active declarations.";
+            if (explanation) explanation.textContent = "Turn on at least one rule to compare cascade results.";
+            if (css) css.textContent = "";
+            return;
+          }
+
+          const runnerUp = active.at(-2);
+          if (winner) winner.textContent = `${winning.label}: ${config.property}: ${winning.value}${winning.important ? " !important" : ""}`;
+          if (explanation) {
+            const override = (config.explanations || []).find((item) =>
+              Object.entries(item.when || {}).every(([key, value]) => winning[key] === value || state.axes[key] === value),
+            );
+            explanation.textContent = override?.text ?? (runnerUp ? axisReason(winning, runnerUp, state.axes) : "Only one active declaration can win.");
+          }
+          if (css) {
+            css.textContent = active.map((rule) => `${rule.selector} {\n  ${config.property}: ${rule.value}${rule.important ? " !important" : ""};\n}`).join("\n\n");
+          }
+        };
+
+        root.querySelectorAll("[data-cascade-axis]").forEach((input) => {
+          input.addEventListener("change", () => {
+            state.axes[input.dataset.cascadeAxis] = input.checked;
+            render();
+          });
+        });
+
+        root.querySelectorAll("[data-cascade-rule] input").forEach((input) => {
+          input.addEventListener("change", render);
+        });
+
+        root.querySelectorAll("[data-cascade-preset]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const values = JSON.parse(button.dataset.cascadePreset || "{}");
+            Object.entries(values).forEach(([key, value]) => {
+              const axis = root.querySelector(`[data-cascade-axis="${key}"]`);
+              if (axis instanceof HTMLInputElement) {
+                axis.checked = Boolean(value);
+                state.axes[key] = Boolean(value);
+              }
+            });
+            render();
+          });
+        });
+
+        render();
+      });
+    };
+
+    document.addEventListener("astro:page-load", attach);
+    attach();
+  })();
+</script>

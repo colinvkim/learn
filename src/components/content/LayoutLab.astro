@@ -1,0 +1,252 @@
+---
+type ControlValue = string | number | boolean;
+
+type ControlPreset = {
+  label: string;
+  description?: string;
+  values: Record<string, ControlValue>;
+};
+
+type PreviewItem = {
+  label?: string;
+  className?: string;
+  content?: string;
+};
+
+type LayoutState = {
+  mode?: "flow" | "flex" | "grid";
+  gap?: number;
+  direction?: "row" | "column";
+  wrap?: boolean;
+  justify?: string;
+  align?: string;
+  columns?: string;
+  grow?: boolean;
+};
+
+interface Props {
+  title?: string;
+  description?: string;
+  items?: PreviewItem[];
+  presets?: ControlPreset[];
+  initial?: LayoutState;
+  modes?: Array<"flow" | "flex" | "grid">;
+  previewMinHeight?: string;
+  showGeneratedCss?: boolean;
+}
+
+const {
+  title = "Layout lab",
+  description = "Put the same items into normal flow, flexbox, or grid.",
+  items = [
+    { content: "Overview" },
+    { content: "Pricing" },
+    { content: "Docs" },
+    { content: "Support" },
+  ],
+  presets = [],
+  initial = {},
+  modes = ["flow", "flex", "grid"],
+  previewMinHeight = "18rem",
+  showGeneratedCss = true,
+} = Astro.props;
+
+const id = `layout-${crypto.randomUUID()}`;
+const state = {
+  mode: initial.mode ?? modes[0] ?? "flow",
+  gap: initial.gap ?? 16,
+  direction: initial.direction ?? "row",
+  wrap: initial.wrap ?? true,
+  justify: initial.justify ?? "flex-start",
+  align: initial.align ?? "stretch",
+  columns: initial.columns ?? "repeat(3, minmax(0, 1fr))",
+  grow: initial.grow ?? false,
+};
+const data = { state };
+---
+
+<section
+  id={id}
+  data-layout-lab
+  data-state={JSON.stringify(data)}
+  class="my-8 overflow-hidden rounded-3xl border border-line/80 bg-panel/92 shadow-soft"
+>
+  <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
+    <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">CSS Lab</p>
+    <h3 class="mt-2 text-lg font-semibold tracking-[-0.02em] text-ink">{title}</h3>
+    {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
+  </header>
+
+  <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+    <div class="min-w-0 space-y-4">
+      {presets.length > 0 && (
+        <div class="space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Presets</p>
+          <div class="flex flex-wrap gap-2">
+            {presets.map((preset) => (
+              <button type="button" data-layout-preset={JSON.stringify(preset.values)} class="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-muted transition hover:border-accent/35 hover:text-ink focus-ring-subtle" title={preset.description}>
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <fieldset class="rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4">
+        <legend class="px-1 text-sm font-semibold text-ink">Mode</legend>
+        <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Layout mode">
+          {modes.map((mode) => (
+            <label class="rounded-[0.9rem] border border-line/80 bg-panel/70 px-3 py-2 text-sm font-medium text-muted focus-within:ring-2 focus-within:ring-accent/25">
+              <input data-layout-control="mode" type="radio" name={`${id}-mode`} value={mode} class="sr-only" checked={state.mode === mode} />
+              <span class="capitalize">{mode}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <span class="flex items-center justify-between"><span class="font-medium text-ink">gap</span><output data-layout-output="gap">{state.gap}px</output></span>
+          <input data-layout-control="gap" type="range" min="0" max="48" value={state.gap} class="w-full accent-accent" />
+        </label>
+        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <span class="font-medium text-ink">justify-content</span>
+          <select data-layout-control="justify" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+            {["flex-start", "center", "space-between", "space-around", "space-evenly"].map((value) => <option value={value} selected={state.justify === value}>{value}</option>)}
+          </select>
+        </label>
+        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <span class="font-medium text-ink">align-items</span>
+          <select data-layout-control="align" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+            {["stretch", "flex-start", "center", "flex-end"].map((value) => <option value={value} selected={state.align === value}>{value}</option>)}
+          </select>
+        </label>
+        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <span class="font-medium text-ink">flex-direction</span>
+          <select data-layout-control="direction" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+            <option value="row" selected={state.direction === "row"}>row</option>
+            <option value="column" selected={state.direction === "column"}>column</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="grid gap-3">
+        <label class="flex items-center gap-3 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <input data-layout-control="wrap" type="checkbox" class="h-4 w-4 accent-accent" checked={state.wrap} />
+          Allow flex items to wrap
+        </label>
+        <label class="flex items-center gap-3 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <input data-layout-control="grow" type="checkbox" class="h-4 w-4 accent-accent" checked={state.grow} />
+          Let items grow
+        </label>
+        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <span class="font-medium text-ink">grid-template-columns</span>
+          <select data-layout-control="columns" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+            {["repeat(2, minmax(0, 1fr))", "repeat(3, minmax(0, 1fr))", "repeat(auto-fit, minmax(8rem, 1fr))", "minmax(10rem, 2fr) 1fr"].map((value) => <option value={value} selected={state.columns === value}>{value}</option>)}
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="min-w-0 space-y-4">
+      <div class="rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4">
+        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Preview</p>
+        <div data-layout-stage class="mt-4 rounded-[1rem] border border-line/70 bg-panel/75 p-4" style={`min-height: ${previewMinHeight}`}>
+          {items.map((item, index) => (
+            <div data-layout-item class:list={["rounded-[0.9rem] border border-accent/16 bg-accent-soft/55 px-4 py-3 text-sm font-semibold text-ink shadow-soft", item.className]}>
+              {item.content ?? item.label ?? `Item ${index + 1}`}
+            </div>
+          ))}
+        </div>
+        <p data-layout-explain class="mt-3 text-sm leading-6 text-muted" role="status"></p>
+      </div>
+
+      {showGeneratedCss && <pre class="!my-0"><code data-layout-css class="language-css"></code></pre>}
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const attach = () => {
+      document.querySelectorAll("[data-layout-lab]").forEach((root) => {
+        if (!(root instanceof HTMLElement) || root.dataset.bound === "true") return;
+        root.dataset.bound = "true";
+        const config = JSON.parse(root.dataset.state || "{}");
+        const state = { ...config.state };
+        const stage = root.querySelector("[data-layout-stage]");
+        const explain = root.querySelector("[data-layout-explain]");
+        const css = root.querySelector("[data-layout-css]");
+        const items = [...root.querySelectorAll("[data-layout-item]")];
+
+        const read = () => {
+          root.querySelectorAll("[data-layout-control]").forEach((control) => {
+            const key = control.dataset.layoutControl;
+            if (control.type === "radio" && !control.checked) return;
+            state[key] = control.type === "checkbox" ? control.checked : control.type === "range" ? Number(control.value) : control.value;
+          });
+        };
+
+        const writeControls = () => {
+          root.querySelectorAll("[data-layout-control]").forEach((control) => {
+            const key = control.dataset.layoutControl;
+            if (control.type === "radio") control.checked = control.value === state[key];
+            else if (control.type === "checkbox") control.checked = Boolean(state[key]);
+            else control.value = state[key];
+          });
+        };
+
+        const render = () => {
+          read();
+          const output = root.querySelector('[data-layout-output="gap"]');
+          if (output) output.textContent = `${state.gap}px`;
+          root.querySelectorAll("[data-layout-control='mode']").forEach((input) => {
+            const label = input.closest("label");
+            label?.classList.toggle("border-accent/35", input.checked);
+            label?.classList.toggle("bg-accent-soft", input.checked);
+            label?.classList.toggle("text-ink", input.checked);
+          });
+          if (stage instanceof HTMLElement) {
+            stage.style.display = state.mode === "flow" ? "block" : state.mode;
+            stage.style.gap = `${state.gap}px`;
+            stage.style.flexDirection = state.direction;
+            stage.style.flexWrap = state.wrap ? "wrap" : "nowrap";
+            stage.style.justifyContent = state.justify;
+            stage.style.alignItems = state.align;
+            stage.style.gridTemplateColumns = state.mode === "grid" ? state.columns : "";
+          }
+          items.forEach((item) => {
+            if (!(item instanceof HTMLElement)) return;
+            item.style.marginBlock = state.mode === "flow" ? `${state.gap / 2}px` : "0";
+            item.style.flex = state.grow ? "1 1 8rem" : "0 1 auto";
+          });
+          if (explain) {
+            explain.textContent = state.mode === "flow"
+              ? "Normal flow stacks block-level items in document order."
+              : state.mode === "flex"
+                ? "Flexbox distributes items along one main axis, then wraps when allowed."
+                : "Grid creates columns first, then places items into cells.";
+          }
+          if (css) {
+            if (state.mode === "flow") css.textContent = `.cluster > * + * {\n  margin-block-start: ${state.gap}px;\n}`;
+            if (state.mode === "flex") css.textContent = `.cluster {\n  display: flex;\n  flex-direction: ${state.direction};\n  flex-wrap: ${state.wrap ? "wrap" : "nowrap"};\n  justify-content: ${state.justify};\n  align-items: ${state.align};\n  gap: ${state.gap}px;\n}\n\n.cluster > * {\n  flex: ${state.grow ? "1 1 8rem" : "0 1 auto"};\n}`;
+            if (state.mode === "grid") css.textContent = `.cluster {\n  display: grid;\n  grid-template-columns: ${state.columns};\n  align-items: ${state.align};\n  gap: ${state.gap}px;\n}`;
+          }
+        };
+
+        root.querySelectorAll("[data-layout-control]").forEach((control) => control.addEventListener("input", render));
+        root.querySelectorAll("[data-layout-preset]").forEach((button) => {
+          button.addEventListener("click", () => {
+            Object.assign(state, JSON.parse(button.dataset.layoutPreset || "{}"));
+            writeControls();
+            render();
+          });
+        });
+        writeControls();
+        render();
+      });
+    };
+    document.addEventListener("astro:page-load", attach);
+    attach();
+  })();
+</script>

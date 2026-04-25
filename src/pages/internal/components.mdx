@@ -10,6 +10,12 @@ import Note from "../../components/content/Note.astro";
 import Tip from "../../components/content/Tip.astro";
 import Warning from "../../components/content/Warning.astro";
 import Steps from "../../components/content/Steps.astro";
+import CascadeInspector from "../../components/content/CascadeInspector.astro";
+import BoxModelExplorer from "../../components/content/BoxModelExplorer.astro";
+import LayoutLab from "../../components/content/LayoutLab.astro";
+import ResponsiveLab from "../../components/content/ResponsiveLab.astro";
+import MotionLab from "../../components/content/MotionLab.astro";
+import ColorLab from "../../components/content/ColorLab.astro";
 
 <PageShell size="reading" class="py-10 sm:py-12">
   <ContentArticle>
@@ -37,5 +43,73 @@ import Steps from "../../components/content/Steps.astro";
       <li>Open the project directory.</li>
       <li>Run <code>pnpm install</code>.</li>
     </Steps>
+
+    <h2>CSS Labs</h2>
+
+    <CascadeInspector
+      title="Why this declaration wins"
+      property="color"
+      previewContent="Save changes"
+      rules={[
+        { label: "Element rule", selector: "button", value: "oklch(0.52 0.02 255)", specificity: [0, 0, 1], layer: "base", layerRank: 1, sourceOrder: 1 },
+        { label: "Class rule", selector: ".primary", value: "oklch(0.5 0.12 245)", specificity: [0, 1, 0], layer: "components", layerRank: 2, sourceOrder: 2 },
+        { label: "Utility rule", selector: ".text-success", value: "oklch(0.55 0.13 150)", specificity: [0, 1, 0], layer: "utilities", layerRank: 3, sourceOrder: 3 },
+      ]}
+      presets={[
+        { label: "Use layers", values: { layer: true, specificity: true, sourceOrder: true } },
+        { label: "Specificity only", values: { layer: false, specificity: true, sourceOrder: false } },
+      ]}
+    />
+
+    <BoxModelExplorer
+      title="Card sizing"
+      previewContent="Product card"
+      initial={{ width: 240, height: 120, padding: 18, border: 2, margin: 16, boxSizing: "border-box" }}
+      presets={[
+        { label: "Button", values: { width: 150, height: 48, padding: 10, border: 2, margin: 8, boxSizing: "border-box" } },
+        { label: "Card", values: { width: 280, height: 140, padding: 24, border: 1, margin: 20, boxSizing: "border-box" } },
+      ]}
+    />
+
+    <LayoutLab
+      title="Navigation or cards"
+      items={[
+        { content: "Overview" },
+        { content: "Pricing" },
+        { content: "Docs" },
+        { content: "Support" },
+      ]}
+      presets={[
+        { label: "Navigation row", values: { mode: "flex", justify: "space-between", align: "center", gap: 12, grow: false } },
+        { label: "Card grid", values: { mode: "grid", columns: "repeat(auto-fit, minmax(8rem, 1fr))", gap: 18 } },
+      ]}
+    />
+
+    <ResponsiveLab
+      title="Viewport or container?"
+      previewContent="Profile summary"
+      presets={[
+        { label: "Wide page, narrow card", values: { viewport: 960, container: 320 } },
+        { label: "Narrow page, wide card", values: { viewport: 560, container: 520 } },
+      ]}
+    />
+
+    <MotionLab
+      title="Motion choices"
+      previewContent="Saved message"
+      presets={[
+        { label: "Subtle", values: { duration: 180, transform: "translateY(-0.75rem)", opacity: 0.2, mode: "transition" } },
+        { label: "Distracting", values: { duration: 1000, transform: "rotate(-4deg)", opacity: 0, mode: "keyframes" } },
+      ]}
+    />
+
+    <ColorLab
+      title="Contrast and tokens"
+      sampleText="Checkout summary"
+      presets={[
+        { label: "Readable", values: { foreground: "#111827", background: "#f8fafc", mixColor: "#2563eb", mixAmount: 8 } },
+        { label: "Low contrast", values: { foreground: "#94a3b8", background: "#f8fafc", mixColor: "#2563eb", mixAmount: 0 } },
+      ]}
+    />
   </ContentArticle>
 </PageShell>
