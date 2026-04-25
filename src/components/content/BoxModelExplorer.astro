@@ -74,7 +74,7 @@ const hasSlot = Astro.slots.has("default");
   id={id}
   data-box-model-explorer
   data-state={JSON.stringify(data)}
-  class="my-8 overflow-hidden rounded-3xl border border-line/80 bg-panel/92 shadow-soft"
+  class="my-8 overflow-hidden rounded-panel border border-line/80 bg-panel/92 shadow-soft"
 >
   <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
     <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">CSS Lab</p>
@@ -82,7 +82,7 @@ const hasSlot = Astro.slots.has("default");
     {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
   </header>
 
-  <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+  <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.82fr)]">
     <div class="min-w-0 space-y-4">
       {
         presets.length > 0 && (
@@ -102,7 +102,7 @@ const hasSlot = Astro.slots.has("default");
       <div class="grid gap-3">
         {(["width", "height", "padding", "border", "margin"] as const).map((key) => (
           (key !== "height" || showHeight) && (
-            <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+            <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
               <span class="flex items-center justify-between gap-3">
                 <span class="font-medium text-ink">{key}</span>
                 <output data-box-output={key}>{state[key]}px</output>
@@ -121,7 +121,7 @@ const hasSlot = Astro.slots.has("default");
       </div>
 
       <div class="grid gap-3 sm:grid-cols-2">
-        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+        <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
           <span class="font-medium text-ink">box-sizing</span>
           <select data-box-control="boxSizing" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
             <option value="content-box" selected={state.boxSizing === "content-box"}>content-box</option>
@@ -130,7 +130,7 @@ const hasSlot = Astro.slots.has("default");
         </label>
         {
           showOverflow && (
-            <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+            <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
               <span class="font-medium text-ink">overflow</span>
               <select data-box-control="overflow" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
                 <option value="visible" selected={state.overflow === "visible"}>visible</option>
@@ -144,9 +144,9 @@ const hasSlot = Astro.slots.has("default");
     </div>
 
     <div class="min-w-0 space-y-4">
-      <div class="rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4">
+      <div class="rounded-[1rem] border border-line/80 bg-canvas/45 p-4">
         <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Rendered element</p>
-        <div data-box-stage class="mt-4 min-h-76 overflow-auto rounded-[1rem] border border-line/70 bg-panel/75 p-4">
+        <div data-box-stage class="mt-4 min-h-76 overflow-auto rounded-[0.85rem] border border-line/70 bg-panel/75 p-4">
           <div data-box-margin class="mx-auto bg-amber-400/12 p-[var(--box-margin)]">
             <div data-box-border class="border-[length:var(--box-border)] border-sky-500/55 bg-sky-500/12 p-[var(--box-padding)]">
               <div data-box-preview class="grid place-items-center rounded-[0.7rem] bg-panel px-3 text-center text-sm font-semibold text-ink shadow-soft">
@@ -161,14 +161,19 @@ const hasSlot = Astro.slots.has("default");
         </dl>
       </div>
 
-      <div class="grid grid-cols-4 gap-1 rounded-[1.15rem] border border-line/80 bg-canvas/58 p-3 text-center text-[0.7rem] font-semibold text-muted">
+      <div class="grid grid-cols-4 gap-1 rounded-[1rem] border border-line/80 bg-canvas/45 p-3 text-center text-[0.7rem] font-semibold text-muted">
         <div class="rounded-lg bg-amber-400/14 py-2">margin</div>
         <div class="rounded-lg bg-sky-500/14 py-2">border</div>
         <div class="rounded-lg bg-emerald-500/14 py-2">padding</div>
         <div class="rounded-lg bg-panel py-2 text-ink">content</div>
       </div>
 
-      <pre class="!my-0"><code data-box-css class="language-css"></code></pre>
+      <details class="rounded-[1rem] border border-line/80 bg-canvas/45 p-4">
+        <summary class="cursor-pointer text-sm font-semibold text-ink focus-ring-subtle">
+          Generated CSS
+        </summary>
+        <pre class="!mb-0"><code data-box-css class="language-css"></code></pre>
+      </details>
     </div>
   </div>
 </section>

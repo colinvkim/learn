@@ -48,7 +48,7 @@ const data = { state };
   id={id}
   data-color-lab
   data-state={JSON.stringify(data)}
-  class="my-8 overflow-hidden rounded-3xl border border-line/80 bg-panel/92 shadow-soft"
+  class="my-8 overflow-hidden rounded-panel border border-line/80 bg-panel/92 shadow-soft"
 >
   <header class="border-b border-line/80 bg-canvas/55 px-5 py-4 dark:bg-canvas/24">
     <p class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted">CSS Lab</p>
@@ -56,7 +56,7 @@ const data = { state };
     {description && <p class="mt-1 text-sm leading-6 text-muted">{description}</p>}
   </header>
 
-  <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+  <div class="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.82fr)]">
     <div class="min-w-0 space-y-4">
       {presets.length > 0 && (
         <div class="space-y-2">
@@ -72,11 +72,11 @@ const data = { state };
       )}
 
       <div class="grid gap-3 sm:grid-cols-2">
-        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+        <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
           <span class="font-medium text-ink">foreground</span>
           <input data-color-control="foreground" type="color" value={state.foreground} class="h-10 w-full rounded-lg border border-line bg-panel p-1 focus-ring-subtle" />
         </label>
-        <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+        <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
           <span class="font-medium text-ink">background</span>
           <input data-color-control="background" type="color" value={state.background} class="h-10 w-full rounded-lg border border-line bg-panel p-1 focus-ring-subtle" />
         </label>
@@ -84,11 +84,11 @@ const data = { state };
 
       {showColorMix && (
         <div class="grid gap-3">
-          <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
             <span class="font-medium text-ink">mix color</span>
             <input data-color-control="mixColor" type="color" value={state.mixColor} class="h-10 w-full rounded-lg border border-line bg-panel p-1 focus-ring-subtle" />
           </label>
-          <label class="grid gap-2 rounded-[1rem] border border-line/80 bg-canvas/58 p-3 text-sm text-muted">
+          <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
             <span class="flex items-center justify-between gap-3"><span class="font-medium text-ink">mix amount</span><output data-color-output="mixAmount">{state.mixAmount}%</output></span>
             <input data-color-control="mixAmount" type="range" min="0" max="100" value={state.mixAmount} class="w-full accent-accent" />
           </label>
@@ -97,9 +97,9 @@ const data = { state };
     </div>
 
     <div class="min-w-0 space-y-4">
-      <div class="rounded-[1.15rem] border border-line/80 bg-canvas/58 p-4">
+      <div class="rounded-[1rem] border border-line/80 bg-canvas/45 p-4">
         <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Preview</p>
-        <div data-color-preview class="mt-4 rounded-[1rem] border border-line/70 p-5 shadow-soft">
+        <div data-color-preview class="mt-4 rounded-[0.85rem] border border-line/70 p-5 shadow-soft">
           <p class="text-xl font-semibold tracking-[-0.02em]">{sampleText}</p>
           <p class="mt-2 text-sm leading-6 opacity-80">Contrast must work before color choices can communicate.</p>
         </div>
@@ -110,7 +110,12 @@ const data = { state };
         </div>
       </div>
 
-      <pre class="!my-0"><code data-color-css class="language-css"></code></pre>
+      <details class="rounded-[1rem] border border-line/80 bg-canvas/45 p-4">
+        <summary class="cursor-pointer text-sm font-semibold text-ink focus-ring-subtle">
+          Generated CSS
+        </summary>
+        <pre class="!mb-0"><code data-color-css class="language-css"></code></pre>
+      </details>
     </div>
   </div>
 </section>
