@@ -13,6 +13,8 @@ Teach CSS as a system for designing resilient interfaces, not as a property ency
 
 Prefer stable, broadly usable features. Clearly label newer, experimental, or unevenly supported features, and teach how to check support with MDN, Baseline, caniuse, and @supports.
 
+Before writing lessons, check current MDN and Baseline/web.dev guidance for modern CSS features. Use current syntax and current browser-support reality, not memory. Prefer modern platform CSS over old workarounds when support is reasonable. When support is mixed, teach progressive enhancement instead of pretending every browser behaves the same.
+
 CSS Course Goal
 
 By the end, a learner should be able to:
@@ -38,6 +40,10 @@ Course principles
 - Teach normal flow before explicit layout systems.
 - Teach accessibility and browser behavior throughout.
 - Teach modern CSS, but separate daily-use features from emerging ones.
+- Use modern syntax in examples: media query range syntax, modern color functions, logical properties, custom properties, nesting, @layer, and @supports where appropriate.
+- Prefer container queries over viewport-only thinking when component responsiveness is the actual problem.
+- Prefer modern layout tools over legacy hacks: flex/grid over floats, gap over margin-only spacing systems, aspect-ratio over padding-ratio hacks, sticky over scroll listeners when CSS solves it.
+- Teach newer motion primitives as progressive enhancement: @starting-style, transition-behavior: allow-discrete, scroll/view timelines, and view transitions.
 - Use realistic examples: articles, nav, cards, forms, dashboards, dialogs, themes, responsive components.
 - Avoid old layout practices such as floats for page layout and table layouts.
 - Avoid framework-specific CSS except brief bridges to Tailwind, CSS modules, component CSS, etc.
