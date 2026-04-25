@@ -1,0 +1,195 @@
+---
+title: "CSS nesting and scoped styling"
+description: "Learn native CSS nesting, the & selector, nested at-rules, specificity, @scope, and safe scoped organization patterns."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+Native CSS nesting lets you write related selectors together:
+
+```css
+.card {
+  padding: 1rem;
+  border: 1px solid rgb(210 215 225);
+
+  h2 {
+    margin-block: 0;
+  }
+
+  a {
+    color: royalblue;
+  }
+}
+```
+
+The nested selectors are relative to `.card`.
+
+## The `&` selector
+
+`&` means the parent selector:
+
+```css
+.button {
+  background: royalblue;
+  color: white;
+
+  &:hover {
+    background: rgb(35 80 190);
+  }
+
+  &[aria-pressed="true"] {
+    box-shadow: inset 0 0 0 2px currentColor;
+  }
+}
+```
+
+Use `&` when the nested selector needs to combine with the parent.
+
+## Nesting at-rules
+
+At-rules can be nested:
+
+```css
+.card {
+  padding: 1rem;
+
+  @media (width >= 48rem) {
+    padding: 1.5rem;
+  }
+
+  @container (width >= 32rem) {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+  }
+}
+```
+
+This keeps responsive adjustments close to the component they affect.
+
+## Keep nesting shallow
+
+Nesting can become hard to read:
+
+```css
+.page {
+  .main {
+    .card {
+      .title {
+        a {
+          span {
+            color: red;
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+That creates deeply coupled selectors. Prefer one or two levels.
+
+## CSS nesting is not Sass
+
+Native CSS nesting does not concatenate class names:
+
+```css
+.card {
+  &__title {
+    /* Not a native CSS way to create .card__title */
+  }
+}
+```
+
+Write the full class:
+
+```css
+.card {
+  padding: 1rem;
+}
+
+.card__title {
+  margin-block: 0;
+}
+```
+
+## Scoped styling with `@scope`
+
+`@scope` limits selectors to a subtree:
+
+```css
+@scope (.profile-card) {
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  a {
+    color: royalblue;
+  }
+}
+```
+
+This styles `h2` and `a` only inside `.profile-card`.
+
+You can also define a lower boundary:
+
+```css
+@scope (.article) to (.comments) {
+  a {
+    text-decoration-thickness: 0.08em;
+  }
+}
+```
+
+The comments subtree is excluded.
+
+<Note title="@scope is newer">
+  <p>
+    `@scope` is Baseline 2025. It works in current browser releases, but may not work for older devices. Use it as progressive enhancement or keep a class-based fallback when your target browsers require it.
+  </p>
+</Note>
+
+## Component CSS without a framework
+
+You can organize plain CSS by component:
+
+```css
+@layer components {
+  .profile-card {
+    container: profile-card / inline-size;
+    padding: 1rem;
+
+    & h2 {
+      font-size: 1.25rem;
+    }
+
+    @container profile-card (width >= 30rem) {
+      & {
+        display: grid;
+        grid-template-columns: 8rem 1fr;
+      }
+    }
+  }
+}
+```
+
+This combines layers, nesting, and container queries while keeping the selector boundary clear.
+
+<Warning title="Nesting can hide specificity">
+  <p>
+    Nested CSS is still CSS. The browser calculates real selectors from it. If nested selectors become long, they still become specific and brittle.
+  </p>
+</Warning>
+
+## What to carry forward
+
+- native nesting groups related CSS
+- `&` refers to the parent selector
+- nested at-rules keep responsive adjustments near the component
+- keep nesting shallow
+- native CSS nesting does not concatenate class names like Sass
+- `@scope` limits selectors to a subtree, but it is newer and needs support awareness
+
+The next lesson uses modern color spaces and color mixing for more reliable palettes.

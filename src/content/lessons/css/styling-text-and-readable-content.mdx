@@ -1,0 +1,175 @@
+---
+title: "Styling text and readable content"
+description: "Learn font stacks, size, line height, measure, spacing, wrapping, and readable text defaults."
+course: css
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+Most pages are mostly text. Typography is not only aesthetics; it is how content becomes usable.
+
+CSS gives you control over font choice, size, weight, line height, measure, wrapping, and spacing.
+
+## Start with body text
+
+Good body text is the base of the page:
+
+```css
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgb(30 34 40);
+}
+```
+
+A system font stack is fast and reliable. Web fonts can be useful, but they add loading behavior you need to manage.
+
+## Font size
+
+Use `rem` for most font sizes:
+
+```css
+h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+
+.caption {
+  font-size: 0.875rem;
+}
+```
+
+Avoid making body text too small. Users can zoom, but your default should still be comfortable.
+
+## Line height
+
+Line height affects readability more than beginners expect:
+
+```css
+p {
+  line-height: 1.65;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.15;
+}
+```
+
+Use unitless line-height for text. It scales with font size and inherits more predictably.
+
+## Measure
+
+Measure is line length. Long lines are tiring to read.
+
+```css
+.article {
+  max-inline-size: 70ch;
+}
+```
+
+`ch` is useful because readable text width relates to character count, not screen width.
+
+## Spacing text content
+
+A simple content stack keeps rhythm:
+
+```css
+.article > * {
+  margin-block: 0;
+}
+
+.article > * + * {
+  margin-block-start: 1rem;
+}
+```
+
+That removes random default margins and adds spacing between direct children.
+
+## Wrapping
+
+Browsers wrap text automatically, but you can improve some cases:
+
+```css
+h1,
+h2 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+```
+
+`text-wrap: balance` helps short headings avoid awkward one-word last lines. `text-wrap: pretty` asks the browser to improve paragraph wrapping where supported.
+
+Use these as enhancements. Text remains readable without them.
+
+## Text alignment and decoration
+
+Use alignment with care:
+
+```css
+.hero {
+  text-align: center;
+}
+
+.price {
+  font-variant-numeric: tabular-nums;
+}
+```
+
+Centered text can work for short blocks. Long paragraphs are usually easier to read aligned to the inline start.
+
+For links, keep clear affordance:
+
+```css
+a {
+  color: royalblue;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+```
+
+Do not remove underlines unless another strong visual cue replaces them.
+
+## Web fonts, briefly
+
+Web fonts can strengthen a design, but they affect performance and rendering.
+
+Use them sparingly:
+
+```css
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter.woff2") format("woff2");
+  font-display: swap;
+}
+```
+
+`font-display: swap` lets text appear with a fallback font while the custom font loads.
+
+<Tip title="Typography first">
+  <p>
+    Before adding decoration, make body text comfortable. Strong typography makes even simple layouts feel intentional.
+  </p>
+</Tip>
+
+## What to carry forward
+
+- body text sets the tone for the whole interface
+- use readable defaults before styling special cases
+- `rem`, unitless `line-height`, and `ch` are practical text tools
+- limit line length for long-form content
+- keep links visibly recognizable
+- treat web fonts as assets with loading cost
+
+The next lesson adds color, backgrounds, borders, radius, and shadows without losing accessibility.

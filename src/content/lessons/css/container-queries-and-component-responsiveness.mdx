@@ -1,0 +1,130 @@
+---
+title: "Container queries and component responsiveness"
+description: "Learn @container, container-type, container units, component-first responsiveness, and progressive enhancement."
+course: css
+status: published
+---
+
+import ResponsiveLab from "../../../components/content/ResponsiveLab.astro";
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Media queries respond to the viewport. Container queries respond to an ancestor container.
+
+That difference matters for components. A card might be wide in the main column and narrow in a sidebar on the same page.
+
+## Create a query container
+
+First, declare a container:
+
+```css
+.course-card {
+  container-type: inline-size;
+}
+```
+
+Then query it:
+
+```css
+@container (width >= 32rem) {
+  .course-card__body {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    gap: 1rem;
+  }
+}
+```
+
+The card changes when its container is wide enough, not when the viewport is wide enough.
+
+## Named containers
+
+Use names when you need to target a specific ancestor:
+
+```css
+.course-card {
+  container: course-card / inline-size;
+}
+
+@container course-card (width >= 32rem) {
+  .course-card__title {
+    font-size: 1.5rem;
+  }
+}
+```
+
+Names keep queries clear when nested components each define containers.
+
+## Container units
+
+Container units are relative to the query container:
+
+```css
+.course-card__title {
+  font-size: clamp(1.125rem, 6cqi, 1.75rem);
+}
+```
+
+Useful units:
+
+- `cqi`: 1% of container inline size
+- `cqb`: 1% of container block size
+- `cqw`: 1% of container width
+- `cqh`: 1% of container height
+- `cqmin` and `cqmax`: smaller or larger container dimension
+
+Prefer logical units like `cqi` when writing direction should not matter.
+
+## Fallbacks and support
+
+Size container queries are broadly usable in modern browsers. Some newer container query types, such as scroll-state queries, have more uneven support.
+
+Use progressive enhancement when needed:
+
+```css
+.course-card__body {
+  display: grid;
+  gap: 1rem;
+}
+
+@supports (container-type: inline-size) {
+  .course-card {
+    container-type: inline-size;
+  }
+
+  @container (width >= 32rem) {
+    .course-card__body {
+      grid-template-columns: 10rem 1fr;
+    }
+  }
+}
+```
+
+The base layout works everywhere. The container-aware layout improves it where supported.
+
+<Note title="Container queries do not replace media queries">
+  <p>
+    Use media queries for page-wide conditions like viewport width, color scheme, motion preference, or pointer type. Use container queries when a component should respond to the size of the space it is placed in.
+  </p>
+</Note>
+
+<ResponsiveLab previewContent="Product card" />
+
+## What to carry forward
+
+- media queries respond to the viewport
+- container queries respond to an ancestor container
+- declare a container with `container-type` or `container`
+- use container queries for reusable components
+- container units like `cqi` make sizing follow component context
+- use `@supports` when relying on newer or unevenly supported features
+
+<Quiz
+  id="q-media-vs-container"
+  question="A card appears in both a narrow sidebar and a wide main column at the same viewport width. Which query is usually better for changing the card layout?"
+  options={["A container query", "A viewport media query", "A print media query"]}
+  correctIndex={0}
+  explanation="The card's own available space is the important condition, so a container query matches the problem."
+/>
+
+The next lesson covers logical properties and modern sizing tools that make responsive CSS more adaptable.

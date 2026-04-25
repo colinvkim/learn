@@ -1,0 +1,147 @@
+---
+title: "Keyframe animation"
+description: "Learn @keyframes, animation properties, timing, iteration, fill modes, loading states, attention cues, and reduced-motion alternatives."
+course: css
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+
+Transitions animate between states. Keyframe animations define a sequence.
+
+```css
+@keyframes pulse {
+  from {
+    opacity: 0.6;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.saving-indicator {
+  animation: pulse 900ms ease-in-out infinite alternate;
+}
+```
+
+## Animation properties
+
+The shorthand includes:
+
+```css
+.loader {
+  animation-name: spin;
+  animation-duration: 800ms;
+  animation-timing-function: linear;
+  animation-delay: 0ms;
+  animation-iteration-count: infinite;
+  animation-direction: normal;
+  animation-fill-mode: none;
+  animation-play-state: running;
+}
+```
+
+Common shorthand:
+
+```css
+.loader {
+  animation: spin 800ms linear infinite;
+}
+```
+
+## A spinner
+
+```css
+@keyframes spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+.spinner {
+  inline-size: 1.5rem;
+  aspect-ratio: 1;
+  border: 3px solid rgb(210 215 225);
+  border-block-start-color: royalblue;
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+```
+
+Use a real text label nearby:
+
+```html
+<span class="spinner" aria-hidden="true"></span>
+<span>Saving...</span>
+```
+
+CSS animation is visual. HTML should still provide accessible meaning.
+
+## Attention cues
+
+Short animations can guide attention:
+
+```css
+@keyframes highlight {
+  from {
+    background: rgb(255 244 180);
+  }
+
+  to {
+    background: transparent;
+  }
+}
+
+.comment:target {
+  animation: highlight 1.5s ease-out;
+}
+```
+
+Use attention cues sparingly. If everything moves, nothing stands out.
+
+## Fill modes
+
+`animation-fill-mode` controls styles before and after animation:
+
+```css
+.panel {
+  animation: enter 200ms ease-out both;
+}
+```
+
+`both` applies the first keyframe before the animation starts and keeps the final keyframe after it ends.
+
+## Reduced motion
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+
+  .comment:target {
+    animation: none;
+    outline: 3px solid currentColor;
+  }
+}
+```
+
+Replacing movement with outline, color, or text state is often better than simply removing feedback.
+
+<Warning title="Do not animate layout-heavy properties by default">
+  <p>
+    Animating `width`, `height`, `top`, or large layout changes can cause jank. Prefer opacity and transforms unless you have measured and tested the effect.
+  </p>
+</Warning>
+
+## What to carry forward
+
+- transitions animate between states; keyframes define sequences
+- `@keyframes` names steps in an animation
+- the `animation` shorthand attaches keyframes to elements
+- spinners and skeletons still need accessible text or structure
+- fill modes control before/after animation styles
+- reduced-motion alternatives should preserve feedback without unnecessary movement
+
+The next lesson uses scrolling and page changes as animation timelines.

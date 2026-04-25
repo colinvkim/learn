@@ -1,0 +1,164 @@
+---
+title: "Positioning and stacking contexts"
+description: "Learn static, relative, absolute, fixed, sticky, containing blocks, z-index, stacking contexts, and overlay basics."
+course: css
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+
+Most layout should use normal flow, flexbox, or grid. Positioning is for exceptions: badges, overlays, sticky headers, fixed controls, and precise offsets.
+
+## Position values
+
+Every element starts as:
+
+```css
+.box {
+  position: static;
+}
+```
+
+`static` means normal flow. Offsets like `inset-block-start` do not apply.
+
+`relative` keeps the element in normal flow, then offsets its visual position:
+
+```css
+.badge-anchor {
+  position: relative;
+}
+```
+
+`absolute` removes the element from normal flow and positions it relative to a containing block:
+
+```css
+.badge {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+}
+```
+
+`fixed` positions relative to the viewport:
+
+```css
+.toast {
+  position: fixed;
+  inset-block-end: 1rem;
+  inset-inline: 1rem;
+}
+```
+
+`sticky` behaves like normal flow until it reaches a threshold:
+
+```css
+.section-nav {
+  position: sticky;
+  inset-block-start: 1rem;
+}
+```
+
+## Containing blocks
+
+Absolutely positioned elements need an anchor. Common pattern:
+
+```css
+.card {
+  position: relative;
+}
+
+.card-status {
+  position: absolute;
+  inset-block-start: 0.75rem;
+  inset-inline-end: 0.75rem;
+}
+```
+
+The `.card` becomes the containing block for `.card-status`.
+
+## Logical offsets
+
+Prefer logical offsets over physical ones:
+
+```css
+.popover {
+  inset-block-start: 100%;
+  inset-inline-start: 0;
+}
+```
+
+Logical properties adapt better to writing modes and directions than `top`, `right`, `bottom`, and `left`.
+
+## `z-index`
+
+`z-index` affects stacking order for positioned elements and some other stacking contexts:
+
+```css
+.popover {
+  position: absolute;
+  z-index: 10;
+}
+```
+
+Higher values can appear above lower values, but only within the same stacking context.
+
+## Stacking contexts
+
+Some properties create new stacking contexts:
+
+```css
+.panel {
+  position: relative;
+  z-index: 0;
+}
+
+.faded {
+  opacity: 0.98;
+}
+
+.transformed {
+  transform: translateY(0);
+}
+```
+
+If `z-index` seems ignored, the element may be trapped inside a stacking context.
+
+<Warning title="Avoid z-index escalation">
+  <p>
+    If values climb from 10 to 1000 to 999999, the layout probably needs clearer overlay layers. Define a small z-index scale for header, menu, popover, modal, and toast.
+  </p>
+</Warning>
+
+## Overlay and popover basics
+
+CSS can style overlays, but HTML and JavaScript may own behavior:
+
+```css
+[popover] {
+  border: 1px solid rgb(210 215 225);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 16px 48px rgb(0 0 0 / 20%);
+}
+
+[popover]::backdrop {
+  background: rgb(0 0 0 / 30%);
+}
+```
+
+The Popover API and `<dialog>` provide semantics and browser behavior. CSS should not fake interactive behavior with hidden checkboxes when real platform controls fit the job.
+
+## Anchor positioning, briefly
+
+CSS anchor positioning is emerging. It lets positioned elements align to anchor elements without JavaScript measuring. Support is still uneven, so treat it as progressive enhancement and check MDN or caniuse before using it in production.
+
+## What to carry forward
+
+- use positioning for exceptions, not every layout
+- `relative` often creates an anchor for `absolute`
+- `fixed` attaches to the viewport
+- `sticky` needs a scroll context and an offset
+- `z-index` works inside stacking contexts
+- overlays need semantics and behavior beyond visual CSS
+
+The next lesson makes layouts responsive to viewport size.

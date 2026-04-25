@@ -1,0 +1,146 @@
+---
+title: "Cascade layers and CSS architecture"
+description: "Learn @layer, reset and base layers, component layers, utility layers, revert-layer, and organizing CSS without specificity fights."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Cascade layers let you define priority groups in CSS.
+
+```css
+@layer reset, base, components, utilities;
+```
+
+For normal declarations, layers listed later win over layers listed earlier.
+
+## Why layers help
+
+Without layers, architecture often relies on specificity and source order. Layers let you say:
+
+- reset styles are weakest
+- base element styles come next
+- component styles come next
+- utilities can intentionally override components
+
+```css
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
+
+@layer base {
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .button {
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+  }
+}
+
+@layer utilities {
+  .hidden {
+    display: none;
+  }
+}
+```
+
+## Layers beat specificity across layers
+
+This surprises people:
+
+```css
+@layer base, components;
+
+@layer base {
+  #signup .button {
+    color: gray;
+  }
+}
+
+@layer components {
+  .button {
+    color: white;
+  }
+}
+```
+
+The `.button` rule in `components` wins because that layer has higher priority than `base`.
+
+Specificity still matters inside the same layer.
+
+## Unlayered styles
+
+Unlayered author styles have higher priority than normal layered author styles. That can be useful, but it can also surprise you.
+
+Prefer putting project CSS into named layers intentionally.
+
+## `revert-layer`
+
+`revert-layer` rolls back the current layer's value:
+
+```css
+@layer components {
+  .button.plain {
+    all: revert-layer;
+  }
+}
+```
+
+Use it when a rule in a layer needs to opt out of earlier declarations in that same layer. It is more precise than fighting with overrides.
+
+## A small project structure
+
+Plain CSS can stay simple:
+
+```css
+@layer reset, tokens, base, layout, components, utilities;
+
+@import url("./reset.css") layer(reset);
+@import url("./tokens.css") layer(tokens);
+@import url("./base.css") layer(base);
+@import url("./layout.css") layer(layout);
+@import url("./components.css") layer(components);
+@import url("./utilities.css") layer(utilities);
+```
+
+You do not need this many files in a tiny site. The important idea is that broad styles should not accidentally overpower components.
+
+<Note title="Layers are daily-use CSS">
+  <p>
+    Cascade layers are well supported in modern browsers and are a strong alternative to specificity-heavy architecture. They are especially useful when mixing resets, third-party CSS, components, and utilities.
+  </p>
+</Note>
+
+## What to carry forward
+
+- `@layer` creates explicit cascade priority groups
+- later layers win over earlier layers for normal declarations
+- specificity is compared inside the winning layer
+- unlayered styles outrank normal layered styles
+- `revert-layer` rolls back declarations from the current layer
+- layers reduce specificity fights when used intentionally
+
+<Quiz
+  id="q-layer-specificity"
+  question="A low-specificity rule in a later layer conflicts with a high-specificity rule in an earlier layer. Which normal declaration wins?"
+  options={[
+    "The later layer's declaration",
+    "The higher-specificity selector always wins",
+    "Neither declaration applies",
+  ]}
+  correctIndex={0}
+  explanation="For normal author declarations, cascade layer priority is considered before specificity."
+/>
+
+The next lesson expands your selector toolkit with modern pseudo-classes.

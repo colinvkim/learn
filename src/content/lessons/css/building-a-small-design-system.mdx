@@ -1,0 +1,176 @@
+---
+title: "Building a small design system"
+description: "Learn how tokens, layers, components, variants, states, and utilities work together in plain CSS."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+A design system is a set of reusable decisions. It does not need to be large. Even a small site benefits from consistent tokens, components, and states.
+
+## Start with layers
+
+```css
+@layer reset, tokens, base, components, utilities;
+```
+
+This gives each kind of CSS a place.
+
+## Tokens
+
+```css
+@layer tokens {
+  :root {
+    --font-body: system-ui, sans-serif;
+    --color-page: oklch(99% 0.01 250);
+    --color-text: oklch(22% 0.02 250);
+    --color-muted: oklch(45% 0.03 250);
+    --color-border: oklch(88% 0.02 250);
+    --color-accent: oklch(56% 0.18 255);
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+  }
+}
+```
+
+Tokens should describe design choices you expect to reuse or vary.
+
+## Base styles
+
+```css
+@layer base {
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--color-page);
+    color: var(--color-text);
+    line-height: 1.6;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+}
+```
+
+Base styles make raw HTML usable.
+
+## Component: button
+
+```css
+@layer components {
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-block-size: 2.75rem;
+    padding-inline: var(--space-4);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background: var(--button-bg, var(--color-accent));
+    color: var(--button-text, white);
+    text-decoration: none;
+    transition:
+      background-color 160ms ease,
+      translate 160ms ease;
+  }
+
+  .button:hover {
+    background: color-mix(in oklab, var(--button-bg, var(--color-accent)), black 10%);
+  }
+
+  .button:active {
+    translate: 0 1px;
+  }
+
+  .button[data-variant="secondary"] {
+    --button-bg: transparent;
+    --button-text: var(--color-text);
+    border-color: var(--color-border);
+  }
+}
+```
+
+Variants change local variables instead of duplicating the component.
+
+## Component: card
+
+```css
+@layer components {
+  .card {
+    container: card / inline-size;
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-page);
+  }
+
+  .card > * {
+    margin-block: 0;
+  }
+
+  .card > * + * {
+    margin-block-start: var(--space-3);
+  }
+
+  @container card (width >= 28rem) {
+    .card[data-layout="media"] {
+      display: grid;
+      grid-template-columns: 8rem 1fr;
+      gap: var(--space-4);
+    }
+  }
+}
+```
+
+## Utilities
+
+Use utilities for small, stable exceptions:
+
+```css
+@layer utilities {
+  .cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+```
+
+Utilities should be boring and predictable.
+
+<Note title="Framework bridge">
+  <p>
+    Tailwind-style utility CSS uses many small classes instead of component CSS. CSS modules scope class names to components. Both ideas still depend on the same CSS fundamentals: cascade, specificity, layout, state, and responsive constraints.
+  </p>
+</Note>
+
+## What to carry forward
+
+- a design system is reusable decisions, not just a component library
+- layers keep resets, tokens, base styles, components, and utilities in order
+- tokens should be semantic and reusable
+- component variants can change local custom properties
+- utilities are best for small repeated layout or accessibility patterns
+- plain CSS can support component-oriented architecture without Sass or a framework
+
+The final lesson asks you to style a semantic multi-page site using the whole course.

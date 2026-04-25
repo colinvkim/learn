@@ -1,0 +1,130 @@
+---
+title: "Final project: Style a semantic site"
+description: "Build a small multi-page HTML site with responsive layout, theme tokens, accessible states, and modern CSS enhancements."
+course: css
+status: published
+---
+
+import Steps from "../../../components/content/Steps.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+The final project is to style a small semantic site. The HTML should already make sense without CSS. Your job is to turn it into a resilient interface.
+
+Use a site with:
+
+- home page
+- article or lesson page
+- listing page with cards
+- contact or signup form
+
+## Requirements
+
+Your CSS should include:
+
+- cascade layers
+- tokens with custom properties
+- readable typography
+- accessible color contrast
+- responsive page layout
+- flexbox for one-axis UI
+- grid for two-axis layout
+- at least one container query
+- logical properties for spacing and sizing
+- hover, focus-visible, active, disabled, and form validation states
+- reduced-motion handling
+- one purposeful transition
+- one progressive enhancement with `@supports`
+
+## Suggested file structure
+
+```text
+styles/
+├── main.css
+├── reset.css
+├── tokens.css
+├── base.css
+├── layout.css
+├── components.css
+└── utilities.css
+```
+
+Small projects can use fewer files. The structure matters less than clear boundaries.
+
+## Main stylesheet
+
+```css
+@layer reset, tokens, base, layout, components, utilities;
+
+@import url("./reset.css") layer(reset);
+@import url("./tokens.css") layer(tokens);
+@import url("./base.css") layer(base);
+@import url("./layout.css") layer(layout);
+@import url("./components.css") layer(components);
+@import url("./utilities.css") layer(utilities);
+```
+
+## Build steps
+
+<Steps>
+  <ol>
+    <li>Review the HTML and confirm the document works without styles.</li>
+    <li>Add reset and base styles.</li>
+    <li>Create tokens for color, type, spacing, radius, and motion.</li>
+    <li>Style body text, headings, links, lists, and media.</li>
+    <li>Build page layout with grid and header layout with flexbox.</li>
+    <li>Style cards, buttons, forms, callouts, and navigation.</li>
+    <li>Add responsive behavior with media queries and container queries.</li>
+    <li>Add focus, validation, current-page, disabled, and reduced-motion states.</li>
+    <li>Add one modern enhancement guarded by `@supports`.</li>
+    <li>Debug with devtools at narrow, medium, wide, zoomed, dark-mode, and keyboard-only states.</li>
+  </ol>
+</Steps>
+
+## Example enhancement
+
+```css
+.card {
+  border: 1px solid var(--border);
+}
+
+@supports selector(.card:has(:focus-visible)) {
+  .card:has(:focus-visible) {
+    outline: 3px solid var(--focus);
+    outline-offset: 4px;
+  }
+}
+```
+
+The card still works without `:has()`. Browsers with support get a nicer focus treatment.
+
+## Review checklist
+
+Before you call the project done, check:
+
+- content does not overflow at 320px wide
+- text remains readable at 200% zoom
+- focus is visible on every interactive element
+- links look like links
+- form errors are not color-only
+- dark mode still has contrast
+- reduced-motion mode avoids unnecessary movement
+- no component depends on hover only
+- no `z-index` value is random
+- no selector needs a long DOM chain to work
+- devtools show no unsupported declarations you rely on
+
+<Warning title="Do not style around broken HTML">
+  <p>
+    If the layout is hard because the document has the wrong elements or missing labels, fix the HTML first. CSS should present structure, not hide structural problems.
+  </p>
+</Warning>
+
+## What to carry forward
+
+- CSS is a system for resolving conflicts, sizing boxes, arranging layout, presenting state, and adapting to context
+- resilient CSS starts with meaningful HTML
+- modern CSS is useful when paired with support checks and progressive enhancement
+- accessibility belongs in every visual decision
+- devtools are part of the authoring workflow
+
+After this project, you should be able to read a design, inspect the HTML, choose layout tools, define tokens, style states, and debug the cascade without treating CSS as a mystery.

@@ -1,0 +1,161 @@
+---
+title: "Custom properties and design tokens"
+description: "Learn CSS variables, fallback values, inheritance, component-local variables, themes, and when tokens help."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+Custom properties let CSS store reusable values:
+
+```css
+:root {
+  --color-accent: oklch(55% 0.18 255);
+  --space-4: 1rem;
+}
+
+.button {
+  padding: var(--space-4);
+  background: var(--color-accent);
+}
+```
+
+They are often called CSS variables. The official term is custom properties.
+
+## Why custom properties matter
+
+Custom properties keep repeated decisions in one place:
+
+```css
+:root {
+  --font-body: system-ui, sans-serif;
+  --radius-card: 0.5rem;
+  --color-text: rgb(25 28 34);
+  --color-surface: white;
+}
+```
+
+These values become design tokens: named decisions that components can share.
+
+## `var()` and fallbacks
+
+Use `var()` to read a custom property:
+
+```css
+.card {
+  border-radius: var(--radius-card);
+}
+```
+
+You can provide a fallback:
+
+```css
+.badge {
+  background: var(--badge-bg, rgb(235 240 250));
+}
+```
+
+The fallback is used if `--badge-bg` is not defined.
+
+## Custom properties inherit
+
+Custom properties inherit by default:
+
+```css
+:root {
+  --button-bg: royalblue;
+}
+
+.danger-zone {
+  --button-bg: crimson;
+}
+
+.button {
+  background: var(--button-bg);
+}
+```
+
+A `.button` inside `.danger-zone` uses crimson. This makes local theming possible without new selector chains.
+
+## Component-local variables
+
+Components can define private knobs:
+
+```css
+.alert {
+  --alert-color: rgb(160 60 20);
+  color: var(--alert-color);
+  border-inline-start: 4px solid currentColor;
+  background: color-mix(in oklab, var(--alert-color), white 88%);
+}
+
+.alert[data-tone="success"] {
+  --alert-color: rgb(20 120 80);
+}
+```
+
+The component's structure stays the same. The tone changes one variable.
+
+## Theme tokens
+
+Theme values often live at `:root`:
+
+```css
+:root {
+  color-scheme: light dark;
+  --page: white;
+  --text: rgb(25 28 34);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: rgb(15 17 22);
+    --text: rgb(236 239 244);
+  }
+}
+```
+
+Then components use semantic tokens:
+
+```css
+body {
+  background: var(--page);
+  color: var(--text);
+}
+```
+
+## When variables make CSS harder
+
+Do not turn every value into a variable:
+
+```css
+.card {
+  border-width: var(--card-border-width);
+}
+```
+
+If a value appears once and has no meaningful design role, a variable may add indirection without benefit.
+
+Use variables when:
+
+- a value repeats
+- a value changes by theme, state, or component context
+- a name clarifies design intent
+- JavaScript needs to set a style hook without rewriting many declarations
+
+<Note title="@property exists for typed variables">
+  <p>
+    The <code>@property</code> rule can register a custom property with a syntax, initial value, and inheritance behavior. It is useful for animating custom properties and preventing invalid values. It is newer than ordinary custom properties, so this course returns to it after the basics are stable.
+  </p>
+</Note>
+
+## What to carry forward
+
+- custom properties store reusable CSS values
+- `var(--name, fallback)` reads a custom property with an optional fallback
+- custom properties inherit by default
+- tokens should name design decisions, not every literal value
+- component-local variables are useful for variants and themes
+
+The next lesson explains normal flow, the default layout system all other layout builds on.

@@ -1,0 +1,140 @@
+---
+title: "Transitions and transforms"
+description: "Learn transition properties, durations, timing functions, delays, transforms, individual transform properties, and responsible motion."
+course: css
+status: published
+---
+
+import MotionLab from "../../../components/content/MotionLab.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Transitions animate between two states. They are ideal for hover, focus, open, selected, and changed states.
+
+```css
+.button {
+  background: royalblue;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.button:hover {
+  background: rgb(35 80 190);
+  transform: translateY(-1px);
+}
+```
+
+## Transition parts
+
+The longhand properties are:
+
+```css
+.card {
+  transition-property: opacity, transform;
+  transition-duration: 180ms;
+  transition-timing-function: ease-out;
+  transition-delay: 0ms;
+}
+```
+
+The shorthand is common:
+
+```css
+.card {
+  transition:
+    opacity 180ms ease-out,
+    transform 180ms ease-out;
+}
+```
+
+Prefer naming properties. `transition: all` can animate unexpected properties and make performance harder to reason about.
+
+## Transforms
+
+Transforms move, rotate, scale, or skew an element without changing normal layout:
+
+```css
+.card:hover {
+  transform: translateY(-2px) scale(1.01);
+}
+```
+
+Modern individual transform properties are easier to compose:
+
+```css
+.card {
+  translate: 0;
+  scale: 1;
+  transition:
+    translate 160ms ease,
+    scale 160ms ease;
+}
+
+.card:hover {
+  translate: 0 -2px;
+  scale: 1.01;
+}
+```
+
+## Performant motion
+
+The safest properties to animate are usually:
+
+- `opacity`
+- `transform` or individual transform properties
+
+Animating layout-heavy properties like `width`, `height`, `top`, or `margin` can cause more work because the browser must recalculate layout.
+
+## Motion with purpose
+
+Use transitions to:
+
+- show that a control is interactive
+- connect state changes
+- reduce abruptness
+- guide attention
+
+Avoid motion that:
+
+- delays the task
+- distracts from reading
+- moves large content unexpectedly
+- ignores reduced-motion preferences
+
+## Reduced motion
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition-duration: 0.01ms;
+  }
+
+  .card:hover {
+    translate: 0;
+    scale: 1;
+  }
+}
+```
+
+You can keep color or border changes while removing movement.
+
+<MotionLab previewContent="Toast message" />
+
+## What to carry forward
+
+- transitions animate between states
+- name transition properties instead of using `all`
+- transforms change visual position without normal layout
+- opacity and transforms are usually safest to animate
+- motion should communicate state, not decorate every interaction
+- respect `prefers-reduced-motion`
+
+<Quiz
+  id="q-transition-vs-animation"
+  question="Which is usually the best fit for a button changing color on hover?"
+  options={["A transition", "A keyframe animation", "A scroll timeline"]}
+  correctIndex={0}
+  explanation="A transition is designed for animating between two states, such as normal and hover."
+/>
+
+The next lesson covers entry and exit motion for elements that appear, disappear, or enter the top layer.

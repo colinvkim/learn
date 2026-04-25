@@ -1,0 +1,166 @@
+---
+title: "Styling forms and interactive states"
+description: "Learn hover, focus, active, disabled, required, invalid, checked, placeholder-shown, and form styling that preserves semantics."
+course: css
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Forms are semantic HTML. CSS should make them clear without hiding their meaning.
+
+Start with real form controls:
+
+```html
+<label for="email">Email</label>
+<input id="email" name="email" type="email" required />
+```
+
+Then style the controls:
+
+```css
+label {
+  display: block;
+  font-weight: 600;
+}
+
+input {
+  inline-size: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgb(170 180 195);
+  border-radius: 0.375rem;
+  font: inherit;
+}
+```
+
+## Interaction states
+
+Buttons and links need state styles:
+
+```css
+.button {
+  background: royalblue;
+  color: white;
+  border: 0;
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+}
+
+.button:hover {
+  background: rgb(35 80 190);
+}
+
+.button:active {
+  translate: 0 1px;
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+```
+
+Hover is not universal. Touch devices may not have hover, so do not make essential information hover-only.
+
+## Focus and focus-visible
+
+Focus shows which control receives keyboard input:
+
+```css
+:focus-visible {
+  outline: 3px solid color-mix(in oklab, royalblue, white 25%);
+  outline-offset: 3px;
+}
+```
+
+Use `:focus-visible` for keyboard-friendly focus styles that do not show on every mouse click.
+
+## Validation states
+
+CSS can respond to form validity:
+
+```css
+input:user-invalid {
+  border-color: rgb(180 35 35);
+}
+
+input:user-valid {
+  border-color: rgb(20 130 85);
+}
+```
+
+`:user-invalid` and `:user-valid` avoid showing error styles before the user interacts in supporting browsers.
+
+Fallback:
+
+```css
+input:invalid:not(:placeholder-shown) {
+  border-color: rgb(180 35 35);
+}
+```
+
+Other useful states:
+
+```css
+input:required {
+  border-inline-start-width: 4px;
+}
+
+input:checked + label {
+  font-weight: 700;
+}
+```
+
+## Accent color
+
+For native checkboxes, radios, and range controls:
+
+```css
+:root {
+  accent-color: royalblue;
+}
+```
+
+This keeps native controls recognizable while matching your theme.
+
+## Placeholder text
+
+Placeholder text is not a label:
+
+```css
+input::placeholder {
+  color: rgb(110 120 135);
+}
+```
+
+Use placeholders for examples or hints, not required instructions.
+
+<Warning title="Do not remove native affordances without replacing them">
+  <p>
+    Removing outlines, hiding labels, or rebuilding controls from divs usually harms accessibility. Style real controls first, then customize only as much as the interface needs.
+  </p>
+</Warning>
+
+## What to carry forward
+
+- use semantic form controls first
+- keep labels visible or accessibly available
+- style hover, active, disabled, and focus states intentionally
+- `:focus-visible` supports keyboard users
+- validation styles should avoid yelling before interaction
+- `accent-color` is a low-risk way to theme native controls
+
+<Quiz
+  id="q-focus-visible"
+  question="Why is `:focus-visible` useful?"
+  options={[
+    "It shows focus styles when they are most relevant, especially for keyboard navigation",
+    "It hides focus from keyboard users",
+    "It submits forms automatically",
+  ]}
+  correctIndex={0}
+  explanation="`:focus-visible` lets browsers apply focus indication when users need it, such as keyboard navigation."
+/>
+
+The next lesson broadens state styling into accessibility: contrast, motion preferences, forced colors, and pointer behavior.

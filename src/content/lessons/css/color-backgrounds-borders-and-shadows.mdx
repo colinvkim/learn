@@ -1,0 +1,156 @@
+---
+title: "Color, backgrounds, borders, and shadows"
+description: "Learn practical visual styling with color syntax, currentColor, alpha, gradients, background layers, borders, radius, and shadows."
+course: css
+status: published
+---
+
+import ColorLab from "../../../components/content/ColorLab.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+Visual styling should clarify interface structure. Color, borders, backgrounds, and shadows can show grouping, hierarchy, state, and affordance.
+
+## Modern color syntax
+
+CSS supports many color formats:
+
+```css
+.notice {
+  color: #5f240b;
+  background: rgb(255 244 230);
+  border-color: hsl(28 80% 70%);
+}
+```
+
+Modern `rgb()` and `hsl()` use spaces and optional alpha:
+
+```css
+.scrim {
+  background: rgb(0 0 0 / 40%);
+}
+```
+
+## `currentColor`
+
+`currentColor` means "use the current text color."
+
+```css
+.link-card {
+  color: royalblue;
+  border: 1px solid currentColor;
+}
+```
+
+This keeps icons, borders, and text in sync.
+
+## Backgrounds
+
+Backgrounds can be colors, images, gradients, or layers:
+
+```css
+.hero {
+  background:
+    linear-gradient(rgb(0 0 0 / 45%), rgb(0 0 0 / 20%)),
+    url("/images/workshop.jpg") center / cover;
+  color: white;
+}
+```
+
+The first background is painted on top. The image sits behind it.
+
+Use gradients for real visual jobs: improving text contrast, creating depth, or expressing state. Do not rely on decorative gradients to carry meaning alone.
+
+## Borders and radius
+
+Borders define edges:
+
+```css
+.card {
+  border: 1px solid rgb(220 225 232);
+  border-radius: 0.5rem;
+}
+```
+
+Radius should fit the design language. Too many unrelated radii can make an interface feel inconsistent.
+
+## Shadows
+
+Shadows imply elevation:
+
+```css
+.popover {
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 12%),
+    0 12px 32px rgb(0 0 0 / 16%);
+}
+```
+
+Use shadows for floating surfaces such as menus, dialogs, and popovers. For ordinary cards, borders are often clearer and less noisy.
+
+## Contrast
+
+Color must be readable:
+
+```css
+.button {
+  background: rgb(20 92 210);
+  color: white;
+}
+```
+
+Check contrast between text and background. Also avoid relying on color alone:
+
+```css
+.form-error {
+  color: rgb(170 30 30);
+  border-inline-start: 4px solid currentColor;
+}
+```
+
+The border provides a second cue.
+
+<ColorLab sampleText="Checkout summary" />
+
+## Light and dark surfaces
+
+Use custom properties for theme values:
+
+```css
+:root {
+  --color-page: white;
+  --color-text: rgb(25 28 34);
+  --color-border: rgb(220 225 232);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-page: rgb(15 17 22);
+    --color-text: rgb(236 239 244);
+    --color-border: rgb(58 64 75);
+  }
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-text);
+}
+```
+
+This lets the same components adapt to theme changes.
+
+<Warning title="Contrast is part of design">
+  <p>
+    A color palette is not usable until text, focus rings, disabled states, and error states have enough contrast in every theme.
+  </p>
+</Warning>
+
+## What to carry forward
+
+- modern `rgb()` and `hsl()` use space-separated syntax
+- alpha colors use slash syntax like `rgb(0 0 0 / 40%)`
+- `currentColor` keeps related visual parts aligned
+- backgrounds can layer gradients and images
+- borders often communicate structure better than heavy shadows
+- color choices must preserve contrast and avoid color-only meaning
+
+The next lesson uses custom properties to turn repeated styling decisions into a small design system.

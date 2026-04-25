@@ -1,0 +1,134 @@
+---
+title: "Entry and exit motion with @starting-style"
+description: "Learn @starting-style, transition-behavior: allow-discrete, discrete transitions, display, overlay, dialogs, and progressive enhancement."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+Some UI appears after the page has already loaded: dialogs, popovers, toasts, menus, and validation messages.
+
+Older CSS could transition normal state changes, but entry transitions were awkward because the element had no previous rendered style. `@starting-style` solves that.
+
+## Entry transition
+
+```css
+.toast {
+  opacity: 1;
+  translate: 0;
+  transition:
+    opacity 180ms ease,
+    translate 180ms ease;
+
+  @starting-style {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}
+```
+
+When `.toast` first appears, the browser can transition from the starting style to the normal style.
+
+## Discrete transitions
+
+Some properties do not interpolate gradually. They flip between states. These are discrete properties.
+
+Modern CSS can allow transitions for some discrete properties:
+
+```css
+.menu {
+  opacity: 0;
+  display: none;
+  transition:
+    opacity 180ms ease,
+    display 180ms allow-discrete;
+}
+
+.menu[data-open="true"] {
+  opacity: 1;
+  display: block;
+}
+```
+
+`allow-discrete` lets `display` participate in the transition timing.
+
+You can also use the longhand:
+
+```css
+.menu {
+  transition-behavior: allow-discrete;
+}
+```
+
+## Dialogs and top layer
+
+Dialogs and popovers can enter the top layer. CSS can style both the element and its backdrop:
+
+```css
+dialog {
+  opacity: 0;
+  translate: 0 1rem;
+  transition:
+    opacity 180ms ease,
+    translate 180ms ease,
+    display 180ms allow-discrete,
+    overlay 180ms allow-discrete;
+}
+
+dialog[open] {
+  opacity: 1;
+  translate: 0;
+}
+
+@starting-style {
+  dialog[open] {
+    opacity: 0;
+    translate: 0 1rem;
+  }
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 35%);
+}
+```
+
+HTML and JavaScript still own opening and closing behavior. CSS owns the visual transition.
+
+## Support strategy
+
+`@starting-style` and `transition-behavior` became Baseline 2024. They work in current browser releases, but older browsers may not support them.
+
+Use progressive enhancement:
+
+```css
+.toast {
+  opacity: 1;
+}
+
+@supports (transition-behavior: allow-discrete) {
+  .toast {
+    transition:
+      opacity 180ms ease,
+      display 180ms allow-discrete;
+  }
+}
+```
+
+The interface should still work without the enhanced motion.
+
+<Note title="Motion should not control meaning">
+  <p>
+    If a browser does not support an entry animation, the element should still appear and be usable. Motion enhances state changes; it should not be required to understand them.
+  </p>
+</Note>
+
+## What to carry forward
+
+- `@starting-style` defines entry styles for first rendered state
+- `transition-behavior: allow-discrete` enables transitions for discrete properties
+- `display`, `content-visibility`, and `overlay` need special care
+- dialogs and popovers combine HTML behavior with CSS presentation
+- newer motion features should be progressive enhancements
+
+The next lesson covers keyframe animation for motion that has its own timeline.

@@ -1,0 +1,156 @@
+---
+title: "Scroll snap, scroll-driven animation, and view transitions"
+description: "Learn scroll snap, scroll timelines, view timelines, view transitions, support limits, and when JavaScript is needed."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+CSS can connect motion to scrolling and page changes. These features are powerful, but their support varies more than flexbox or grid.
+
+## Scroll snap
+
+Scroll snap helps a scroll container stop at meaningful points:
+
+```css
+.carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 80%;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: inline mandatory;
+}
+
+.carousel > * {
+  scroll-snap-align: start;
+}
+```
+
+Use it for carousels, step lists, or paged sections. Avoid trapping users in awkward scroll behavior.
+
+## Scroll-driven animations
+
+Scroll-driven animations use scroll position as the animation timeline:
+
+```css
+@keyframes grow-progress {
+  from {
+    scale: 0 1;
+  }
+
+  to {
+    scale: 1 1;
+  }
+}
+
+.progress {
+  transform-origin: left center;
+  animation: grow-progress linear;
+  animation-timeline: scroll(root block);
+}
+```
+
+The animation progresses as the root scrolls.
+
+## View timelines
+
+View timelines animate an element based on its visibility in a scroll container:
+
+```css
+.reveal {
+  opacity: 0;
+  translate: 0 1rem;
+  animation: reveal linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 35%;
+}
+
+@keyframes reveal {
+  to {
+    opacity: 1;
+    translate: 0;
+  }
+}
+```
+
+This can replace some JavaScript scroll listeners.
+
+## Support strategy
+
+Scroll-driven animation properties such as `scroll-timeline`, `view()`, and `animation-timeline` still have limited or mixed support across widely used browsers.
+
+Use them as progressive enhancement:
+
+```css
+.reveal {
+  opacity: 1;
+}
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    opacity: 0;
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+  }
+}
+```
+
+The content is visible by default. Motion adds polish where supported.
+
+## View transitions
+
+The View Transition API can animate between document states or page navigations.
+
+CSS names elements:
+
+```css
+.course-card {
+  view-transition-name: course-card;
+}
+```
+
+CSS styles the transition pseudo-elements:
+
+```css
+::view-transition-old(course-card),
+::view-transition-new(course-card) {
+  animation-duration: 220ms;
+}
+```
+
+JavaScript is often needed for same-document transitions:
+
+```javascript
+document.startViewTransition(() => {
+  updateSelectedCourse();
+});
+```
+
+Cross-document transitions can use CSS `@view-transition`, but support is still limited compared with basic CSS. Check MDN, Baseline, and caniuse before relying on it.
+
+<Note title="Use the browser support vocabulary">
+  <p>
+    Baseline Newly available means current core browsers support a feature. Baseline Widely available means it has been interoperable for 30 months. Limited availability means some widely used browsers still lack support.
+  </p>
+</Note>
+
+<Warning title="Avoid scroll-jacking">
+  <p>
+    Scroll-linked effects should follow the user's scroll, not fight it. Do not block normal scrolling, hijack wheel input, or require motion to understand content.
+  </p>
+</Warning>
+
+## What to carry forward
+
+- scroll snap creates intentional stopping points in scroll containers
+- scroll timelines link keyframes to scroll progress
+- view timelines link keyframes to element visibility
+- view transitions animate between states or pages
+- newer scroll and view-transition features need support checks
+- content should remain usable without motion
+
+The next lesson teaches a practical debugging workflow.

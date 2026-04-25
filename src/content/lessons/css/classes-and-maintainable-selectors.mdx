@@ -1,0 +1,185 @@
+---
+title: "Classes and maintainable selectors"
+description: "Learn how to choose stable styling hooks, name classes clearly, and avoid selectors that are hard to override."
+course: css
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+CSS selectors are part of your design system. They decide how tightly styles are coupled to HTML structure.
+
+Maintainable selectors are:
+
+- clear about what they style
+- stable when markup changes a little
+- low enough in specificity to override later
+- not dependent on unrelated page structure
+
+## Prefer classes for components
+
+Classes are reusable hooks:
+
+```html
+<article class="course-card">
+  <h2 class="course-card__title">CSS basics</h2>
+  <p class="course-card__summary">Learn selectors, cascade, and layout.</p>
+</article>
+```
+
+```css
+.course-card {
+  padding: 1rem;
+  border: 1px solid rgb(210 215 225);
+  border-radius: 0.5rem;
+}
+
+.course-card__title {
+  margin-block: 0;
+  font-size: 1.25rem;
+}
+```
+
+The class names describe styling roles without saying exactly what colors or sizes must be.
+
+## Avoid styling everything by tag
+
+Type selectors are good for base defaults:
+
+```css
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+img {
+  max-inline-size: 100%;
+  block-size: auto;
+}
+```
+
+But component styles usually need classes:
+
+```css
+article h2 a span {
+  color: purple;
+}
+```
+
+That selector depends on a very specific tree. If a wrapper changes, the style breaks.
+
+## Avoid IDs for everyday styling
+
+IDs have high specificity:
+
+```css
+#signup-card {
+  padding: 2rem;
+}
+```
+
+This is hard to override with normal class selectors. Use IDs when HTML needs unique identifiers, such as form labels or fragment links. Use classes for styling patterns.
+
+## Attribute selectors are useful for state and semantics
+
+Attributes can make CSS follow HTML state:
+
+```css
+[aria-current="page"] {
+  font-weight: 700;
+}
+
+[data-state="open"] {
+  display: block;
+}
+```
+
+Use these when the attribute already represents real state or meaning. Do not invent attributes only to avoid a clear class.
+
+## Keep selectors low-specificity
+
+Low-specificity selectors are easier to compose:
+
+```css
+.button {
+  border-radius: 0.375rem;
+}
+
+.button-primary {
+  background: royalblue;
+  color: white;
+}
+```
+
+This is easier to maintain than:
+
+```css
+main section article.card div.actions button.button.primary {
+  background: royalblue;
+}
+```
+
+Long selectors often signal that the CSS is reaching through too much structure.
+
+## Name by role, not current appearance
+
+Prefer:
+
+```html
+<p class="form-error">Email is required.</p>
+```
+
+Avoid:
+
+```html
+<p class="red-small-text">Email is required.</p>
+```
+
+The first name describes the purpose. The second describes one possible visual treatment. If the design changes, `red-small-text` becomes misleading.
+
+<Tip title="A useful class test">
+  <p>
+    Ask whether the class name would still make sense if color, spacing, or layout changed. If yes, it is probably a role. If no, it may be a visual detail disguised as a name.
+  </p>
+</Tip>
+
+## Utility classes are a different tradeoff
+
+Some projects use utility classes:
+
+```html
+<article class="rounded border p-4">
+  ...
+</article>
+```
+
+That approach can work, especially with tools like Tailwind. Plain CSS projects usually benefit from component classes first. You can still add a few utilities for repeated one-off patterns:
+
+```css
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+```
+
+## What to carry forward
+
+- use classes as default styling hooks
+- use type selectors for broad base styles
+- avoid ID selectors for routine styling
+- keep selectors short and low-specificity
+- choose names by role or component, not temporary appearance
+- attribute selectors are useful when styling real state
+
+<Warning title="Do not add wrappers only because a selector is hard">
+  <p>
+    If styling requires many extra elements, first ask whether the selector, layout method, or component boundary is wrong. Extra markup should support structure, accessibility, or necessary layout.
+  </p>
+</Warning>
+
+The next lesson covers the values CSS properties receive: units, functions, keywords, and flexible sizing tools.

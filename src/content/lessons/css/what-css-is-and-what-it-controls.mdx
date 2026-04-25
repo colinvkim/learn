@@ -1,0 +1,141 @@
+---
+title: "What CSS is and what it controls"
+description: "Learn CSS as the presentation layer of the web and see where it fits beside HTML and JavaScript."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+CSS controls how HTML is presented. It sets color, type, spacing, layout, visual states, responsive behavior, and motion.
+
+That is a large job, but CSS has one main purpose: let the same meaningful HTML adapt to many contexts without changing the document itself.
+
+## The three web layers
+
+In a healthy web page:
+
+- HTML describes structure and meaning
+- CSS describes presentation and layout
+- JavaScript describes behavior and application logic
+
+For example, HTML can say "this is a navigation list":
+
+```html
+<nav aria-label="Main navigation">
+  <ul class="site-nav">
+    <li><a href="/courses/">Courses</a></li>
+    <li><a href="/notes/">Notes</a></li>
+    <li><a href="/about/">About</a></li>
+  </ul>
+</nav>
+```
+
+CSS can decide whether that list is vertical, horizontal, compact, spacious, light, dark, or responsive:
+
+```css
+.site-nav {
+  display: flex;
+  gap: 1rem;
+  padding-inline: 0;
+  list-style: none;
+}
+```
+
+JavaScript is not needed for that layout. JavaScript would matter if opening a menu changed state, saved a preference, fetched data, or updated the document after an event.
+
+## CSS is not decoration only
+
+CSS is visual, but it is not shallow. CSS controls how usable a page feels.
+
+It affects:
+
+- whether text is comfortable to read
+- whether a layout works on narrow screens
+- whether focus is visible for keyboard users
+- whether colors have enough contrast
+- whether motion respects reduced-motion preferences
+- whether components survive unpredictable content
+
+Bad CSS can make good HTML hard to use. Good CSS helps structure become clear.
+
+## How browsers apply CSS
+
+At a practical level, the browser:
+
+1. parses HTML into a document tree
+2. parses CSS into rules
+3. matches selectors against elements
+4. resolves conflicts through the cascade
+5. computes final values
+6. lays out boxes
+7. paints pixels
+
+You do not need every rendering detail yet. The important idea is that CSS is rule-based. You describe patterns, and the browser applies them to matching elements.
+
+## CSS changes with context
+
+CSS is built for variation. The same rule can respond to:
+
+- viewport size with media queries
+- component size with container queries
+- user theme preference with `prefers-color-scheme`
+- motion preference with `prefers-reduced-motion`
+- interaction states like `:hover`, `:focus-visible`, and `:disabled`
+- document direction with logical properties like `margin-inline`
+
+That means good CSS is not just "make this look right on my screen." Good CSS defines flexible constraints.
+
+<Note title="CSS has become more capable">
+  <p>
+    Modern CSS can solve problems that used to require build tools or JavaScript: cascade layers, nesting, container queries, relational selectors like <code>:has()</code>, modern color functions, entry transitions, and more. This course uses modern CSS where it is stable enough, and labels newer features when support needs checking.
+  </p>
+</Note>
+
+## What CSS owns
+
+CSS owns:
+
+- selectors and matching
+- cascade and conflict resolution
+- visual styling
+- spacing and sizing
+- layout
+- responsive behavior
+- component states
+- animation and motion
+- style organization
+
+CSS does not own:
+
+- choosing semantic HTML elements
+- changing data
+- handling form submission logic
+- attaching event listeners
+- storing application state
+- fetching content from APIs
+
+Those boundaries keep projects easier to understand.
+
+## What to carry forward
+
+- CSS is the presentation and layout language of the web
+- HTML gives CSS meaningful structure to style
+- JavaScript is for behavior and logic, not ordinary styling
+- CSS works by matching rules, resolving conflicts, laying out boxes, and painting
+- modern CSS is powerful enough to build resilient interfaces without many old workarounds
+
+<Quiz
+  id="q-css-layer"
+  question="Which job belongs most clearly to CSS?"
+  options={[
+    "Making a navigation list display horizontally with spacing",
+    "Choosing whether the navigation should use a nav element",
+    "Saving the user's selected navigation item to a database",
+  ]}
+  correctIndex={0}
+  explanation="CSS controls presentation and layout. HTML owns the structure, and JavaScript or backend code owns behavior and data."
+/>
+
+The next lesson shows how CSS rules match elements in the document tree.

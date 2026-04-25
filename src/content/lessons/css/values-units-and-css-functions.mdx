@@ -1,0 +1,178 @@
+---
+title: "Values, units, and CSS functions"
+description: "Learn common CSS units, flexible functions, viewport units, relative lengths, and CSS-wide keywords."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+CSS properties accept values. To write resilient CSS, you need to know what values are relative to.
+
+```css
+.article {
+  max-inline-size: 65ch;
+  padding: clamp(1rem, 4vw, 3rem);
+}
+```
+
+That rule uses a character-based unit, a logical size property, and a function that creates a range.
+
+## Absolute and relative units
+
+`px` is fixed relative to CSS pixels:
+
+```css
+.icon {
+  inline-size: 24px;
+}
+```
+
+`rem` is relative to the root font size:
+
+```css
+body {
+  font-size: 1rem;
+}
+```
+
+`em` is relative to the current element's font size:
+
+```css
+.button {
+  padding: 0.75em 1em;
+}
+```
+
+That makes button padding scale with button text size.
+
+## Percentages depend on context
+
+Percentages are not always relative to the same thing:
+
+```css
+.media {
+  inline-size: 100%;
+}
+
+.badge {
+  translate: 0 -50%;
+}
+```
+
+The first percentage relates to the containing block's width. The translate percentage relates to the element's own size. When a percentage surprises you, check the property definition or computed value in devtools.
+
+## Useful text-relative units
+
+Use these when the design should follow text:
+
+- `ch`: roughly the width of the `0` character
+- `lh`: current line height
+- `cap`: height of capital letters in the current font
+
+```css
+.article {
+  max-inline-size: 70ch;
+}
+
+.stack > * + * {
+  margin-block-start: 1lh;
+}
+```
+
+## Viewport units
+
+Viewport units are relative to the viewport:
+
+- `vw`: viewport width
+- `vh`: viewport height
+- `svh`: small viewport height
+- `lvh`: large viewport height
+- `dvh`: dynamic viewport height
+
+On mobile, browser UI can appear and disappear. Prefer `svh`, `lvh`, or `dvh` when viewport height must account for that behavior.
+
+```css
+.app-shell {
+  min-block-size: 100svh;
+}
+```
+
+## Flexible math functions
+
+`calc()` combines values:
+
+```css
+.sidebar {
+  inline-size: calc(18rem + 2vw);
+}
+```
+
+`min()` chooses the smaller value:
+
+```css
+.card {
+  inline-size: min(100%, 42rem);
+}
+```
+
+`max()` chooses the larger value:
+
+```css
+.tap-target {
+  min-block-size: max(2.75rem, 44px);
+}
+```
+
+`clamp()` sets a minimum, preferred value, and maximum:
+
+```css
+h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+}
+```
+
+<Note title="Fluid does not mean uncontrolled">
+  <p>
+    `clamp()` is useful because it gives fluid values boundaries. A heading can grow with the viewport without becoming tiny on small screens or huge on wide screens.
+  </p>
+</Note>
+
+## CSS-wide keywords
+
+Every property accepts:
+
+```css
+.example {
+  color: inherit;
+  padding: initial;
+  margin: unset;
+  display: revert;
+  border: revert-layer;
+}
+```
+
+These are especially useful when undoing defaults, building components, or working with cascade layers.
+
+## What to carry forward
+
+- `px` is fixed; `rem`, `em`, `%`, viewport units, and text units are relative
+- percentages depend on the property
+- `svh`, `lvh`, and `dvh` handle mobile viewport height better than old `vh`
+- `calc()`, `min()`, `max()`, and `clamp()` help express flexible constraints
+- CSS-wide keywords help reset or inherit values intentionally
+
+<Quiz
+  id="q-clamp"
+  question="What does `clamp(1rem, 4vw, 2rem)` do?"
+  options={[
+    "Uses 4vw, but never below 1rem or above 2rem",
+    "Always uses the largest of the three values",
+    "Adds 1rem, 4vw, and 2rem together",
+  ]}
+  correctIndex={0}
+  explanation="`clamp()` takes a minimum, preferred value, and maximum. The preferred value flexes inside the limits."
+/>
+
+The next lesson applies these values to the box model: content, padding, border, margin, sizing, and overflow.

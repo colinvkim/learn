@@ -1,0 +1,159 @@
+---
+title: "Grid layout"
+description: "Learn grid rows, columns, gaps, fr units, minmax(), repeat(), auto-fit, placement, named areas, and flex-vs-grid decisions."
+course: css
+status: published
+---
+
+import Quiz from "../../../components/content/Quiz.astro";
+
+Grid is for two-dimensional layout. It controls rows and columns together.
+
+```css
+.dashboard {
+  display: grid;
+  grid-template-columns: 16rem 1fr;
+  gap: 1rem;
+}
+```
+
+That creates a fixed sidebar column and a flexible content column.
+
+## Tracks and gaps
+
+Rows and columns are grid tracks:
+
+```css
+.gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+```
+
+`fr` means a fraction of available space.
+
+## `repeat()`, `minmax()`, and responsive grids
+
+This pattern is common:
+
+```css
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  gap: 1rem;
+}
+```
+
+It says:
+
+- create as many columns as fit
+- each column should be at least `18rem`
+- do not exceed `100%` on narrow containers
+- let columns grow to share space
+
+This can produce responsive card grids without media queries.
+
+## Placing items
+
+Grid can place items explicitly:
+
+```css
+.featured {
+  grid-column: span 2;
+}
+```
+
+Or by line:
+
+```css
+.sidebar {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+```
+
+Use explicit placement when it clarifies layout. Avoid making every item hand-placed unless the design truly needs it.
+
+## Named areas
+
+Named areas make page layout readable:
+
+```css
+.page {
+  display: grid;
+  grid-template:
+    "header header" auto
+    "nav    main" 1fr
+    "footer footer" auto
+    / 14rem 1fr;
+  min-block-size: 100svh;
+}
+
+.site-header {
+  grid-area: header;
+}
+
+.site-nav {
+  grid-area: nav;
+}
+
+main {
+  grid-area: main;
+}
+
+.site-footer {
+  grid-area: footer;
+}
+```
+
+This is good for large structural regions. For small components, explicit columns are often simpler.
+
+## Subgrid, briefly
+
+`subgrid` lets nested grid items align to parent grid tracks:
+
+```css
+.card {
+  display: grid;
+  grid-template-rows: subgrid;
+}
+```
+
+Use it when nested content needs shared row or column alignment across cards. Check browser support for your target browsers before relying on it.
+
+## Flexbox vs grid
+
+Ask what the layout needs:
+
+- one axis: flexbox
+- rows and columns together: grid
+- content wrapping in one row of controls: flexbox
+- cards aligned in columns and rows: grid
+- page shell: grid
+- button group: flexbox
+
+They work together often. A page can use grid for the shell and flexbox inside the header.
+
+## What to carry forward
+
+- grid controls rows and columns together
+- `fr` divides available space
+- `gap` spaces tracks
+- `repeat(auto-fit, minmax(...))` creates resilient card grids
+- named areas help page-level layouts
+- grid and flexbox are partners, not rivals
+
+<Quiz
+  id="q-grid-two-dimensional"
+  question="Which layout need points most clearly to CSS grid?"
+  options={[
+    "A gallery where cards should align in rows and columns",
+    "A single row of buttons with even spacing",
+    "A paragraph with a link inside it",
+  ]}
+  correctIndex={0}
+  explanation="Grid is best when both rows and columns matter. A button row is usually flexbox."
+/>
+
+The next lesson covers positioning, stacking, and overlays.

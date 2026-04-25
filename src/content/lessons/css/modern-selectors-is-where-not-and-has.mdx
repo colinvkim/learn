@@ -1,0 +1,154 @@
+---
+title: "Modern selectors with :is(), :where(), :not(), and :has()"
+description: "Learn modern selector helpers, relational selection, specificity behavior, and maintainable patterns."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+Modern selectors make CSS more expressive without long repeated selector lists.
+
+## `:is()`
+
+`:is()` groups selector options:
+
+```css
+:is(h1, h2, h3) {
+  line-height: 1.15;
+}
+```
+
+It matches any listed selector. Its specificity is the specificity of the most specific selector in the list.
+
+Useful for reducing repetition:
+
+```css
+.article :is(h2, h3, h4) {
+  margin-block-start: 2em;
+}
+```
+
+## `:where()`
+
+`:where()` also groups selectors, but has zero specificity:
+
+```css
+:where(h1, h2, h3) {
+  margin-block: 0;
+}
+```
+
+This is excellent for base styles that should be easy to override.
+
+```css
+.prose :where(ul, ol) {
+  padding-inline-start: 1.5em;
+}
+```
+
+## `:not()`
+
+`:not()` excludes matches:
+
+```css
+.nav-link:not([aria-current="page"]) {
+  color: inherit;
+}
+```
+
+Use it for simple exclusions. If a selector becomes a paragraph of exceptions, split the CSS into clearer classes or states.
+
+## `:has()`
+
+`:has()` selects an element based on what it contains or relates to:
+
+```css
+.field:has(input:required) label::after {
+  content: " *";
+}
+```
+
+It can also look at state:
+
+```css
+.card:has(:focus-visible) {
+  outline: 3px solid royalblue;
+  outline-offset: 4px;
+}
+```
+
+Or choose layout based on content:
+
+```css
+.media-card:has(img) {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 1rem;
+}
+```
+
+## Specificity with modern selectors
+
+`:is()`, `:not()`, and `:has()` use the specificity of the most specific selector in their argument list.
+
+`:where()` always adds zero specificity.
+
+That makes `:where()` useful in resets and base layers:
+
+```css
+@layer base {
+  :where(a) {
+    color: var(--link);
+  }
+}
+```
+
+Components can override it easily:
+
+```css
+@layer components {
+  .button {
+    color: white;
+  }
+}
+```
+
+<Note title=":has() is powerful, but keep it purposeful">
+  <p>
+    `:has()` is now broadly usable in modern browsers, but it changes how you think about selectors. Use it for real parent/state/content relationships, not as a replacement for clear class names.
+  </p>
+</Note>
+
+## Browser support strategy
+
+For newer selectors, check MDN, Baseline, and caniuse for your target browsers. When a selector is an enhancement, wrap it:
+
+```css
+@supports selector(.card:has(img)) {
+  .card:has(img) {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+  }
+}
+```
+
+The base `.card` style still works if `:has()` is unavailable.
+
+<Warning title="Do not hide broken structure with selectors">
+  <p>
+    If you need a complex selector to guess what a component is, the HTML or class model may need improvement. Selectors should express structure, not rescue unclear markup.
+  </p>
+</Warning>
+
+## What to carry forward
+
+- `:is()` groups selectors with normal specificity behavior
+- `:where()` groups selectors with zero specificity
+- `:not()` excludes matches
+- `:has()` selects based on descendants, siblings, or state relationships
+- use `@supports selector(...)` for progressive enhancement when support matters
+- modern selectors help most when paired with clear HTML and low-specificity CSS
+
+The next lesson covers native CSS nesting and scoped styling.

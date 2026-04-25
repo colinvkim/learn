@@ -1,0 +1,194 @@
+---
+title: "Building a responsive page"
+description: "Practice styling a semantic page with tokens, layout, media queries, container queries, states, and accessible defaults."
+course: css
+status: published
+---
+
+import Steps from "../../../components/content/Steps.astro";
+import Tip from "../../../components/content/Tip.astro";
+
+This lesson pulls together page-level CSS. The goal is not a fancy landing page. The goal is a resilient page that stays readable, usable, and organized.
+
+## HTML
+
+```html
+<header class="site-header">
+  <a class="logo" href="/">Learn</a>
+  <nav aria-label="Main navigation">
+    <ul class="nav-list">
+      <li><a href="/courses/">Courses</a></li>
+      <li><a href="/notes/">Notes</a></li>
+      <li><a href="/about/">About</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="page">
+  <article class="article">
+    <h1>CSS layout patterns</h1>
+    <p>Build interfaces that adapt to content, containers, and users.</p>
+  </article>
+
+  <aside class="related">
+    <h2>Related lessons</h2>
+    <ul>
+      <li><a href="/css/flexbox-layout/">Flexbox layout</a></li>
+      <li><a href="/css/grid-layout/">Grid layout</a></li>
+    </ul>
+  </aside>
+</main>
+```
+
+## Tokens and base styles
+
+```css
+@layer reset, tokens, base, layout, components;
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
+
+@layer tokens {
+  :root {
+    --page: oklch(99% 0.01 250);
+    --text: oklch(23% 0.02 250);
+    --muted: oklch(45% 0.03 250);
+    --border: oklch(88% 0.02 250);
+    --accent: oklch(56% 0.18 255);
+    --space-page: clamp(1rem, 4vw, 3rem);
+  }
+}
+
+@layer base {
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    line-height: 1.6;
+    background: var(--page);
+    color: var(--text);
+  }
+
+  a {
+    color: var(--accent);
+    text-underline-offset: 0.18em;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+}
+```
+
+## Header layout
+
+```css
+@layer layout {
+  .site-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem var(--space-page);
+    border-block-end: 1px solid var(--border);
+  }
+
+  .nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+```
+
+## Page layout
+
+```css
+@layer layout {
+  .page {
+    display: grid;
+    gap: 2rem;
+    inline-size: min(100% - 2 * var(--space-page), 72rem);
+    margin-inline: auto;
+    padding-block: 2rem;
+  }
+
+  @media (width >= 56rem) {
+    .page {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      align-items: start;
+    }
+  }
+}
+```
+
+`minmax(0, 1fr)` lets the main column shrink instead of forcing overflow from long content.
+
+## Component styles
+
+```css
+@layer components {
+  .article {
+    max-inline-size: 70ch;
+  }
+
+  .article h1 {
+    max-inline-size: 14ch;
+    font-size: clamp(2rem, 7vw, 4rem);
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .related {
+    container: related / inline-size;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+  }
+
+  @container related (width >= 16rem) {
+    .related {
+      position: sticky;
+      inset-block-start: 1rem;
+    }
+  }
+}
+```
+
+<Steps>
+  <ol>
+    <li>Start with semantic HTML.</li>
+    <li>Add tokens and base styles.</li>
+    <li>Style readable text before decoration.</li>
+    <li>Use flexbox for header alignment.</li>
+    <li>Use grid for page columns.</li>
+    <li>Add responsive rules only where the content needs them.</li>
+    <li>Check focus, contrast, overflow, and reduced motion.</li>
+  </ol>
+</Steps>
+
+<Tip title="Build from narrow to wide">
+  <p>
+    The narrow layout should be complete, not a broken version waiting for desktop CSS. Wide layouts should enhance it.
+  </p>
+</Tip>
+
+## What to carry forward
+
+- page CSS starts with tokens, base styles, and readable content
+- flexbox fits header and navigation alignment
+- grid fits page structure
+- media queries should follow content needs
+- container queries can improve side components
+- check accessibility states as part of the build, not after
+
+The next lesson turns repeated decisions into a small design system.

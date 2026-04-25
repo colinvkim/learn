@@ -1,0 +1,164 @@
+---
+title: "Normal flow and display"
+description: "Learn block, inline, inline-block, display values, formatting contexts, visibility, display none, opacity, and containment basics."
+course: css
+status: published
+---
+
+import LayoutLab from "../../../components/content/LayoutLab.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Before flexbox and grid, there is normal flow. Normal flow is how the browser lays out elements when you do not ask for a special layout.
+
+Understanding it prevents many layout surprises.
+
+## Block and inline
+
+Block elements stack in the block direction:
+
+```html
+<h1>Course title</h1>
+<p>Intro paragraph.</p>
+<p>Second paragraph.</p>
+```
+
+Headings and paragraphs are block-level by default. They take the available inline space and start on new lines.
+
+Inline elements flow inside text:
+
+```html
+<p>Read the <a href="/css/">CSS course</a> next.</p>
+```
+
+The link does not create a new line. It participates in the line box.
+
+## `display`
+
+The `display` property controls how an element participates in layout:
+
+```css
+.hidden {
+  display: none;
+}
+
+.pill {
+  display: inline-block;
+}
+
+.toolbar {
+  display: flex;
+}
+
+.gallery {
+  display: grid;
+}
+```
+
+Common values:
+
+- `block`: stacks as a block
+- `inline`: flows with text
+- `inline-block`: inline outside, box-like inside
+- `flex`: one-dimensional layout
+- `grid`: two-dimensional layout
+- `contents`: removes the element's own box while keeping children
+- `none`: removes the element from layout and accessibility tree
+
+Use `display: contents` carefully. It can affect semantics and accessibility behavior in some cases.
+
+## Hiding elements
+
+These are different:
+
+```css
+.one {
+  display: none;
+}
+
+.two {
+  visibility: hidden;
+}
+
+.three {
+  opacity: 0;
+}
+```
+
+- `display: none` removes the box and normally removes it from accessibility APIs
+- `visibility: hidden` keeps layout space but hides the element
+- `opacity: 0` keeps layout space and the element can still receive pointer or focus behavior unless you prevent it
+
+## Formatting contexts
+
+A formatting context is a layout environment. You do not need the full formal model yet, but some CSS creates a new context:
+
+```css
+.media-object {
+  display: flow-root;
+}
+```
+
+`flow-root` is useful when you need an element to contain floats or isolate margin behavior. Modern layout uses it less often than flex and grid, but it is still a clean tool.
+
+## `gap` belongs to layout
+
+When using flex or grid, prefer `gap` for spacing between items:
+
+```css
+.stack {
+  display: grid;
+  gap: 1rem;
+}
+```
+
+This avoids margin-collapsing issues and makes spacing part of the layout container.
+
+<LayoutLab
+  items={[
+    { content: "Overview" },
+    { content: "Pricing" },
+    { content: "Docs" },
+  ]}
+/>
+
+## Content visibility and containment
+
+Modern CSS includes performance-related tools:
+
+```css
+.long-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 40rem;
+}
+```
+
+`content-visibility: auto` lets the browser skip rendering off-screen content until needed. Use it for long independent sections, not tiny components everywhere.
+
+Containment can also support container queries and performance:
+
+```css
+.card-list {
+  container-type: inline-size;
+}
+```
+
+You will use containment more directly in the container query lesson.
+
+## What to carry forward
+
+- normal flow is the browser's default layout
+- block boxes stack; inline boxes flow with text
+- `display` changes how an element participates in layout
+- `display: none`, `visibility: hidden`, and `opacity: 0` are not interchangeable
+- `gap` gives predictable spacing in flex and grid
+- containment features are powerful, but use them for clear layout or performance reasons
+
+<Quiz
+  id="q-display-none-visibility-opacity"
+  question="Which hiding method removes an element's box from layout?"
+  options={["display: none", "visibility: hidden", "opacity: 0"]}
+  correctIndex={0}
+  explanation="`display: none` removes the element's box. `visibility: hidden` and `opacity: 0` keep layout space."
+/>
+
+The next lesson introduces flexbox, the layout tool for arranging items along one main axis.

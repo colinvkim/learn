@@ -1,0 +1,155 @@
+---
+title: "CSS for HTML and JavaScript integration"
+description: "Learn how CSS fits with semantic HTML, class hooks, data attributes, ARIA state, DOM changes, and when JavaScript should own behavior."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+
+CSS works best when HTML and JavaScript keep their own responsibilities clear.
+
+HTML provides meaningful structure:
+
+```html
+<button class="menu-button" type="button" aria-expanded="false">
+  Menu
+</button>
+```
+
+CSS styles the state:
+
+```css
+.menu-button[aria-expanded="true"] {
+  background: royalblue;
+  color: white;
+}
+```
+
+JavaScript changes the state when behavior happens.
+
+## Use semantic HTML examples
+
+Good CSS starts with good markup:
+
+```html
+<article class="course-card">
+  <h2><a href="/courses/css/">CSS</a></h2>
+  <p>Learn selectors, cascade, layout, and responsive design.</p>
+</article>
+```
+
+CSS can style that without changing the meaning:
+
+```css
+.course-card {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.course-card:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+```
+
+## Classes for styling, data attributes for state
+
+Classes are good for component identity:
+
+```html
+<button class="tab">Overview</button>
+```
+
+Data attributes are useful for JavaScript-managed state:
+
+```html
+<button class="tab" data-state="active">Overview</button>
+```
+
+```css
+.tab[data-state="active"] {
+  border-block-end-color: currentColor;
+  font-weight: 700;
+}
+```
+
+If an ARIA attribute already represents real accessibility state, style that instead:
+
+```css
+.accordion-button[aria-expanded="true"] {
+  color: var(--accent);
+}
+```
+
+Do not add ARIA only for styling. ARIA must remain truthful.
+
+## CSS can handle many states alone
+
+CSS can style:
+
+- hover
+- focus
+- active
+- disabled
+- checked
+- invalid
+- current page
+- open popovers and dialogs
+- reduced motion
+- dark mode
+- container size
+
+JavaScript is needed when state changes because of behavior, data, or application logic.
+
+## A menu boundary
+
+CSS can style menu states:
+
+```css
+.menu[hidden] {
+  display: none;
+}
+
+.menu-button[aria-expanded="true"] + .menu {
+  display: block;
+}
+```
+
+JavaScript should toggle `hidden` and `aria-expanded` when the button is activated. CSS should not fake button behavior with non-semantic elements.
+
+## Inline styles from JavaScript
+
+Sometimes JavaScript sets custom properties:
+
+```javascript
+card.style.setProperty("--progress", `${progress}%`);
+```
+
+CSS consumes the value:
+
+```css
+.progress-bar {
+  inline-size: var(--progress, 0%);
+}
+```
+
+This is cleaner than JavaScript writing many CSS properties directly.
+
+<Note title="CSS is enough until behavior changes state">
+  <p>
+    If the browser already exposes the state through selectors or attributes, CSS can usually handle styling. If user actions, data, routing, or timers change state, JavaScript should update the document and let CSS respond.
+  </p>
+</Note>
+
+## What to carry forward
+
+- semantic HTML gives CSS stable, meaningful targets
+- classes identify components and styling roles
+- ARIA and data attributes can expose state to CSS
+- ARIA must remain truthful, not decorative
+- JavaScript should change state; CSS should present state
+- custom properties are a clean bridge from JavaScript values to CSS styling
+
+The next lesson builds a responsive page from the pieces you have learned.

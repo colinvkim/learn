@@ -1,0 +1,164 @@
+---
+title: "How CSS rules match HTML"
+description: "Learn stylesheets, rules, selectors, declarations, properties, values, and how browsers connect CSS to HTML."
+course: css
+status: published
+---
+
+import Quiz from "../../../components/content/Quiz.astro";
+
+CSS starts with rules. A rule says: find elements that match this selector, then apply these declarations.
+
+```css
+.notice {
+  color: rgb(120 40 20);
+  background: rgb(255 244 230);
+}
+```
+
+In that rule:
+
+- `.notice` is the selector
+- `color` and `background` are properties
+- `rgb(120 40 20)` and `rgb(255 244 230)` are values
+- each `property: value` pair is a declaration
+
+## Connecting CSS to HTML
+
+Most pages load CSS from a stylesheet:
+
+```html
+<link rel="stylesheet" href="/styles.css" />
+```
+
+That keeps structure and presentation separate. HTML remains readable, and many pages can share one stylesheet.
+
+You can also write CSS in a `<style>` element, which is useful for small demos:
+
+```html
+<style>
+  .callout {
+    border-inline-start: 4px solid currentColor;
+    padding: 1rem;
+  }
+</style>
+```
+
+Inline styles exist, but use them rarely:
+
+```html
+<p style="color: red;">This mixes presentation into HTML.</p>
+```
+
+Inline styles are hard to reuse and have strong cascade behavior, so they become awkward in real projects.
+
+## Selectors match document patterns
+
+CSS selectors describe patterns in the document tree.
+
+```html
+<article class="lesson-card">
+  <h2>Box model</h2>
+  <p>Learn how content, padding, border, and margin work.</p>
+</article>
+```
+
+```css
+.lesson-card {
+  padding: 1rem;
+}
+
+.lesson-card h2 {
+  font-size: 1.25rem;
+}
+```
+
+The first selector matches the article. The second selector matches any `h2` inside `.lesson-card`.
+
+## Common selector types
+
+Start with these:
+
+```css
+article {
+  /* type selector */
+}
+
+.lesson-card {
+  /* class selector */
+}
+
+#main-content {
+  /* id selector */
+}
+
+[aria-current="page"] {
+  /* attribute selector */
+}
+```
+
+Class selectors are usually the best default for project CSS. They are reusable, readable, and not too strong.
+
+Type selectors are useful for broad defaults. ID selectors are useful in HTML for labels, fragment links, and unique regions, but they are often too strong for everyday styling.
+
+## Combining selectors
+
+Selectors can describe relationships:
+
+```css
+.lesson-card h2 {
+  /* any h2 inside .lesson-card */
+}
+
+.lesson-card > h2 {
+  /* direct child h2 only */
+}
+
+h2 + p {
+  /* first p immediately after an h2 */
+}
+
+h2 ~ p {
+  /* later sibling p elements after an h2 */
+}
+```
+
+Use relationship selectors when the relationship is meaningful. Avoid long chains that depend on every wrapper staying exactly the same.
+
+## User agent styles
+
+Browsers have built-in CSS called user agent styles. That is why headings are bold, links are blue, and lists have bullets before you write any CSS.
+
+Your CSS usually builds on those defaults, changes them, or resets parts of them.
+
+## Computed values
+
+The value you write is not always the final value the browser uses.
+
+```css
+p {
+  font-size: 1rem;
+  margin-block: 1em;
+}
+```
+
+The browser computes what `1rem` and `1em` mean in pixels for the current element. Devtools can show both the rule you wrote and the computed result.
+
+## What to carry forward
+
+- CSS rules combine selectors with declarations
+- selectors match patterns in the HTML document tree
+- external stylesheets are the normal way to share CSS
+- class selectors are a strong everyday default
+- browsers start with user agent styles before author CSS changes them
+- devtools can show which rules matched and what values were computed
+
+<Quiz
+  id="q-rule-parts"
+  question="In `.card { padding: 1rem; }`, what is `.card`?"
+  options={["A selector", "A property", "A computed value"]}
+  correctIndex={0}
+  explanation="`.card` selects elements whose class list includes `card`. `padding` is the property, and `1rem` is the written value."
+/>
+
+The next lesson explains what happens when more than one matching rule tries to set the same property.

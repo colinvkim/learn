@@ -1,0 +1,142 @@
+---
+title: "Logical properties and modern sizing"
+description: "Learn inline/block sizing, logical margins and padding, viewport height units, fit-content, min-content, max-content, and resilient constraints."
+course: css
+status: published
+---
+
+import Tip from "../../../components/content/Tip.astro";
+
+Physical properties describe screen directions:
+
+```css
+.box {
+  margin-left: 1rem;
+  width: 20rem;
+}
+```
+
+Logical properties describe writing directions:
+
+```css
+.box {
+  margin-inline-start: 1rem;
+  inline-size: 20rem;
+}
+```
+
+Logical CSS adapts better to right-to-left languages and non-horizontal writing modes.
+
+## Inline and block
+
+For English, the inline direction is left to right. The block direction is top to bottom.
+
+Useful mappings:
+
+- `inline-size`: usually width
+- `block-size`: usually height
+- `margin-inline`: left and right in horizontal writing
+- `margin-block`: top and bottom in horizontal writing
+- `padding-inline`: inline padding
+- `inset-block-start`: usually top
+- `inset-inline-end`: usually right in left-to-right pages
+
+## Use logical spacing
+
+```css
+.article {
+  padding-inline: clamp(1rem, 4vw, 3rem);
+  padding-block: 2rem;
+}
+
+.callout {
+  border-inline-start: 4px solid currentColor;
+  padding-inline-start: 1rem;
+}
+```
+
+This reads by meaning: space along the text direction, border at the start of the line.
+
+## Modern viewport sizing
+
+Old `100vh` can be awkward on mobile because browser UI changes viewport height.
+
+Use newer units by intent:
+
+```css
+.screen {
+  min-block-size: 100svh;
+}
+
+.modal {
+  max-block-size: 90dvh;
+}
+```
+
+- `svh`: small viewport height, stable and safe for initial screen fit
+- `lvh`: large viewport height
+- `dvh`: dynamic viewport height, updates as browser UI changes
+
+## Intrinsic constraints
+
+Use content-aware sizing when useful:
+
+```css
+.button {
+  inline-size: fit-content;
+}
+
+.sidebar {
+  inline-size: clamp(16rem, 25vw, 22rem);
+}
+
+.article {
+  max-inline-size: 70ch;
+}
+```
+
+For images and media:
+
+```css
+.cover {
+  inline-size: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+```
+
+## Avoid fixed-size traps
+
+This can overflow:
+
+```css
+.panel {
+  width: 720px;
+}
+```
+
+This is more resilient:
+
+```css
+.panel {
+  inline-size: min(100%, 45rem);
+}
+```
+
+The element can fill available space without exceeding the intended maximum.
+
+<Tip title="Write constraints, not guesses">
+  <p>
+    Good sizing usually says what is allowed: minimum, maximum, preferred size, and relationship to content. Fixed dimensions are sometimes right, but they should earn their place.
+  </p>
+</Tip>
+
+## What to carry forward
+
+- logical properties describe writing direction, not physical screen direction
+- `inline-size` and `block-size` are more adaptable than width and height
+- `svh`, `lvh`, and `dvh` solve common mobile viewport problems
+- `min()`, `max()`, `clamp()`, and `fit-content` express constraints
+- prefer flexible bounds over fixed widths
+
+The next lesson applies CSS to forms and interactive states.

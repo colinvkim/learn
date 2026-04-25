@@ -1,0 +1,187 @@
+---
+title: "Box model, sizing, and overflow"
+description: "Learn content boxes, padding, borders, margins, box-sizing, intrinsic sizing, overflow, and aspect ratio."
+course: css
+status: published
+---
+
+import BoxModelExplorer from "../../../components/content/BoxModelExplorer.astro";
+import Warning from "../../../components/content/Warning.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Every element that renders creates a box. Layout becomes easier when you can picture that box.
+
+From inside to outside:
+
+1. content
+2. padding
+3. border
+4. margin
+
+```css
+.card {
+  padding: 1rem;
+  border: 1px solid rgb(210 215 225);
+  margin-block: 1rem;
+}
+```
+
+<BoxModelExplorer
+  previewContent="Continue"
+  initial={{ width: 160, padding: 14, border: 2, margin: 12, boxSizing: "border-box" }}
+/>
+
+## Content box vs border box
+
+By default, `width` sets the content box. Padding and border are added outside it:
+
+```css
+.box {
+  width: 20rem;
+  padding: 2rem;
+  border: 2px solid;
+}
+```
+
+The visible box becomes wider than `20rem`.
+
+Most projects prefer this reset:
+
+```css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+```
+
+With `border-box`, width includes content, padding, and border. This makes sizing more predictable.
+
+## Margins create space between boxes
+
+Margins are outside the border:
+
+```css
+.section {
+  margin-block: 3rem;
+}
+```
+
+Vertical margins between normal block elements can collapse. That means two adjacent vertical margins may combine instead of add.
+
+```css
+h2 {
+  margin-block-end: 1rem;
+}
+
+p {
+  margin-block-start: 1rem;
+}
+```
+
+The space between them may be `1rem`, not `2rem`.
+
+Use layout tools like `gap` when you want predictable spacing between flex or grid items.
+
+## Width, min, and max
+
+Prefer constraints over fixed sizes:
+
+```css
+.article {
+  inline-size: min(100%, 70ch);
+}
+
+.button {
+  min-inline-size: 8rem;
+}
+```
+
+`width: 600px` can overflow on small screens. `max-inline-size: 600px` allows the element to shrink.
+
+## Intrinsic sizing
+
+Intrinsic sizing lets content influence size:
+
+```css
+.tag {
+  inline-size: max-content;
+}
+
+.panel {
+  inline-size: min-content;
+}
+
+.card {
+  inline-size: fit-content;
+}
+```
+
+Use these carefully. They are powerful when content should define size, but they can also create overflow if the content cannot wrap.
+
+## Overflow
+
+Overflow happens when content does not fit its box:
+
+```css
+.panel {
+  overflow: auto;
+}
+```
+
+Common values:
+
+- `visible`: content spills out
+- `hidden`: content is clipped
+- `auto`: scrollbars appear only when needed
+- `scroll`: scrollbars are always reserved
+- `clip`: clips without creating a scroll container
+
+<Warning title="Hidden overflow can hide focus">
+  <p>
+    `overflow: hidden` can clip outlines, popovers, and keyboard focus indicators. Use it only when clipping is truly intended.
+  </p>
+</Warning>
+
+## Aspect ratio and replaced elements
+
+Use `aspect-ratio` for fixed shape:
+
+```css
+.video-card {
+  aspect-ratio: 16 / 9;
+}
+```
+
+For images and videos:
+
+```css
+.thumbnail {
+  inline-size: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
+}
+```
+
+`object-fit: cover` fills the box and may crop. `object-fit: contain` preserves the whole media and may leave empty space.
+
+## What to carry forward
+
+- rendered elements create boxes
+- padding is inside the border; margin is outside
+- `box-sizing: border-box` makes sizing easier
+- vertical margins can collapse in normal flow
+- prefer `max-*`, `min-*`, and flexible sizes over fixed widths
+- overflow is a layout signal, not just a scrollbar problem
+- `aspect-ratio` replaces old padding-ratio hacks
+
+<Quiz
+  id="q-display-visibility-opacity"
+  question="Which value creates a box that can scroll only when content overflows?"
+  options={["overflow: auto", "overflow: visible", "overflow: clip"]}
+  correctIndex={0}
+  explanation="`overflow: auto` creates scrollbars when needed. `visible` spills content, and `clip` clips without normal scrolling."
+/>
+
+The next lesson moves from boxes to readable text.

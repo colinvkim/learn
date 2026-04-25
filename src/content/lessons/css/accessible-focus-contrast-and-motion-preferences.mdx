@@ -1,0 +1,147 @@
+---
+title: "Accessible focus, contrast, and motion preferences"
+description: "Learn keyboard-visible focus, contrast, reduced motion, forced colors, hover and pointer media features, and color-independent cues."
+course: css
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+
+Accessible CSS makes interface state perceivable. It does not replace semantic HTML, but it can preserve or destroy usability.
+
+## Focus must be visible
+
+Every interactive element should have a visible focus state:
+
+```css
+:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+```
+
+For custom colors:
+
+```css
+.button:focus-visible {
+  outline: 3px solid color-mix(in oklab, royalblue, white 35%);
+  outline-offset: 3px;
+}
+```
+
+Never remove outlines globally:
+
+```css
+*:focus {
+  outline: none;
+}
+```
+
+That makes keyboard navigation hard or impossible to track.
+
+## Contrast
+
+Text needs enough contrast against its background:
+
+```css
+.button {
+  background: rgb(20 90 190);
+  color: white;
+}
+```
+
+Check real combinations: normal text, large text, disabled text, placeholder text, borders, icons, and focus rings.
+
+## Do not rely on color alone
+
+Bad:
+
+```css
+.error {
+  color: red;
+}
+```
+
+Better:
+
+```css
+.error {
+  color: rgb(160 30 30);
+  border-inline-start: 4px solid currentColor;
+  padding-inline-start: 0.75rem;
+}
+```
+
+The border communicates state even if color perception differs.
+
+## Reduced motion
+
+Some users prefer less motion:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
+  }
+}
+```
+
+For more careful designs, replace motion with a non-motion cue:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transform: none;
+  }
+}
+```
+
+## Forced colors
+
+Some users use high-contrast or forced-color modes. Let system colors work:
+
+```css
+@media (forced-colors: active) {
+  .button {
+    border: 1px solid ButtonText;
+  }
+}
+```
+
+Avoid using background images or box shadows as the only state indicators. They may disappear or change in forced-color modes.
+
+## Pointer and hover capability
+
+Do not assume every device has hover:
+
+```css
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    transform: translateY(-2px);
+  }
+}
+```
+
+Touch users still need visible controls and states without hover.
+
+<Warning title="Disabled states still need contrast">
+  <p>
+    Low opacity can make disabled controls too faint to read. A disabled control should look inactive, but its label still needs to be understandable.
+  </p>
+</Warning>
+
+## What to carry forward
+
+- visible focus is required for keyboard use
+- contrast must be checked for every meaningful state
+- color should not be the only cue
+- `prefers-reduced-motion` should reduce or replace motion
+- forced colors may change backgrounds, shadows, and colors
+- hover styles should be enhancements, not required instructions
+
+The next lesson returns to the cascade with architecture tools: layers, resets, components, and overrides.

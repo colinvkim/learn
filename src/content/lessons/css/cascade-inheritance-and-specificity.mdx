@@ -1,0 +1,179 @@
+---
+title: "Cascade, inheritance, and specificity"
+description: "Learn how CSS resolves conflicts through cascade origin, importance, layers, specificity, source order, and inheritance."
+course: css
+status: published
+---
+
+import CascadeInspector from "../../../components/content/CascadeInspector.astro";
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+The cascade is CSS conflict resolution. If two rules match the same element and set the same property, the browser needs a winner.
+
+```css
+button {
+  color: gray;
+}
+
+.primary-action {
+  color: white;
+}
+```
+
+If a button has `class="primary-action"`, both rules match. The cascade decides which `color` applies.
+
+## The practical cascade order
+
+For author CSS, think in this order:
+
+1. importance: normal declarations vs `!important`
+2. cascade layer: later layers beat earlier layers for normal declarations
+3. specificity: stronger selectors beat weaker selectors inside the winning layer
+4. source order: later rules win when specificity ties
+
+This order matters. Specificity does not beat a later cascade layer. Source order matters only after earlier cascade steps tie.
+
+<CascadeInspector
+  property="color"
+  previewContent="Save changes"
+  rules={[
+    { label: "Type selector", selector: "button", value: "gray", specificity: [0, 0, 1], sourceOrder: 1 },
+    { label: "Class selector", selector: ".primary-action", value: "white", specificity: [0, 1, 0], sourceOrder: 2 },
+  ]}
+/>
+
+## Specificity
+
+Specificity is the selector's weight.
+
+Common weights:
+
+- type selector: low
+- class, attribute, pseudo-class: medium
+- id selector: high
+- inline style: very high within author styles
+
+```css
+p {
+  color: black;
+}
+
+.intro {
+  color: darkgreen;
+}
+
+#lead {
+  color: purple;
+}
+```
+
+If one paragraph matches all three, the ID selector wins because it has higher specificity.
+
+## Source order
+
+When specificity ties, the later rule wins:
+
+```css
+.notice {
+  color: blue;
+}
+
+.notice {
+  color: darkred;
+}
+```
+
+The text becomes dark red.
+
+## Inheritance
+
+Some properties inherit from ancestors. Text-related properties often inherit:
+
+```css
+body {
+  color: rgb(30 34 40);
+  font-family: system-ui, sans-serif;
+}
+```
+
+Most descendants inherit that text color and font family unless another rule changes them.
+
+Box properties usually do not inherit:
+
+```css
+main {
+  padding: 2rem;
+}
+```
+
+Children inside `main` do not automatically get the same padding.
+
+## CSS-wide keywords
+
+Every property accepts these useful keywords:
+
+```css
+.example {
+  color: inherit;
+  border-color: currentColor;
+  padding: initial;
+  font-size: unset;
+  display: revert;
+}
+```
+
+Use them by meaning:
+
+- `inherit`: use the parent value
+- `initial`: use the property's initial value
+- `unset`: inherit if the property normally inherits, otherwise initial
+- `revert`: roll back to the previous cascade origin, often browser/user defaults
+- `revert-layer`: roll back declarations from the current cascade layer
+
+<Note title="Layers arrive before specificity">
+  <p>
+    Cascade layers are part of the cascade, not a naming convention. A low-specificity selector in a later layer can beat a high-specificity selector in an earlier layer. This is useful for architecture, and it is covered in depth later.
+  </p>
+</Note>
+
+## Use `!important` with restraint
+
+`!important` changes cascade priority:
+
+```css
+.button {
+  color: red !important;
+}
+```
+
+This is useful for user styles, emergency overrides, and rare utility rules. It is a bad everyday escape hatch because it makes future overrides harder.
+
+<Warning title="Specificity can become debt">
+  <p>
+    Long selectors and ID-heavy CSS feel precise at first. Later, they force even stronger selectors to override them. Prefer clear classes, low specificity, and layers when organizing a project.
+  </p>
+</Warning>
+
+## What to carry forward
+
+- cascade decides which matching declaration wins
+- importance, layers, specificity, and source order are separate steps
+- inheritance passes some values from parent to child
+- `revert-layer` matters when using cascade layers
+- low-specificity CSS is usually easier to maintain
+
+<Quiz
+  id="q-specificity-source-order"
+  question="When do two normal declarations use source order to choose a winner?"
+  options={[
+    "When they are in the same relevant layer and have equal specificity",
+    "Whenever one rule appears later, even if specificity differs",
+    "Only when one rule uses `!important`",
+  ]}
+  correctIndex={0}
+  explanation="Source order breaks ties after origin, importance, layer, and specificity have already been considered."
+/>
+
+The next lesson turns that cascade knowledge into maintainable selector habits.

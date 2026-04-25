@@ -1,0 +1,177 @@
+---
+title: "Flexbox layout"
+description: "Learn flex direction, axes, gap, wrapping, alignment, flex-basis, grow, shrink, and when flexbox is the right tool."
+course: css
+status: published
+---
+
+import LayoutLab from "../../../components/content/LayoutLab.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Flexbox arranges items along one main axis. It is best for navigation bars, toolbars, media objects, button groups, and rows or columns where items should share space.
+
+```css
+.nav-list {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+```
+
+## Main axis and cross axis
+
+The main axis comes from `flex-direction`:
+
+```css
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+```
+
+In a row, the main axis is inline. In a column, the main axis is block.
+
+`justify-content` aligns along the main axis:
+
+```css
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+```
+
+`align-items` aligns along the cross axis:
+
+```css
+.toolbar {
+  align-items: center;
+}
+```
+
+## Gap
+
+Use `gap` for spacing between flex items:
+
+```css
+.actions {
+  display: flex;
+  gap: 0.75rem;
+}
+```
+
+This is cleaner than putting margins on every button.
+
+## Wrapping
+
+Flex items try to fit on one line unless wrapping is enabled:
+
+```css
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+```
+
+This is useful for tags, chips, and action rows that can flow onto another line.
+
+## Flex sizing
+
+Flex sizing has three parts:
+
+```css
+.sidebar {
+  flex: 0 0 16rem;
+}
+
+.content {
+  flex: 1 1 0;
+}
+```
+
+The shorthand is:
+
+```text
+flex: grow shrink basis
+```
+
+- `flex-grow`: can the item take extra space?
+- `flex-shrink`: can the item shrink?
+- `flex-basis`: what size does it start from?
+
+For equal-width flexible items:
+
+```css
+.pricing-card {
+  flex: 1 1 18rem;
+}
+```
+
+Each card wants at least `18rem`, can grow, and can shrink when needed.
+
+## A practical media object
+
+```html
+<article class="media-card">
+  <img src="/images/course.jpg" alt="" />
+  <div>
+    <h2>CSS layout</h2>
+    <p>Build responsive rows, grids, and components.</p>
+  </div>
+</article>
+```
+
+```css
+.media-card {
+  display: flex;
+  gap: 1rem;
+  align-items: start;
+}
+
+.media-card img {
+  inline-size: 6rem;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+```
+
+Flexbox makes the image and text sit side by side while preserving content size.
+
+<LayoutLab
+  items={[
+    { content: "Profile" },
+    { content: "Messages" },
+    { content: "Settings" },
+    { content: "Billing" },
+  ]}
+/>
+
+## When flexbox is not enough
+
+Flexbox is one-dimensional. It can wrap, but each line is laid out independently. If you need rows and columns to line up together, use grid.
+
+## What to carry forward
+
+- flexbox lays out items along one main axis
+- `flex-direction` sets the main axis
+- `justify-content` works on the main axis
+- `align-items` works on the cross axis
+- `gap` is the normal spacing tool
+- `flex: grow shrink basis` controls how items share space
+- use grid when rows and columns both matter
+
+<Quiz
+  id="q-flex-grid"
+  question="Which layout tool is usually best for a toolbar where items sit in one row and share space?"
+  options={["Flexbox", "Grid", "Absolute positioning"]}
+  correctIndex={0}
+  explanation="Flexbox is designed for one-dimensional layout: a row or column of related items."
+/>
+
+The next lesson introduces grid for two-dimensional layout.

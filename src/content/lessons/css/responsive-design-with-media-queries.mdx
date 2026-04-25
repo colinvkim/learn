@@ -1,0 +1,150 @@
+---
+title: "Responsive design with media queries"
+description: "Learn content-first responsive thinking, media query range syntax, fluid type, viewport features, and mobile-first workflow."
+course: css
+status: published
+---
+
+import ResponsiveLab from "../../../components/content/ResponsiveLab.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Responsive design means the interface adapts to available space, device capabilities, and user preferences.
+
+Start with content. A layout should change when the content needs a different shape, not because a device name appears in your head.
+
+## Start from the narrow version
+
+The narrow layout is often the simplest:
+
+```css
+.page {
+  display: grid;
+  gap: 1rem;
+}
+```
+
+Then add space when available:
+
+```css
+@media (width >= 56rem) {
+  .page {
+    grid-template-columns: 16rem 1fr;
+  }
+}
+```
+
+This is often called mobile-first. It is a workflow, not a law. The useful habit is to start with the most constrained layout and enhance from there.
+
+## Range syntax
+
+Modern media queries can use comparison syntax:
+
+```css
+@media (width >= 48rem) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (30rem <= width < 60rem) {
+  .promo {
+    padding: 2rem;
+  }
+}
+```
+
+This is easier to read than older `min-width` and `max-width` patterns.
+
+## Fluid values reduce breakpoint pressure
+
+Not every change needs a breakpoint:
+
+```css
+:root {
+  --space-page: clamp(1rem, 4vw, 3rem);
+}
+
+h1 {
+  font-size: clamp(2rem, 6vw, 4rem);
+}
+```
+
+Use breakpoints for structural changes. Use fluid values for gradual changes.
+
+## Media features are not only width
+
+CSS can respond to preferences and input:
+
+```css
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: rgb(15 17 22);
+    --text: rgb(236 239 244);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    transform: translateY(-2px);
+  }
+}
+```
+
+This avoids hover-only assumptions on touch devices.
+
+## Responsive images, lightly
+
+HTML usually owns responsive image sources:
+
+```html
+<img
+  src="/images/course-800.jpg"
+  srcset="/images/course-400.jpg 400w, /images/course-800.jpg 800w"
+  sizes="(width >= 48rem) 40vw, 100vw"
+  alt="Student reviewing CSS layout notes"
+/>
+```
+
+CSS controls how the image fits its box:
+
+```css
+img {
+  max-inline-size: 100%;
+  block-size: auto;
+}
+```
+
+## Test at awkward sizes
+
+Do not test only phone, tablet, desktop. Drag the viewport slowly. Look for the exact width where the content starts to feel cramped, overflow, or waste space. Put breakpoints there.
+
+<ResponsiveLab previewContent="Profile card" />
+
+## What to carry forward
+
+- responsive design responds to content and context
+- media query range syntax is the modern readable form
+- use breakpoints for structural changes
+- use `clamp()` for fluid type and spacing
+- hover, pointer, color-scheme, and reduced-motion queries matter
+- HTML owns image source selection; CSS owns image layout
+
+<Quiz
+  id="q-media-query-purpose"
+  question="What should usually decide a layout breakpoint?"
+  options={[
+    "The point where the content needs a different layout",
+    "The exact name of a popular device",
+    "A random round pixel number",
+  ]}
+  correctIndex={0}
+  explanation="Breakpoints should follow content and layout needs. Device sizes change constantly."
+/>
+
+The next lesson shows when component size matters more than viewport size.

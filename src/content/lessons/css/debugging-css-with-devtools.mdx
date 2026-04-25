@@ -1,0 +1,147 @@
+---
+title: "Debugging CSS with browser devtools"
+description: "Learn how to inspect rules, computed styles, the box model, flex and grid overlays, specificity, layers, overflow, and stacking problems."
+course: css
+status: published
+---
+
+import Steps from "../../../components/content/Steps.astro";
+
+CSS debugging is not guessing. Browser devtools can show what the browser actually matched, computed, laid out, and painted.
+
+## Inspect the element
+
+Start by selecting the element in the Elements panel. Look at:
+
+- matched rules
+- crossed-out declarations
+- inherited styles
+- computed values
+- box model
+- layout overlays
+
+If a declaration is crossed out, another declaration won the cascade.
+
+## Find cascade problems
+
+Ask:
+
+- did the selector match?
+- did another rule override it?
+- is the winning rule in a later layer?
+- is specificity higher?
+- does source order decide the tie?
+- is the property inherited instead of directly set?
+- is the value invalid?
+
+Common example:
+
+```css
+.button {
+  color: white;
+}
+
+@layer utilities {
+  .text-muted {
+    color: gray;
+  }
+}
+```
+
+If `.text-muted` does not win, check whether `.button` is unlayered or in a later layer.
+
+## Debug box model problems
+
+Use the box model view to inspect:
+
+- content size
+- padding
+- border
+- margin
+- box sizing
+
+If an element is wider than expected, check whether `box-sizing` is `content-box`, whether a fixed width is too large, or whether content cannot wrap.
+
+## Debug flex and grid
+
+Devtools can overlay flex and grid layouts. Use those overlays to see:
+
+- grid tracks
+- gaps
+- line numbers
+- flex direction
+- item alignment
+- available space
+
+This is faster than editing values blindly.
+
+## Debug overflow
+
+Overflow usually comes from:
+
+- fixed widths
+- long unbreakable text
+- images without `max-inline-size: 100%`
+- grid tracks using `1fr` where `minmax(0, 1fr)` is needed
+- absolute positioning
+- transforms moving content visually
+
+Useful temporary debug CSS:
+
+```css
+* {
+  outline: 1px solid rgb(255 0 0 / 25%);
+}
+```
+
+Remove it after finding the problem.
+
+## Debug stacking
+
+If `z-index` does not work, check:
+
+- is the element positioned or otherwise creating a stacking context?
+- is an ancestor creating a stacking context?
+- is the element inside a lower stacking context?
+- is the overlay in the top layer, like `dialog` or `[popover]`?
+
+Large `z-index` values do not escape ancestor stacking contexts.
+
+<Steps>
+  <ol>
+    <li>Inspect the wrong element.</li>
+    <li>Check whether the expected selector matched.</li>
+    <li>Check crossed-out declarations and winning rules.</li>
+    <li>Open computed styles to see final values.</li>
+    <li>Use box model and layout overlays to inspect geometry.</li>
+    <li>Change one value at a time, then move the fix back to the stylesheet.</li>
+  </ol>
+</Steps>
+
+## Browser-support debugging
+
+Modern devtools and MDN show Baseline support information for many CSS features. When a property is ignored:
+
+- check spelling first
+- check whether the value is valid
+- check whether the feature is supported
+- use `@supports` for progressive enhancement
+
+```css
+@supports (container-type: inline-size) {
+  .card-list {
+    container-type: inline-size;
+  }
+}
+```
+
+## What to carry forward
+
+- inspect actual matched rules before changing code
+- crossed-out declarations are cascade clues
+- computed styles show final values
+- flex and grid overlays reveal layout structure
+- overflow and stacking bugs usually have visible causes in devtools
+- support problems should be handled with Baseline, MDN, caniuse, and `@supports`
+
+The next lesson clarifies how CSS connects cleanly with HTML and JavaScript.
