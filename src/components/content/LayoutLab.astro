@@ -92,11 +92,11 @@ const data = { state };
         </div>
       )}
 
-      <fieldset class="rounded-[1rem] border border-line/80 bg-canvas/45 p-4">
+      <fieldset class="space-y-3 rounded-[1rem] border border-line/80 bg-canvas/45 p-3">
         <legend class="px-1 text-sm font-semibold text-ink">Mode</legend>
-        <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Layout mode">
+        <div class="grid grid-cols-3 gap-1.5 rounded-[0.8rem] border border-line/80 bg-panel/70 p-1" role="radiogroup" aria-label="Layout mode">
           {modes.map((mode) => (
-            <label class="rounded-[0.9rem] border border-line/80 bg-panel/70 px-3 py-2 text-sm font-medium text-muted focus-within:ring-2 focus-within:ring-accent/25">
+            <label class="rounded-[0.65rem] border border-transparent px-3 py-2 text-center text-sm font-medium text-muted focus-within:ring-2 focus-within:ring-accent/25">
               <input data-layout-control="mode" type="radio" name={`${id}-mode`} value={mode} class="sr-only" checked={state.mode === mode} />
               <span class="capitalize">{mode}</span>
             </label>
@@ -104,47 +104,62 @@ const data = { state };
         </div>
       </fieldset>
 
-      <div class="grid gap-3 sm:grid-cols-2">
+      <div class="space-y-3">
         <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
-          <span class="flex items-center justify-between"><span class="font-medium text-ink">gap</span><output data-layout-output="gap">{state.gap}px</output></span>
+          <span class="flex items-center justify-between gap-3">
+            <span class="font-medium text-ink">Spacing</span>
+            <output data-layout-output="gap">{state.gap}px</output>
+          </span>
           <input data-layout-control="gap" type="range" min="0" max="48" value={state.gap} class="w-full accent-accent" />
         </label>
-        <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
-          <span class="font-medium text-ink">justify-content</span>
-          <select data-layout-control="justify" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
-            {["flex-start", "center", "space-between", "space-around", "space-evenly"].map((value) => <option value={value} selected={state.justify === value}>{value}</option>)}
-          </select>
-        </label>
-        <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
-          <span class="font-medium text-ink">align-items</span>
+        <label data-layout-relevant="flex grid" class="grid gap-1.5 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
+          <span class="font-medium text-ink">Align items</span>
           <select data-layout-control="align" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
             {["stretch", "flex-start", "center", "flex-end"].map((value) => <option value={value} selected={state.align === value}>{value}</option>)}
           </select>
         </label>
-        <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
-          <span class="font-medium text-ink">flex-direction</span>
-          <select data-layout-control="direction" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
-            <option value="row" selected={state.direction === "row"}>row</option>
-            <option value="column" selected={state.direction === "column"}>column</option>
-          </select>
-        </label>
-      </div>
 
-      <div class="grid gap-3">
-        <label class="flex items-center gap-3 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
-          <input data-layout-control="wrap" type="checkbox" class="h-4 w-4 accent-accent" checked={state.wrap} />
-          Allow flex items to wrap
-        </label>
-        <label class="flex items-center gap-3 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
-          <input data-layout-control="grow" type="checkbox" class="h-4 w-4 accent-accent" checked={state.grow} />
-          Let items grow
-        </label>
-        <label class="grid gap-2 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm text-muted">
-          <span class="font-medium text-ink">grid-template-columns</span>
-          <select data-layout-control="columns" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
-            {["repeat(2, minmax(0, 1fr))", "repeat(3, minmax(0, 1fr))", "repeat(auto-fit, minmax(8rem, 1fr))", "minmax(10rem, 2fr) 1fr"].map((value) => <option value={value} selected={state.columns === value}>{value}</option>)}
-          </select>
-        </label>
+        <div data-layout-panel="flow" class="rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3 text-sm leading-6 text-muted">
+          <p class="font-medium text-ink">Normal flow</p>
+          <p class="mt-1">Items keep document order. Spacing changes margins between blocks.</p>
+        </div>
+
+        <div data-layout-panel="flex" class="grid gap-3 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="grid gap-1.5 text-sm text-muted">
+              <span class="font-medium text-ink">Direction</span>
+              <select data-layout-control="direction" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+                <option value="row" selected={state.direction === "row"}>row</option>
+                <option value="column" selected={state.direction === "column"}>column</option>
+              </select>
+            </label>
+            <label class="grid gap-1.5 text-sm text-muted">
+              <span class="font-medium text-ink">Justify</span>
+              <select data-layout-control="justify" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+                {["flex-start", "center", "space-between", "space-around", "space-evenly"].map((value) => <option value={value} selected={state.justify === value}>{value}</option>)}
+              </select>
+            </label>
+          </div>
+          <div class="grid gap-2 sm:grid-cols-2">
+            <label class="flex items-center gap-3 rounded-lg border border-line/80 bg-panel/55 px-3 py-2 text-sm text-muted">
+              <input data-layout-control="wrap" type="checkbox" class="h-4 w-4 accent-accent" checked={state.wrap} />
+              Wrap
+            </label>
+            <label class="flex items-center gap-3 rounded-lg border border-line/80 bg-panel/55 px-3 py-2 text-sm text-muted">
+              <input data-layout-control="grow" type="checkbox" class="h-4 w-4 accent-accent" checked={state.grow} />
+              Grow items
+            </label>
+          </div>
+        </div>
+
+        <div data-layout-panel="grid" class="grid gap-3 rounded-[0.85rem] border border-line/80 bg-canvas/45 p-3">
+          <label class="grid gap-1.5 text-sm text-muted">
+            <span class="font-medium text-ink">Columns</span>
+            <select data-layout-control="columns" class="rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink focus-ring-subtle">
+              {["repeat(2, minmax(0, 1fr))", "repeat(3, minmax(0, 1fr))", "repeat(auto-fit, minmax(8rem, 1fr))", "minmax(10rem, 2fr) 1fr"].map((value) => <option value={value} selected={state.columns === value}>{value}</option>)}
+            </select>
+          </label>
+        </div>
       </div>
     </div>
 
@@ -211,9 +226,17 @@ const data = { state };
           if (output) output.textContent = `${state.gap}px`;
           root.querySelectorAll("[data-layout-control='mode']").forEach((input) => {
             const label = input.closest("label");
-            label?.classList.toggle("border-accent/35", input.checked);
+            label?.classList.toggle("border-accent/25", input.checked);
             label?.classList.toggle("bg-accent-soft", input.checked);
             label?.classList.toggle("text-ink", input.checked);
+          });
+          root.querySelectorAll("[data-layout-panel]").forEach((panel) => {
+            if (!(panel instanceof HTMLElement)) return;
+            panel.hidden = panel.dataset.layoutPanel !== state.mode;
+          });
+          root.querySelectorAll("[data-layout-relevant]").forEach((controlGroup) => {
+            if (!(controlGroup instanceof HTMLElement)) return;
+            controlGroup.hidden = !controlGroup.dataset.layoutRelevant?.split(" ").includes(state.mode);
           });
           if (stage instanceof HTMLElement) {
             stage.style.display = state.mode === "flow" ? "block" : state.mode;
