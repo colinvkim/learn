@@ -19,6 +19,8 @@ const topics = Array.isArray(course.data.topics) ? course.data.topics : [];
 ---
 
 <aside
+  transition:name={`course-sidebar-${course.id}`}
+  transition:persist
   class="lg:h-full lg:overflow-y-auto lg:overscroll-y-contain lg:border-r lg:border-line/80 lg:bg-panel/40 lg:pr-0"
 >
   <div
