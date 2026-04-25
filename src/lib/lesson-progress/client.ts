@@ -21,39 +21,6 @@ declare global {
 }
 
 const WRONG_FEEDBACK_TIMEOUT_MS = 1600;
-const SIDEBAR_LINK_BASE_CLASS =
-  "relative block rounded-xl px-3 py-2.5 pr-16 text-[0.86rem] leading-5.5 transition";
-const SIDEBAR_LINK_ACTIVE_CLASS =
-  "bg-canvas/88 text-ink shadow-[inset_0_0_0_1px_var(--color-line)] dark:bg-canvas/52";
-const SIDEBAR_LINK_INACTIVE_CLASS =
-  "text-muted hover:bg-canvas/75 hover:text-ink dark:hover:bg-canvas/40";
-
-function normalizePath(path: string) {
-  return path.replace(/\/+$/, "") || "/";
-}
-
-function syncSidebarCurrentLesson(sidebar: HTMLElement) {
-  const currentPath = normalizePath(window.location.pathname);
-
-  sidebar.querySelectorAll("[data-lesson-link]").forEach((element) => {
-    if (!(element instanceof HTMLAnchorElement)) {
-      return;
-    }
-
-    const lessonPath = normalizePath(
-      new URL(element.href, window.location.origin).pathname,
-    );
-    const isCurrent = lessonPath === currentPath;
-
-    element.className = `${SIDEBAR_LINK_BASE_CLASS} ${isCurrent ? SIDEBAR_LINK_ACTIVE_CLASS : SIDEBAR_LINK_INACTIVE_CLASS}`;
-
-    if (isCurrent) {
-      element.setAttribute("aria-current", "page");
-    } else {
-      element.removeAttribute("aria-current");
-    }
-  });
-}
 
 function getLessonContext(element: Element | null): LessonContext | null {
   const root = element?.closest("[data-lesson-root]");
@@ -106,8 +73,7 @@ function setStatusText(panel: HTMLElement, status: LessonStatus) {
     return;
   }
 
-  summary.textContent =
-    "Mark the lesson manually or answer the quick checks to track progress.";
+  summary.textContent = "Mark the lesson manually or answer the quick checks to track progress.";
 }
 
 function updateLessonPanel(panel: HTMLElement) {
@@ -152,9 +118,7 @@ function updateLessonPanel(panel: HTMLElement) {
 
   if (progressBar instanceof HTMLElement) {
     const completion =
-      summary.quizCount === 0
-        ? 0
-        : (summary.completedQuizCount / summary.quizCount) * 100;
+      summary.quizCount === 0 ? 0 : (summary.completedQuizCount / summary.quizCount) * 100;
     progressBar.style.width = `${completion}%`;
   }
 }
@@ -246,8 +210,6 @@ function updateSidebar(sidebar: HTMLElement) {
     return;
   }
 
-  syncSidebarCurrentLesson(sidebar);
-
   const allState = readLessonProgressState();
   let completedCount = 0;
   let startedCount = 0;
@@ -281,23 +243,20 @@ function updateSidebar(sidebar: HTMLElement) {
       status === "completed" ? "Completed lesson" : "In-progress lesson",
     );
 
-    marker.querySelectorAll("[data-lesson-marker-icon]").forEach((icon) => {
-      if (!(icon instanceof Element)) {
-        return;
-      }
+    marker
+      .querySelectorAll("[data-lesson-marker-icon]")
+      .forEach((icon) => {
+        if (!(icon instanceof Element)) {
+          return;
+        }
 
-      icon.toggleAttribute(
-        "hidden",
-        icon.getAttribute("data-lesson-marker-icon") !== status,
-      );
-    });
+        icon.toggleAttribute("hidden", icon.getAttribute("data-lesson-marker-icon") !== status);
+      });
   });
 
   const totalLessons = sidebar.querySelectorAll("[data-lesson-link]").length;
   const progressCount = sidebar.querySelector("[data-course-progress-count]");
-  const progressCaption = sidebar.querySelector(
-    "[data-course-progress-caption]",
-  );
+  const progressCaption = sidebar.querySelector("[data-course-progress-caption]");
   const progressBar = sidebar.querySelector("[data-course-progress-bar]");
 
   if (progressCount instanceof HTMLElement) {
@@ -311,7 +270,8 @@ function updateSidebar(sidebar: HTMLElement) {
       progressCaption.textContent = `${completedCount} lesson${completedCount === 1 ? "" : "s"} complete`;
     } else if (completedCount > 0) {
       const inProgressCount = startedCount - completedCount;
-      progressCaption.textContent = `${completedCount} complete, ${inProgressCount} in progress`;
+      progressCaption.textContent =
+        `${completedCount} complete, ${inProgressCount} in progress`;
     } else if (startedCount > 0) {
       progressCaption.textContent = `${startedCount} lesson${startedCount === 1 ? "" : "s"} started`;
     } else {
@@ -320,8 +280,7 @@ function updateSidebar(sidebar: HTMLElement) {
   }
 
   if (progressBar instanceof HTMLElement) {
-    const completion =
-      totalLessons === 0 ? 0 : (completedCount / totalLessons) * 100;
+    const completion = totalLessons === 0 ? 0 : (completedCount / totalLessons) * 100;
     progressBar.style.width = `${completion}%`;
   }
 }
@@ -329,21 +288,15 @@ function updateSidebar(sidebar: HTMLElement) {
 function updateAll() {
   document
     .querySelectorAll("[data-lesson-progress]")
-    .forEach(
-      (element) => element instanceof HTMLElement && updateLessonPanel(element),
-    );
+    .forEach((element) => element instanceof HTMLElement && updateLessonPanel(element));
 
   document
     .querySelectorAll("[data-quiz]")
-    .forEach(
-      (element) => element instanceof HTMLElement && updateQuiz(element),
-    );
+    .forEach((element) => element instanceof HTMLElement && updateQuiz(element));
 
   document
     .querySelectorAll("[data-sidebar-progress]")
-    .forEach(
-      (element) => element instanceof HTMLElement && updateSidebar(element),
-    );
+    .forEach((element) => element instanceof HTMLElement && updateSidebar(element));
 }
 
 function handleStatusSelection(button: HTMLButtonElement) {
@@ -366,8 +319,7 @@ function showIncorrectFeedback(quiz: HTMLElement, option: HTMLButtonElement) {
   if (feedback instanceof HTMLElement) {
     feedback.hidden = false;
     feedback.dataset.tone = "warning";
-    feedback.textContent =
-      "Not quite. Re-read the section above and try again.";
+    feedback.textContent = "Not quite. Re-read the section above and try again.";
   }
 
   window.setTimeout(() => {
@@ -413,17 +365,24 @@ function handleQuizSelection(option: HTMLButtonElement) {
     quizIds,
   );
 
-  recordQuizAttempt(context.courseId, context.lessonSlug, quizId, isCorrect);
+  recordQuizAttempt(
+    context.courseId,
+    context.lessonSlug,
+    quizId,
+    isCorrect,
+  );
 
   if (summary.status === "not-started") {
     setLessonStatus(context.courseId, context.lessonSlug, "in-progress");
   }
 
-  updateAll();
-
-  if (!isCorrect) {
-    showIncorrectFeedback(quiz, option);
+  if (isCorrect) {
+    updateAll();
+    return;
   }
+
+  updateAll();
+  showIncorrectFeedback(quiz, option);
 }
 
 function bindEvents() {
@@ -447,9 +406,7 @@ function bindEvents() {
     }
   });
 
-  document.addEventListener("astro:page-load", () => {
-    updateAll();
-  });
+  document.addEventListener("astro:page-load", updateAll);
 
   window.addEventListener("storage", (event) => {
     if (event.key === LESSON_PROGRESS_STORAGE_KEY) {
