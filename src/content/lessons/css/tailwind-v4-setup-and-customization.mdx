@@ -1,0 +1,379 @@
+---
+title: "Tailwind v4 setup and customization"
+description: "Learn how to set up Tailwind CSS v4, configure your theme, add custom utilities, and use modern CSS features with the framework."
+course: css
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Tip from "../../../components/content/Tip.astro";
+import Warning from "../../../components/content/Warning.astro";
+
+Tailwind CSS v4 represents a significant evolution. It uses CSS-first configuration, removes the need for a JavaScript config file, and provides full access to modern CSS features like cascade layers and native CSS nesting.
+
+## The v4 approach: CSS-first
+
+Previous versions of Tailwind required `tailwind.config.js`. Version 4 uses CSS imports and at-rules instead.
+
+Install Tailwind:
+
+```bash
+npm install tailwindcss@4
+# or
+pnpm add tailwindcss@4
+```
+
+Create a CSS entry file:
+
+```css
+/* main.css */
+@import "tailwindcss";
+```
+
+This single import provides all of Tailwind's utilities, components, and base styles. There is no separate CLI command needed to generate a CSS file—Tailwind processes your CSS directly.
+
+## Theme configuration in CSS
+
+Customize the theme using `@theme`:
+
+```css
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-brand: #0d9488;
+  --color-brand-dark: #0f766e;
+
+  /* Fonts */
+  --font-content: "Inter", system-ui, sans-serif;
+  --font-code: "JetBrains Mono", monospace;
+
+  /* Spacing additions */
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+
+  /* Breakpoints */
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-slide-up: slide-up 0.4s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(1rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+```
+
+Theme variables become utilities automatically. `--color-brand` generates `bg-brand`, `text-brand`, `border-brand`, and other color utilities.
+
+<Tip title="Theme follows CSS custom property syntax">
+The `@theme` block uses standard CSS custom property syntax with the `--` prefix. This is real CSS, not framework-specific syntax.
+</Tip>
+
+## Choosing what to import
+
+Import only what you need:
+
+```css
+/* Full Tailwind (base + components + utilities) */
+@import "tailwindcss";
+
+/* Or import parts separately */
+@import "tailwindcss/preflight";  /* CSS reset */
+@import "tailwindcss/utilities";   /* Utility classes */
+```
+
+Preflight is Tailwind's reset. It removes default margins, sets border-box sizing, normalizes form elements, and provides a consistent baseline.
+
+## Custom utilities with @utility
+
+Define your own utilities using `@utility`:
+
+```css
+@utility content-grid {
+  display: grid;
+  grid-template-columns: 1fr min(65ch, 100%) 1fr;
+  gap: var(--spacing-4);
+
+  & > * {
+    grid-column: 2;
+  }
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-400) transparent;
+}
+```
+
+Custom utilities work with Tailwind's variants automatically. `content-grid` works. `md:content-grid` and `hover:content-grid` also work.
+
+## Layer organization
+
+Tailwind v4 uses native CSS cascade layers:
+
+```css
+@import "tailwindcss";
+
+/* Your base styles */
+@layer base {
+  body {
+    @apply antialiased text-gray-900 bg-white;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+/* Your components */
+@layer components {
+  .prose {
+    @apply max-w-none;
+    line-height: 1.75;
+  }
+
+  .prose p + p {
+    @apply mt-4;
+  }
+}
+
+/* Your utilities */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+```
+
+The `@apply` directive lets you use Tailwind utilities inside custom CSS.
+
+<Note title="@apply requires the theme">
+`@apply` only works for utilities that exist in your theme. Custom values in brackets like `p-[20px]` cannot be applied with `@apply`.
+</Note>
+
+## Modern color with OKLCH
+
+Tailwind v4 supports modern color spaces:
+
+```css
+@theme {
+  /* OKLCH for perceptually uniform colors */
+  --color-primary: oklch(55% 0.15 250);
+  --color-secondary: oklch(65% 0.1 150);
+
+  /* Semantic tokens */
+  --color-surface: oklch(98% 0.005 250);
+  --color-text: oklch(25% 0.02 250);
+  --color-text-muted: oklch(55% 0.05 250);
+}
+```
+
+Using OKLCH means color variations match perceived lightness, not just RGB values. A lighter blue and lighter red will look equally light.
+
+## Container queries
+
+Tailwind v4 includes container query variants:
+
+```html
+<!-- Mark a container -->
+<div class="@container">
+  <div class="@md:grid-cols-2 @lg:grid-cols-3 grid grid-cols-1 gap-4">
+    <!-- Responsive to container width, not viewport -->
+  </div>
+</div>
+```
+
+`@container` enables container queries. `@md:` applies styles at a container width of 28rem. `@lg:` applies at 32rem.
+
+Configure container sizes in your theme:
+
+```css
+@theme {
+  --container-sm: 24rem;
+  --container-md: 28rem;
+  --container-lg: 32rem;
+  --container-xl: 36rem;
+}
+```
+
+## View transition support
+
+Use Tailwind with native view transitions:
+
+```css
+@layer utilities {
+  ::view-transition-old(root) {
+    animation: fade-out 0.3s ease;
+  }
+
+  ::view-transition-new(root) {
+    animation: fade-in 0.3s ease;
+  }
+}
+```
+
+Tailwind's animation utilities work alongside native view transition APIs.
+
+## Conditional variants
+
+Configure variants for complex selectors:
+
+```css
+@variant dark (&:where(.dark, .dark *));
+@variant supports-container (&@container (width >= 400px));
+@variant rtl (&:where([dir="rtl"], [dir="rtl"] *));
+```
+
+Custom variants allow targeting any CSS condition with Tailwind's prefix syntax.
+
+<Warning title="Check browser support">
+Some features like `@property` animation or `color-mix()` require modern browsers. Check support tables and provide fallbacks when needed.
+</Warning>
+
+## Integration with build tools
+
+Tailwind v4 integrates directly with JavaScript build tools:
+
+**Vite** (simplest setup):
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [tailwindcss()],
+})
+```
+
+**PostCSS**:
+
+```js
+// postcss.config.mjs
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+```
+
+No additional configuration files needed. Tailwind reads your CSS and processes it.
+
+## Common project setup
+
+A typical project structure:
+
+```text
+src/
+├── styles/
+│   ├── main.css        /* Tailwind entry + @theme */
+│   ├── base.css        /* Additional base styles */
+│   ├── components.css  /* Component patterns */
+│   └── utilities.css   /* Custom utilities */
+└── main.js             /* Imports ./styles/main.css */
+```
+
+```css
+/* main.css */
+@import "tailwindcss";
+
+/* Theme customization */
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --color-brand: oklch(55% 0.15 250);
+  --color-surface: oklch(98% 0.005 250);
+}
+
+/* Base layer extensions */
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand;
+  }
+}
+
+/* Component patterns */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 font-medium transition-colors;
+  }
+
+  .btn-primary {
+    @apply btn bg-brand text-white hover:bg-brand-dark;
+  }
+
+  .btn-secondary {
+    @apply btn border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
+  }
+}
+
+/* Utilities */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+```
+
+## Migrating from custom CSS
+
+Consider these steps when adopting Tailwind on an existing project:
+
+1. Install and configure Tailwind alongside existing CSS
+2. Replace utility-only styles first (margins, padding, flexbox)
+3. Extract component patterns with `@layer components`
+4. Gradually migrate complex custom CSS
+5. Remove unused custom CSS as you go
+
+You do not need to migrate everything at once. Tailwind and custom CSS can coexist.
+
+## What to carry forward
+
+- Tailwind v4 uses CSS-first configuration via `@theme` instead of JavaScript config
+- Theme variables use standard CSS custom property syntax
+- Import `tailwindcss` for a complete setup, or import individual parts
+- Use `@layer` for base styles, components, and utilities
+- Use `@apply` to compose utilities in custom CSS
+- Custom utilities defined with `@utility` automatically support variants
+- Container queries, modern color spaces, and view transitions are fully supported
+- Build tool integration is simpler with the v4 plugin architecture
+
+## When to use Tailwind v4
+
+Tailwind v4 is a good choice when:
+
+- You want modern CSS features with a utility-first approach
+- You prefer configuration in CSS over JavaScript
+- You are starting a new project or can migrate incrementally
+- You want access to container queries, OKLCH colors, and native CSS nesting
+
+Consider staying with custom CSS or other approaches when:
+
+- You need full control over every style declaration
+- Your project has strict CSS architecture requirements
+- Your team prefers separation of markup and styling
+- You are maintaining legacy codebases without build tool support

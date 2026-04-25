@@ -76,9 +76,11 @@ export const courseLessonOrder: Record<string, string[]> = {
     "keyframe-animation",
     "scroll-snap-scroll-driven-animation-and-view-transitions",
     "debugging-css-with-devtools",
+    "building-a-small-design-system",
+    "utility-first-css-with-tailwind",
+    "tailwind-v4-setup-and-customization",
     "css-for-html-and-javascript-integration",
     "building-a-responsive-page",
-    "building-a-small-design-system",
     "final-project-style-a-semantic-site",
   ],
   "npm-and-pnpm": [
