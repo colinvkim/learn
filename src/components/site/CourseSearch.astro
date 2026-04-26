@@ -62,9 +62,10 @@ const searchIndexJson = JSON.stringify(searchIndex).replace(/</g, "\\u003c");
         <span class="hidden truncate sm:inline">Search course</span>
       </span>
       <kbd
+        data-course-search-shortcut
         class="hidden rounded-md border border-line/80 bg-canvas/74 px-1.5 py-0.5 font-mono text-[0.68rem] font-medium text-muted sm:inline"
       >
-        Cmd K
+        ⌘K
       </kbd>
       <span class="sr-only">Search {course.data.title}</span>
     </button>
@@ -176,16 +177,28 @@ const searchIndexJson = JSON.stringify(searchIndex).replace(/</g, "\\u003c");
 </div>
 
 <style is:global>
-  [data-course-search-modal]:not(.hidden) {
+  [data-course-search-modal]:not(.hidden):not(.is-closing) {
     animation: course-search-fade-in 160ms ease-out;
   }
 
-  [data-course-search-modal]:not(.hidden) [data-course-search-backdrop] {
+  [data-course-search-modal]:not(.hidden):not(.is-closing) [data-course-search-backdrop] {
     animation: course-search-backdrop-in 160ms ease-out;
   }
 
-  [data-course-search-modal]:not(.hidden) [data-course-search-panel] {
+  [data-course-search-modal]:not(.hidden):not(.is-closing) [data-course-search-panel] {
     animation: course-search-panel-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-course-search-modal].is-closing {
+    animation: course-search-fade-out 130ms ease-in forwards;
+  }
+
+  [data-course-search-modal].is-closing [data-course-search-backdrop] {
+    animation: course-search-backdrop-out 130ms ease-in forwards;
+  }
+
+  [data-course-search-modal].is-closing [data-course-search-panel] {
+    animation: course-search-panel-out 130ms ease-in forwards;
   }
 
   @keyframes course-search-fade-in {
@@ -208,10 +221,33 @@ const searchIndexJson = JSON.stringify(searchIndex).replace(/</g, "\\u003c");
     }
   }
 
+  @keyframes course-search-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes course-search-backdrop-out {
+    to {
+      opacity: 0;
+      backdrop-filter: blur(0);
+    }
+  }
+
+  @keyframes course-search-panel-out {
+    to {
+      opacity: 0;
+      transform: translateY(-0.35rem) scale(0.985);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     [data-course-search-modal]:not(.hidden),
+    [data-course-search-modal].is-closing,
     [data-course-search-modal]:not(.hidden) [data-course-search-backdrop],
-    [data-course-search-modal]:not(.hidden) [data-course-search-panel] {
+    [data-course-search-modal].is-closing [data-course-search-backdrop],
+    [data-course-search-modal]:not(.hidden) [data-course-search-panel],
+    [data-course-search-modal].is-closing [data-course-search-panel] {
       animation: none;
     }
   }

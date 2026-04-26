@@ -28,7 +28,9 @@ declare global {
 
 const MAX_RESULTS = 8;
 const SNIPPET_RADIUS = 72;
+const CLOSE_ANIMATION_MS = 130;
 let restoreFocusElement: HTMLElement | null = null;
+let closeAnimationTimeout: number | null = null;
 
 function normalize(value: string) {
   return value.toLowerCase().replace(/\s+/g, " ").trim();
@@ -151,6 +153,20 @@ function getActiveIndex(root: HTMLElement) {
   return getResultLinks(root).findIndex((link) => link.dataset.active === "true");
 }
 
+function getShortcutLabel() {
+  return /Mac|iPhone|iPad|iPod/.test(window.navigator.platform)
+    ? "⌘K"
+    : "Ctrl + K";
+}
+
+function updateShortcutLabels() {
+  document.querySelectorAll("[data-course-search-shortcut]").forEach((element) => {
+    if (element instanceof HTMLElement) {
+      element.textContent = getShortcutLabel();
+    }
+  });
+}
+
 function renderResults(root: HTMLElement) {
   const index = getIndex(root);
   const input = querySearchElement(root, "[data-course-search-input]");
@@ -217,9 +233,34 @@ function setModalOpen(root: HTMLElement, isOpen: boolean) {
     return;
   }
 
-  modal.classList.toggle("hidden", !isOpen);
   trigger.setAttribute("aria-expanded", String(isOpen));
-  document.documentElement.classList.toggle("overflow-hidden", isOpen);
+
+  if (closeAnimationTimeout !== null) {
+    window.clearTimeout(closeAnimationTimeout);
+    closeAnimationTimeout = null;
+  }
+
+  if (isOpen) {
+    modal.classList.remove("hidden", "is-closing");
+    document.documentElement.classList.add("overflow-hidden");
+    return;
+  }
+
+  if (modal.classList.contains("hidden")) {
+    document.documentElement.classList.remove("overflow-hidden");
+    return;
+  }
+
+  modal.classList.add("is-closing");
+  closeAnimationTimeout = window.setTimeout(() => {
+    if (modal.classList.contains("is-closing")) {
+      modal.classList.add("hidden");
+      modal.classList.remove("is-closing");
+      document.documentElement.classList.remove("overflow-hidden");
+    }
+
+    closeAnimationTimeout = null;
+  }, CLOSE_ANIMATION_MS);
 }
 
 function openSearch(root: HTMLElement) {
@@ -256,7 +297,9 @@ function closeSearch(root: HTMLElement) {
 
 function toggleSearch(root: HTMLElement) {
   const modal = querySearchElement(root, "[data-course-search-modal]");
-  const isOpen = modal instanceof HTMLElement && !modal.classList.contains("hidden");
+  const isOpen = modal instanceof HTMLElement &&
+    !modal.classList.contains("hidden") &&
+    !modal.classList.contains("is-closing");
 
   if (isOpen) {
     closeSearch(root);
@@ -390,6 +433,7 @@ function bindEvents() {
 
 export function initCourseSearch() {
   if (window.__learnCourseSearchController) {
+    updateShortcutLabels();
     document
       .querySelectorAll("[data-course-search]")
       .forEach((root) => root instanceof HTMLElement && renderResults(root));
@@ -397,6 +441,7 @@ export function initCourseSearch() {
   }
 
   window.__learnCourseSearchController = true;
+  updateShortcutLabels();
   bindEvents();
   document
     .querySelectorAll("[data-course-search]")
