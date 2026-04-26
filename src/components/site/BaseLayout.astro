@@ -47,7 +47,10 @@ const canonical = Astro.site
             >
               learn.colinkim.dev
             </a>
-            <ThemeToggle />
+            <div class="flex min-w-0 items-center gap-2 sm:gap-3">
+              <slot name="header-controls" />
+              <ThemeToggle />
+            </div>
           </div>
         </header>
       )

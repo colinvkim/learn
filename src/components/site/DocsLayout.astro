@@ -2,6 +2,7 @@
 import type { CourseEntry, LessonEntry } from "../../lib/content/queries";
 import BaseLayout from "./BaseLayout.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
+import CourseSearch from "./CourseSearch.astro";
 import CourseSidebar from "./CourseSidebar.astro";
 
 interface Crumb {
@@ -29,6 +30,8 @@ const {
 ---
 
 <BaseLayout title={title} description={description}>
+  <CourseSearch slot="header-controls" course={course} lessons={lessons} />
+
   <div class="mx-auto max-w-384 px-4 pb-16 pt-8 sm:px-5 lg:h-[calc(100dvh-4rem)] lg:max-w-none lg:overflow-hidden lg:px-0 lg:pb-0 lg:pt-0">
     <div class="grid gap-8 lg:h-full lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-0">
       <div class="lg:h-full lg:overflow-hidden">
