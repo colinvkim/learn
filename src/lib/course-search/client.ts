@@ -107,8 +107,19 @@ function getSearchRoot(element: Element | null) {
   return root instanceof HTMLElement ? root : null;
 }
 
+function querySearchElement(root: HTMLElement, selector: string) {
+  return root.querySelector(selector) ?? document.querySelector(selector);
+}
+
+function querySearchElements(root: HTMLElement, selector: string) {
+  const scopedElements = [...root.querySelectorAll(selector)];
+  return scopedElements.length > 0
+    ? scopedElements
+    : [...document.querySelectorAll(selector)];
+}
+
 function getIndex(root: HTMLElement): CourseSearchIndex | null {
-  const script = root.querySelector("[data-course-search-index]");
+  const script = querySearchElement(root, "[data-course-search-index]");
 
   if (!(script instanceof HTMLScriptElement)) {
     return null;
@@ -122,9 +133,8 @@ function getIndex(root: HTMLElement): CourseSearchIndex | null {
 }
 
 function getResultLinks(root: HTMLElement) {
-  return [
-    ...root.querySelectorAll("[data-course-search-result]"),
-  ].filter((element): element is HTMLAnchorElement => element instanceof HTMLAnchorElement);
+  return querySearchElements(root, "[data-course-search-result]")
+    .filter((element): element is HTMLAnchorElement => element instanceof HTMLAnchorElement);
 }
 
 function setActiveResult(root: HTMLElement, activeIndex: number) {
@@ -143,10 +153,10 @@ function getActiveIndex(root: HTMLElement) {
 
 function renderResults(root: HTMLElement) {
   const index = getIndex(root);
-  const input = root.querySelector("[data-course-search-input]");
-  const resultsRoot = root.querySelector("[data-course-search-results]");
-  const template = root.querySelector("[data-course-search-result-template]");
-  const empty = root.querySelector("[data-course-search-empty]");
+  const input = querySearchElement(root, "[data-course-search-input]");
+  const resultsRoot = querySearchElement(root, "[data-course-search-results]");
+  const template = querySearchElement(root, "[data-course-search-result-template]");
+  const empty = querySearchElement(root, "[data-course-search-empty]");
 
   if (
     !index ||
@@ -200,8 +210,8 @@ function renderResults(root: HTMLElement) {
 }
 
 function setModalOpen(root: HTMLElement, isOpen: boolean) {
-  const modal = root.querySelector("[data-course-search-modal]");
-  const trigger = root.querySelector("[data-course-search-trigger]");
+  const modal = querySearchElement(root, "[data-course-search-modal]");
+  const trigger = querySearchElement(root, "[data-course-search-trigger]");
 
   if (!(modal instanceof HTMLElement) || !(trigger instanceof HTMLButtonElement)) {
     return;
@@ -213,7 +223,7 @@ function setModalOpen(root: HTMLElement, isOpen: boolean) {
 }
 
 function openSearch(root: HTMLElement) {
-  const input = root.querySelector("[data-course-search-input]");
+  const input = querySearchElement(root, "[data-course-search-input]");
 
   if (!(input instanceof HTMLInputElement)) {
     return;
@@ -231,7 +241,7 @@ function openSearch(root: HTMLElement) {
 }
 
 function closeSearch(root: HTMLElement) {
-  const trigger = root.querySelector("[data-course-search-trigger]");
+  const trigger = querySearchElement(root, "[data-course-search-trigger]");
 
   setModalOpen(root, false);
 
@@ -245,7 +255,7 @@ function closeSearch(root: HTMLElement) {
 }
 
 function toggleSearch(root: HTMLElement) {
-  const modal = root.querySelector("[data-course-search-modal]");
+  const modal = querySearchElement(root, "[data-course-search-modal]");
   const isOpen = modal instanceof HTMLElement && !modal.classList.contains("hidden");
 
   if (isOpen) {
@@ -331,7 +341,7 @@ function bindEvents() {
 
     const activeRoot = [...document.querySelectorAll("[data-course-search]")]
       .find((root): root is HTMLElement => {
-        const modal = root.querySelector("[data-course-search-modal]");
+        const modal = querySearchElement(root, "[data-course-search-modal]");
         return root instanceof HTMLElement &&
           modal instanceof HTMLElement &&
           !modal.classList.contains("hidden");

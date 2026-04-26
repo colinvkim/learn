@@ -30,7 +30,13 @@ const {
 ---
 
 <BaseLayout title={title} description={description}>
-  <CourseSearch slot="header-controls" course={course} lessons={lessons} />
+  <CourseSearch
+    slot="header-controls"
+    course={course}
+    lessons={lessons}
+    variant="trigger"
+  />
+  <CourseSearch course={course} lessons={lessons} variant="modal" />
 
   <div class="mx-auto max-w-384 px-4 pb-16 pt-8 sm:px-5 lg:h-[calc(100dvh-4rem)] lg:max-w-none lg:overflow-hidden lg:px-0 lg:pb-0 lg:pt-0">
     <div class="grid gap-8 lg:h-full lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-0">

@@ -9,9 +9,12 @@ import {
 interface Props {
   course: CourseEntry;
   lessons: LessonEntry[];
+  variant?: "all" | "trigger" | "modal";
 }
 
-const { course, lessons } = Astro.props;
+const { course, lessons, variant = "all" } = Astro.props;
+const showTrigger = variant === "all" || variant === "trigger";
+const showModal = variant === "all" || variant === "modal";
 
 function stripLessonBody(body = "") {
   return body
@@ -46,130 +49,178 @@ const searchIndexJson = JSON.stringify(searchIndex).replace(/</g, "\\u003c");
 ---
 
 <div data-course-search class="contents">
-  <button
-    type="button"
-    data-course-search-trigger
-    class="focus-ring inline-flex h-10 min-w-0 items-center gap-2 rounded-full border border-line/80 bg-panel/92 px-3 text-sm font-medium text-muted shadow-soft ring-1 ring-white/55 transition hover:border-accent/20 hover:text-ink dark:ring-white/8 sm:w-56 sm:justify-between"
-    aria-haspopup="dialog"
-    aria-expanded="false"
-  >
-    <span class="inline-flex min-w-0 items-center gap-2">
-      <Search class="h-4 w-4 shrink-0" aria-hidden="true" />
-      <span class="hidden truncate sm:inline">Search course</span>
-    </span>
-    <kbd
-      class="hidden rounded-md border border-line/80 bg-canvas/74 px-1.5 py-0.5 font-mono text-[0.68rem] font-medium text-muted sm:inline"
-    >
-      Cmd K
-    </kbd>
-    <span class="sr-only">Search {course.data.title}</span>
-  </button>
-
-  <div
-    data-course-search-modal
-    class="fixed inset-0 z-50 hidden px-3 py-14 sm:px-6 sm:py-20"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby={`course-search-title-${course.id}`}
-  >
+  {showTrigger && (
     <button
       type="button"
-      data-course-search-backdrop
-      class="absolute inset-0 bg-ink/24 backdrop-blur-[2px] dark:bg-black/42"
-      aria-label="Close search"
+      data-course-search-trigger
+      class="focus-ring inline-flex h-10 min-w-0 items-center gap-2 rounded-full border border-line/80 bg-panel/92 px-3 text-sm font-medium text-muted shadow-soft ring-1 ring-white/55 transition hover:border-accent/20 hover:text-ink dark:ring-white/8 sm:w-56 sm:justify-between"
+      aria-haspopup="dialog"
+      aria-expanded="false"
     >
+      <span class="inline-flex min-w-0 items-center gap-2">
+        <Search class="h-4 w-4 shrink-0" aria-hidden="true" />
+        <span class="hidden truncate sm:inline">Search course</span>
+      </span>
+      <kbd
+        class="hidden rounded-md border border-line/80 bg-canvas/74 px-1.5 py-0.5 font-mono text-[0.68rem] font-medium text-muted sm:inline"
+      >
+        Cmd K
+      </kbd>
+      <span class="sr-only">Search {course.data.title}</span>
     </button>
+  )}
 
-    <section
-      data-course-search-panel
-      class="relative mx-auto grid max-h-[min(38rem,calc(100dvh-7rem))] w-full max-w-2xl grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-panel border border-line/80 bg-panel shadow-[0_24px_80px_rgba(15,23,42,0.18)] ring-1 ring-white/60 dark:bg-canvas dark:ring-white/10"
+  {showModal && (
+    <div
+      data-course-search-modal
+      class="fixed inset-0 z-50 hidden px-3 py-14 sm:px-6 sm:py-20"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={`course-search-title-${course.id}`}
     >
-      <header class="border-b border-line/80 px-4 py-3 sm:px-5">
-        <div class="mb-2 flex items-center justify-between gap-3">
-          <p
-            id={`course-search-title-${course.id}`}
-            class="truncate text-sm font-semibold text-ink"
-          >
-            Search {course.data.title}
-          </p>
-          <button
-            type="button"
-            data-course-search-close
-            class="focus-ring-subtle inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line/80 bg-canvas/70 text-muted transition hover:text-ink"
-            aria-label="Close search"
-          >
-            <X class="h-4 w-4" aria-hidden="true" />
-          </button>
-        </div>
-        <label class="grid grid-cols-[auto_1fr] items-center gap-3 rounded-xl border border-line/80 bg-canvas/72 px-3 py-2.5">
-          <Search class="h-4 w-4 text-muted" aria-hidden="true" />
-          <input
-            data-course-search-input
-            class="min-w-0 bg-transparent text-base text-ink outline-none placeholder:text-muted"
-            type="search"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Search lessons..."
-          />
-        </label>
-      </header>
+      <button
+        type="button"
+        data-course-search-backdrop
+        class="absolute inset-0 bg-ink/24 backdrop-blur-[2px] dark:bg-black/42"
+        aria-label="Close search"
+      >
+      </button>
 
-      <div class="min-h-0 overflow-y-auto p-2 sm:p-3">
-        <p
-          data-course-search-empty
-          class="hidden px-3 py-8 text-center text-sm leading-6 text-muted"
-        >
-          No lessons found.
-        </p>
-        <div
-          data-course-search-results
-          class="space-y-1"
-          role="listbox"
-          aria-label={`${course.data.title} search results`}
-        >
-        </div>
-      </div>
-
-      <template data-course-search-result-template>
-        <a
-          data-course-search-result
-          class="focus-ring-subtle group grid gap-1 rounded-xl border border-transparent px-3 py-3 text-left transition hover:border-line/80 hover:bg-canvas/72 data-[active=true]:border-accent/22 data-[active=true]:bg-accent-soft/72"
-          role="option"
-        >
-          <span class="flex min-w-0 items-center justify-between gap-3">
-            <span
-              data-course-search-result-title
+      <section
+        data-course-search-panel
+        class="relative mx-auto grid max-h-[min(38rem,calc(100dvh-7rem))] w-full max-w-2xl grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-panel border border-line/80 bg-panel shadow-[0_24px_80px_rgba(15,23,42,0.18)] ring-1 ring-white/60 dark:bg-canvas dark:ring-white/10"
+      >
+        <header class="border-b border-line/80 px-4 py-3 sm:px-5">
+          <div class="mb-2 flex items-center justify-between gap-3">
+            <p
+              id={`course-search-title-${course.id}`}
               class="truncate text-sm font-semibold text-ink"
             >
-            </span>
-            <span class="inline-flex shrink-0 items-center gap-1 text-[0.72rem] font-medium text-muted">
-              <span data-course-search-result-order></span>
-              <CornerDownLeft
-                class="hidden h-3.5 w-3.5 group-data-[active=true]:block"
-                aria-hidden="true"
-              />
-            </span>
-          </span>
-          <span
-            data-course-search-result-snippet
-            class="line-clamp-2 text-sm leading-5 text-muted"
-          >
-          </span>
-        </a>
-      </template>
-    </section>
+              Search {course.data.title}
+            </p>
+            <button
+              type="button"
+              data-course-search-close
+              class="focus-ring-subtle inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line/80 bg-canvas/70 text-muted transition hover:text-ink"
+              aria-label="Close search"
+            >
+              <X class="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+          <label class="grid grid-cols-[auto_1fr] items-center gap-3 rounded-xl border border-line/80 bg-canvas/72 px-3 py-2.5">
+            <Search class="h-4 w-4 text-muted" aria-hidden="true" />
+            <input
+              data-course-search-input
+              class="min-w-0 bg-transparent text-base text-ink outline-none placeholder:text-muted"
+              type="search"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Search lessons..."
+            />
+          </label>
+        </header>
 
-    <script
-      type="application/json"
-      data-course-search-index
-      set:html={searchIndexJson}
-    >
-    </script>
-  </div>
+        <div class="min-h-0 overflow-y-auto p-2 sm:p-3">
+          <p
+            data-course-search-empty
+            class="hidden px-3 py-8 text-center text-sm leading-6 text-muted"
+          >
+            No lessons found.
+          </p>
+          <div
+            data-course-search-results
+            class="space-y-1"
+            role="listbox"
+            aria-label={`${course.data.title} search results`}
+          >
+          </div>
+        </div>
+
+        <template data-course-search-result-template>
+          <a
+            data-course-search-result
+            class="focus-ring-subtle group grid gap-1 rounded-xl border border-transparent px-3 py-3 text-left transition hover:border-line/80 hover:bg-canvas/72 data-[active=true]:border-accent/22 data-[active=true]:bg-accent-soft/72"
+            role="option"
+          >
+            <span class="flex min-w-0 items-center justify-between gap-3">
+              <span
+                data-course-search-result-title
+                class="truncate text-sm font-semibold text-ink"
+              >
+              </span>
+              <span class="inline-flex shrink-0 items-center gap-1 text-[0.72rem] font-medium text-muted">
+                <span data-course-search-result-order></span>
+                <CornerDownLeft
+                  class="hidden h-3.5 w-3.5 group-data-[active=true]:block"
+                  aria-hidden="true"
+                />
+              </span>
+            </span>
+            <span
+              data-course-search-result-snippet
+              class="line-clamp-2 text-sm leading-5 text-muted"
+            >
+            </span>
+          </a>
+        </template>
+      </section>
+
+      <script
+        type="application/json"
+        data-course-search-index
+        set:html={searchIndexJson}
+      >
+      </script>
+    </div>
+  )}
 </div>
 
-<script>
-  import { initCourseSearch } from "../../lib/course-search/client";
+<style is:global>
+  [data-course-search-modal]:not(.hidden) {
+    animation: course-search-fade-in 160ms ease-out;
+  }
 
-  initCourseSearch();
-</script>
+  [data-course-search-modal]:not(.hidden) [data-course-search-backdrop] {
+    animation: course-search-backdrop-in 160ms ease-out;
+  }
+
+  [data-course-search-modal]:not(.hidden) [data-course-search-panel] {
+    animation: course-search-panel-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes course-search-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes course-search-backdrop-in {
+    from {
+      opacity: 0;
+      backdrop-filter: blur(0);
+    }
+  }
+
+  @keyframes course-search-panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.5rem) scale(0.98);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-course-search-modal]:not(.hidden),
+    [data-course-search-modal]:not(.hidden) [data-course-search-backdrop],
+    [data-course-search-modal]:not(.hidden) [data-course-search-panel] {
+      animation: none;
+    }
+  }
+</style>
+
+{showModal && (
+  <script>
+    import { initCourseSearch } from "../../lib/course-search/client";
+
+    initCourseSearch();
+  </script>
+)}
