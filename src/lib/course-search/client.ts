@@ -20,6 +20,11 @@ type SearchResult = CourseSearchLesson & {
   snippet: string;
 };
 
+type SearchTerm = {
+  value: string;
+  matchPrefix: boolean;
+};
+
 declare global {
   interface Window {
     __learnCourseSearchController?: boolean;
@@ -28,6 +33,7 @@ declare global {
 
 const MAX_RESULTS = 8;
 const SNIPPET_RADIUS = 72;
+const MIN_PREFIX_LENGTH = 3;
 const CLOSE_ANIMATION_MS = 130;
 let restoreFocusElement: HTMLElement | null = null;
 let closeAnimationTimeout: number | null = null;
@@ -43,9 +49,19 @@ function tokenize(query: string) {
     .filter((term) => /[a-z0-9#]/i.test(term));
 }
 
-function countMatches(haystack: string, terms: string[]) {
+function getSearchTerms(query: string): SearchTerm[] {
+  const tokens = tokenize(query);
+  const allowPrefix = !/\s$/.test(query);
+
+  return tokens.map((value, index) => ({
+    value,
+    matchPrefix: allowPrefix && index === tokens.length - 1 && value.length >= MIN_PREFIX_LENGTH,
+  }));
+}
+
+function countMatches(haystack: string, terms: SearchTerm[]) {
   return terms.reduce((count, term) => {
-    return haystack.includes(term) ? count + 1 : count;
+    return getTermPattern(term).test(haystack) ? count + 1 : count;
   }, 0);
 }
 
@@ -53,37 +69,55 @@ function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function getPhrasePattern(terms: string[], flags = "i") {
+function getTermPattern(term: SearchTerm, flags = "i") {
+  const prefixPattern = term.matchPrefix ? "[a-z0-9+#.-]*" : "";
+
+  return new RegExp(`(^|[^a-z0-9+#.-])(${escapeRegExp(term.value)}${prefixPattern})(?=$|[^a-z0-9+#.-])`, flags);
+}
+
+function getPhrasePattern(terms: SearchTerm[], flags = "i") {
   if (terms.length < 2) {
     return null;
   }
 
-  return new RegExp(terms.map(escapeRegExp).join("\\s+"), flags);
+  const phrase = terms
+    .map((term) => {
+      const prefixPattern = term.matchPrefix ? "[a-z0-9+#.-]*" : "";
+      return `${escapeRegExp(term.value)}${prefixPattern}`;
+    })
+    .join("\\s+");
+
+  return new RegExp(`(^|[^a-z0-9+#.-])(${phrase})(?=$|[^a-z0-9+#.-])`, flags);
 }
 
-function getFirstMatchRange(source: string, terms: string[]) {
+function getMatchRange(match: RegExpExecArray) {
+  const leadingBoundaryLength = match[1]?.length ?? 0;
+  const text = match[2] ?? match[0];
+  const start = match.index + leadingBoundaryLength;
+
+  return {
+    start,
+    end: start + text.length,
+  };
+}
+
+function getFirstMatchRange(source: string, terms: SearchTerm[]) {
   const phrasePattern = getPhrasePattern(terms);
   const phraseMatch = phrasePattern?.exec(source);
 
-  if (phraseMatch?.index !== undefined) {
-    return {
-      start: phraseMatch.index,
-      end: phraseMatch.index + phraseMatch[0].length,
-    };
+  if (phraseMatch) {
+    return getMatchRange(phraseMatch);
   }
 
-  const lowerSource = source.toLowerCase();
-  const term = terms.find((candidate) => lowerSource.includes(candidate));
+  for (const term of terms) {
+    const match = getTermPattern(term).exec(source);
 
-  if (!term) {
-    return null;
+    if (match) {
+      return getMatchRange(match);
+    }
   }
 
-  const index = lowerSource.indexOf(term);
-  return {
-    start: index,
-    end: index + term.length,
-  };
+  return null;
 }
 
 function getSnippetBoundary(source: string, index: number, direction: -1 | 1) {
@@ -109,7 +143,7 @@ function getSnippetBoundary(source: string, index: number, direction: -1 | 1) {
     : index + boundaryIndex;
 }
 
-function getSnippet(lesson: CourseSearchLesson, terms: string[]) {
+function getSnippet(lesson: CourseSearchLesson, terms: SearchTerm[]) {
   const source = lesson.body || lesson.description;
   const matchRange = getFirstMatchRange(source, terms);
 
@@ -125,15 +159,15 @@ function getSnippet(lesson: CourseSearchLesson, terms: string[]) {
   return `${prefix}${source.slice(start, end).trim()}${suffix}`;
 }
 
-function hasPhraseMatch(haystack: string, terms: string[]) {
+function hasPhraseMatch(haystack: string, terms: SearchTerm[]) {
   if (terms.length < 2) {
     return false;
   }
 
-  return haystack.includes(terms.join(" "));
+  return Boolean(getPhrasePattern(terms)?.test(haystack));
 }
 
-function scoreLesson(lesson: CourseSearchLesson, terms: string[]) {
+function scoreLesson(lesson: CourseSearchLesson, terms: SearchTerm[]) {
   const title = normalize(lesson.title);
   const description = normalize(lesson.description);
   const body = normalize(lesson.body);
@@ -141,7 +175,9 @@ function scoreLesson(lesson: CourseSearchLesson, terms: string[]) {
   const descriptionMatches = countMatches(description, terms);
   const bodyMatches = countMatches(body, terms);
   const allTermsMatched = terms.every((term) => {
-    return title.includes(term) || description.includes(term) || body.includes(term);
+    const termPattern = getTermPattern(term);
+
+    return termPattern.test(title) || termPattern.test(description) || termPattern.test(body);
   });
 
   if (!allTermsMatched) {
@@ -157,7 +193,7 @@ function scoreLesson(lesson: CourseSearchLesson, terms: string[]) {
 }
 
 function searchLessons(index: CourseSearchIndex, query: string): SearchResult[] {
-  const terms = tokenize(query);
+  const terms = getSearchTerms(query);
 
   if (terms.length === 0) {
     return index.lessons.slice(0, MAX_RESULTS).map((lesson) => ({
@@ -244,7 +280,7 @@ function mergeRanges(ranges: { start: number; end: number }[]) {
     }, []);
 }
 
-function getHighlightRanges(text: string, terms: string[]) {
+function getHighlightRanges(text: string, terms: SearchTerm[]) {
   const phrasePattern = getPhrasePattern(terms, "gi");
   const phraseRanges: { start: number; end: number }[] = [];
 
@@ -252,10 +288,7 @@ function getHighlightRanges(text: string, terms: string[]) {
     let match = phrasePattern.exec(text);
 
     while (match) {
-      phraseRanges.push({
-        start: match.index,
-        end: match.index + match[0].length,
-      });
+      phraseRanges.push(getMatchRange(match));
       match = phrasePattern.exec(text);
     }
   }
@@ -265,15 +298,12 @@ function getHighlightRanges(text: string, terms: string[]) {
   }
 
   const termRanges = terms.flatMap((term) => {
-    const termPattern = new RegExp(escapeRegExp(term), "gi");
+    const termPattern = getTermPattern(term, "gi");
     const ranges: { start: number; end: number }[] = [];
     let match = termPattern.exec(text);
 
     while (match) {
-      ranges.push({
-        start: match.index,
-        end: match.index + match[0].length,
-      });
+      ranges.push(getMatchRange(match));
       match = termPattern.exec(text);
     }
 
@@ -283,7 +313,7 @@ function getHighlightRanges(text: string, terms: string[]) {
   return mergeRanges(termRanges);
 }
 
-function renderHighlightedText(element: HTMLElement, text: string, terms: string[]) {
+function renderHighlightedText(element: HTMLElement, text: string, terms: SearchTerm[]) {
   const ranges = getHighlightRanges(text, terms);
 
   if (ranges.length === 0) {
@@ -343,7 +373,7 @@ function renderResults(root: HTMLElement) {
   }
 
   const results = searchLessons(index, input.value);
-  const terms = tokenize(input.value);
+  const terms = getSearchTerms(input.value);
   resultsRoot.replaceChildren();
 
   if (empty instanceof HTMLElement) {
