@@ -33,11 +33,14 @@ let restoreFocusElement: HTMLElement | null = null;
 let closeAnimationTimeout: number | null = null;
 
 function normalize(value: string) {
-  return value.toLowerCase().replace(/\s+/g, " ").trim();
+  return value.toLowerCase().replace(/[^\w#+.-]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function tokenize(query: string) {
-  return normalize(query).split(" ").filter(Boolean);
+  return normalize(query)
+    .split(" ")
+    .map((term) => term.replace(/^[^a-z0-9#]+|[^a-z0-9+#]+$/gi, ""))
+    .filter((term) => /[a-z0-9#]/i.test(term));
 }
 
 function countMatches(haystack: string, terms: string[]) {
@@ -46,22 +49,65 @@ function countMatches(haystack: string, terms: string[]) {
   }, 0);
 }
 
-function getSnippet(lesson: CourseSearchLesson, terms: string[]) {
-  const source = lesson.body || lesson.description;
-  const normalizedSource = normalize(source);
-  const term = terms.find((candidate) => normalizedSource.includes(candidate));
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getPhrasePattern(terms: string[], flags = "i") {
+  if (terms.length < 2) {
+    return null;
+  }
+
+  return new RegExp(terms.map(escapeRegExp).join("\\s+"), flags);
+}
+
+function getFirstMatchRange(source: string, terms: string[]) {
+  const phrasePattern = getPhrasePattern(terms);
+  const phraseMatch = phrasePattern?.exec(source);
+
+  if (phraseMatch?.index !== undefined) {
+    return {
+      start: phraseMatch.index,
+      end: phraseMatch.index + phraseMatch[0].length,
+    };
+  }
+
+  const lowerSource = source.toLowerCase();
+  const term = terms.find((candidate) => lowerSource.includes(candidate));
 
   if (!term) {
+    return null;
+  }
+
+  const index = lowerSource.indexOf(term);
+  return {
+    start: index,
+    end: index + term.length,
+  };
+}
+
+function getSnippet(lesson: CourseSearchLesson, terms: string[]) {
+  const source = lesson.body || lesson.description;
+  const matchRange = getFirstMatchRange(source, terms);
+
+  if (!matchRange) {
     return lesson.description;
   }
 
-  const index = normalizedSource.indexOf(term);
-  const start = Math.max(0, index - SNIPPET_RADIUS);
-  const end = Math.min(source.length, index + term.length + SNIPPET_RADIUS);
+  const start = Math.max(0, matchRange.start - SNIPPET_RADIUS);
+  const end = Math.min(source.length, matchRange.end + SNIPPET_RADIUS);
   const prefix = start > 0 ? "..." : "";
   const suffix = end < source.length ? "..." : "";
 
   return `${prefix}${source.slice(start, end).trim()}${suffix}`;
+}
+
+function hasPhraseMatch(haystack: string, terms: string[]) {
+  if (terms.length < 2) {
+    return false;
+  }
+
+  return haystack.includes(terms.join(" "));
 }
 
 function scoreLesson(lesson: CourseSearchLesson, terms: string[]) {
@@ -79,7 +125,12 @@ function scoreLesson(lesson: CourseSearchLesson, terms: string[]) {
     return 0;
   }
 
-  return titleMatches * 24 + descriptionMatches * 10 + bodyMatches * 3;
+  const phraseBonus =
+    (hasPhraseMatch(title, terms) ? 40 : 0) +
+    (hasPhraseMatch(description, terms) ? 18 : 0) +
+    (hasPhraseMatch(body, terms) ? 8 : 0);
+
+  return titleMatches * 24 + descriptionMatches * 10 + bodyMatches * 3 + phraseBonus;
 }
 
 function searchLessons(index: CourseSearchIndex, query: string): SearchResult[] {
@@ -153,6 +204,91 @@ function getActiveIndex(root: HTMLElement) {
   return getResultLinks(root).findIndex((link) => link.dataset.active === "true");
 }
 
+function mergeRanges(ranges: { start: number; end: number }[]) {
+  return ranges
+    .filter((range) => range.end > range.start)
+    .sort((a, b) => a.start - b.start || b.end - a.end)
+    .reduce<{ start: number; end: number }[]>((merged, range) => {
+      const previous = merged.at(-1);
+
+      if (!previous || range.start > previous.end) {
+        merged.push({ ...range });
+        return merged;
+      }
+
+      previous.end = Math.max(previous.end, range.end);
+      return merged;
+    }, []);
+}
+
+function getHighlightRanges(text: string, terms: string[]) {
+  const phrasePattern = getPhrasePattern(terms, "gi");
+  const phraseRanges: { start: number; end: number }[] = [];
+
+  if (phrasePattern) {
+    let match = phrasePattern.exec(text);
+
+    while (match) {
+      phraseRanges.push({
+        start: match.index,
+        end: match.index + match[0].length,
+      });
+      match = phrasePattern.exec(text);
+    }
+  }
+
+  if (phraseRanges.length > 0) {
+    return mergeRanges(phraseRanges);
+  }
+
+  const termRanges = terms.flatMap((term) => {
+    const termPattern = new RegExp(escapeRegExp(term), "gi");
+    const ranges: { start: number; end: number }[] = [];
+    let match = termPattern.exec(text);
+
+    while (match) {
+      ranges.push({
+        start: match.index,
+        end: match.index + match[0].length,
+      });
+      match = termPattern.exec(text);
+    }
+
+    return ranges;
+  });
+
+  return mergeRanges(termRanges);
+}
+
+function renderHighlightedText(element: HTMLElement, text: string, terms: string[]) {
+  const ranges = getHighlightRanges(text, terms);
+
+  if (ranges.length === 0) {
+    element.textContent = text;
+    return;
+  }
+
+  const nodes: Node[] = [];
+  let cursor = 0;
+
+  ranges.forEach((range) => {
+    if (range.start > cursor) {
+      nodes.push(document.createTextNode(text.slice(cursor, range.start)));
+    }
+
+    const strong = document.createElement("strong");
+    strong.textContent = text.slice(range.start, range.end);
+    nodes.push(strong);
+    cursor = range.end;
+  });
+
+  if (cursor < text.length) {
+    nodes.push(document.createTextNode(text.slice(cursor)));
+  }
+
+  element.replaceChildren(...nodes);
+}
+
 function getShortcutLabel() {
   return /Mac|iPhone|iPad|iPod/.test(window.navigator.platform)
     ? "⌘K"
@@ -184,6 +320,7 @@ function renderResults(root: HTMLElement) {
   }
 
   const results = searchLessons(index, input.value);
+  const terms = tokenize(input.value);
   resultsRoot.replaceChildren();
 
   if (empty instanceof HTMLElement) {
@@ -218,7 +355,7 @@ function renderResults(root: HTMLElement) {
     }
 
     if (snippet instanceof HTMLElement) {
-      snippet.textContent = result.snippet;
+      renderHighlightedText(snippet, result.snippet, terms);
     }
 
     resultsRoot.appendChild(fragment);
