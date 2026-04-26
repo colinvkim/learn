@@ -19,6 +19,7 @@ export const courseLessonOrder: Record<string, string[]> = {
     "github-code-review",
     "github-issues",
     "github-actions",
+    "git-signing-commits-with-ssh",
     "a-practical-everyday-workflow",
     "git-reference",
     "which-tools-and-workflows-should-you-use",
