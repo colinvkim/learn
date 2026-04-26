@@ -86,6 +86,29 @@ function getFirstMatchRange(source: string, terms: string[]) {
   };
 }
 
+function getSnippetBoundary(source: string, index: number, direction: -1 | 1) {
+  if (index <= 0 || index >= source.length) {
+    return index;
+  }
+
+  const slice = direction === -1
+    ? source.slice(Math.max(0, index - 28), index)
+    : source.slice(index, Math.min(source.length, index + 28));
+  const boundaryIndex = direction === -1
+    ? Math.max(slice.lastIndexOf(" "), slice.lastIndexOf("\n"))
+    : [slice.indexOf(" "), slice.indexOf("\n")]
+        .filter((candidate) => candidate >= 0)
+        .sort((a, b) => a - b)[0];
+
+  if (boundaryIndex === undefined || boundaryIndex < 0) {
+    return index;
+  }
+
+  return direction === -1
+    ? index - slice.length + boundaryIndex + 1
+    : index + boundaryIndex;
+}
+
 function getSnippet(lesson: CourseSearchLesson, terms: string[]) {
   const source = lesson.body || lesson.description;
   const matchRange = getFirstMatchRange(source, terms);
@@ -94,8 +117,8 @@ function getSnippet(lesson: CourseSearchLesson, terms: string[]) {
     return lesson.description;
   }
 
-  const start = Math.max(0, matchRange.start - SNIPPET_RADIUS);
-  const end = Math.min(source.length, matchRange.end + SNIPPET_RADIUS);
+  const start = getSnippetBoundary(source, Math.max(0, matchRange.start - SNIPPET_RADIUS), -1);
+  const end = getSnippetBoundary(source, Math.min(source.length, matchRange.end + SNIPPET_RADIUS), 1);
   const prefix = start > 0 ? "..." : "";
   const suffix = end < source.length ? "..." : "";
 
@@ -126,9 +149,9 @@ function scoreLesson(lesson: CourseSearchLesson, terms: string[]) {
   }
 
   const phraseBonus =
-    (hasPhraseMatch(title, terms) ? 40 : 0) +
-    (hasPhraseMatch(description, terms) ? 18 : 0) +
-    (hasPhraseMatch(body, terms) ? 8 : 0);
+    (hasPhraseMatch(title, terms) ? 3000 : 0) +
+    (hasPhraseMatch(description, terms) ? 2000 : 0) +
+    (hasPhraseMatch(body, terms) ? 1000 : 0);
 
   return titleMatches * 24 + descriptionMatches * 10 + bodyMatches * 3 + phraseBonus;
 }
