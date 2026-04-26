@@ -11,6 +11,7 @@ import PythonIcon from "../icons/PythonIcon.astro";
 import CssIcon from "../icons/CssIcon.astro";
 import TailwindIcon from "../icons/TailwindIcon.astro";
 import SwiftIcon from "../icons/SwiftIcon.astro";
+import CppIcon from "../icons/CppIcon.astro";
 
 interface Props {
   topics: string[];
@@ -38,6 +39,7 @@ const iconMap = {
   tailwind: TailwindIcon,
   python: PythonIcon,
   swift: SwiftIcon,
+  "c++": CppIcon,
 };
 
 const renderedTopics = visibleTopics.map((topic, index) => ({

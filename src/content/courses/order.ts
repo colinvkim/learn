@@ -144,6 +144,47 @@ export const courseLessonOrder: Record<string, string[]> = {
     "persistence-and-app-data",
     "capstone-building-a-small-swiftui-app",
   ],
+  cpp: [
+    // Module 1: C++ mental model
+    "what-cpp-is",
+    "compilation-and-first-program",
+    "values-types-and-initialization",
+    "control-flow-and-small-programs",
+    "functions-parameters-and-const",
+    "source-files-headers-and-declarations",
+    // Module 2: memory, lifetime, and objects
+    "pointers-references-and-addresses",
+    "stack-heap-scope-and-lifetime",
+    "object-lifetime-and-undefined-behavior",
+    "classes-objects-and-invariants",
+    "constructors-destructors-and-raii",
+    "owning-resources-with-rule-of-zero",
+    // Module 3: value semantics and ownership
+    "copying-assignment-and-value-semantics",
+    "move-semantics-and-moved-from-objects",
+    "smart-pointers-and-ownership-models",
+    // Module 4: standard library data work
+    "strings-vectors-and-everyday-data",
+    "arrays-maps-sets-and-container-choice",
+    "iterators-algorithms-and-invalidation",
+    "algorithms-range-for-and-lambdas",
+    "modern-features-for-clearer-code",
+    // Module 5: error handling and abstraction
+    "error-handling-with-values-and-exceptions",
+    "const-correctness-and-api-design",
+    "templates-and-generic-functions",
+    "concepts-and-practical-generic-design",
+    "inheritance-polymorphism-and-virtual-destructors",
+    "composition-over-inheritance",
+    // Module 6: tooling, safety, and systems practice
+    "build-systems-with-cmake",
+    "debugging-compiler-errors-and-crashes",
+    "sanitizers-and-memory-bug-hunting",
+    "performance-memory-and-measurement",
+    "profiling-and-evidence-based-optimization",
+    "organizing-a-multi-file-project",
+    "capstone-modern-cpp-system",
+  ],
   typescript: [
     // Module 1: TypeScript mental model
     "what-typescript-adds",
