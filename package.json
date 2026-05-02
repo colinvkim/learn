@@ -14,14 +14,14 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.4",
-    "@lucide/astro": "^1.11.0",
+    "@lucide/astro": "^1.14.0",
     "@tailwindcss/vite": "^4.2.4",
     "@vercel/analytics": "^2.0.1",
-    "astro": "^6.1.9",
+    "astro": "^6.2.1",
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.8",
+    "@astrojs/check": "^0.9.9",
     "typescript": "^5.9.3"
   }
 }
