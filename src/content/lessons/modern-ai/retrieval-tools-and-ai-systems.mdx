@@ -1,0 +1,125 @@
+---
+title: "Retrieval, tools, and AI systems"
+description: "Learn why modern AI systems often combine models with retrieval, vector search, citations, tool calling, and external software."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+A model is often only one part of an AI system.
+
+Many useful AI products combine a model with search, databases, tools, permissions, monitoring, user interfaces, and ordinary application code.
+
+## Limited internal knowledge
+
+A trained model has information stored in its parameters, but that internal knowledge has limits.
+
+It may be:
+
+- outdated
+- incomplete
+- uncertain
+- biased by training data
+- unable to cite where a claim came from
+- unaware of private documents it was not given
+
+For many tasks, the system should not rely only on what the model "knows" internally.
+
+## Retrieval-augmented generation
+
+**Retrieval-augmented generation**, or **RAG**, is a pattern where the system retrieves relevant information and gives it to the model as context.
+
+```text
+user question -> retrieve documents -> add context -> model answers
+```
+
+The model is still generating text, but it can ground the answer in supplied material.
+
+RAG is common for documentation assistants, support systems, internal knowledge bases, legal research tools, and other tasks where source material matters.
+
+## Embeddings for search
+
+RAG often uses embeddings.
+
+Documents are split into chunks. Each chunk gets an embedding. A user query also gets an embedding. The system compares vectors to find chunks that are semantically similar to the query.
+
+```text
+query embedding -> nearest document embeddings -> retrieved context
+```
+
+This helps find relevant passages even when the wording is different.
+
+## Vector databases
+
+A **vector database** stores embeddings and supports similarity search.
+
+Conceptually, it answers: which stored vectors are closest to this query vector?
+
+The database may also store metadata such as document title, URL, author, access permissions, timestamps, or section headings.
+
+The vector database does not make the answer true by itself. It helps retrieve candidate context.
+
+## Grounding, citations, and provenance
+
+**Grounding** means connecting a model's output to specific evidence or external state.
+
+For example, an answer grounded in documentation should be based on retrieved documentation, not only on the model's memory.
+
+**Citations** point to sources. **Provenance** describes where information came from and how it moved through the system.
+
+Grounding, citations, and provenance help users evaluate answers. They do not automatically guarantee correctness, but they make verification possible.
+
+<Note title="RAG reduces some hallucinations, not all of them">
+  <p>
+    A model can still misread retrieved text, ignore important context, combine sources incorrectly, or cite a source that only partly supports the claim.
+  </p>
+</Note>
+
+## Tool calling
+
+**Tool calling** lets a model ask external software to do something.
+
+The model might call tools to:
+
+- search a database
+- run a calculation
+- create a calendar event
+- inspect a file
+- call an API
+- execute a workflow
+
+The model decides what tool to call and with what arguments, while normal software performs the action.
+
+## Agents
+
+An **agent** is an AI system that can choose steps toward a goal, often using tools and observing results along the way.
+
+The term is broad. A simple agent might call a search tool and summarize results. A more complex agent might plan tasks, use multiple tools, revise its approach, and ask for approval before taking risky actions.
+
+Agents are powerful because they connect model reasoning with external actions. They are risky for the same reason. Tool permissions, confirmations, logging, and rollback plans matter.
+
+<Quiz
+  id="q-rag"
+  question="What is the basic idea of retrieval-augmented generation?"
+  options={[
+    "Retrieve relevant context first, then give it to the model for generation.",
+    "Train a new model from scratch for every question.",
+    "Remove all external data from the system.",
+  ]}
+  correctIndex={0}
+  explanation="RAG combines retrieval with generation so the model can answer using supplied context."
+/>
+
+## What to carry forward
+
+- models have limited and imperfect internal knowledge
+- RAG retrieves external context before generation
+- embeddings support semantic search for relevant chunks
+- vector databases store and search embeddings
+- grounding connects outputs to evidence or external state
+- tool calling lets models use software
+- agents combine model decisions with multi-step tool use
+
+The next lesson explains how AI systems are evaluated and where they fail.

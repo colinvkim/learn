@@ -1,0 +1,125 @@
+---
+title: "Post-training and alignment"
+description: "Understand instruction tuning, human feedback, reward models, RLHF, DPO, safety tuning, and why alignment remains difficult."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+**Post-training** is the work done after large-scale pretraining to shape how a model behaves.
+
+Pretraining gives a model broad pattern knowledge. Post-training tries to make that model more useful, more steerable, and less likely to cause harm in real use.
+
+## Alignment
+
+**Alignment** means making a model's behavior match human intentions, values, rules, and safety expectations.
+
+That is harder than it sounds. People disagree. Instructions can be ambiguous. Good behavior depends on context. A model may satisfy the literal request while violating the user's real goal.
+
+Alignment is not a single technique. It is a set of training methods, evaluations, policies, product choices, and monitoring practices.
+
+## Instruction tuning
+
+Instruction tuning uses examples that pair user requests with desired responses.
+
+```text
+instruction: Explain overfitting to a beginner.
+response: Overfitting happens when...
+```
+
+This teaches the model to treat user messages as requests to answer or act, rather than as text to continue in any style.
+
+Instruction tuning is one reason assistant-style models feel different from base models.
+
+## Human feedback
+
+Human feedback often comes from people comparing multiple model outputs and choosing the better one.
+
+The comparison might consider correctness, clarity, helpfulness, safety, tone, refusal behavior, and whether the answer follows instructions.
+
+The goal is to provide a training signal for qualities that are hard to capture with simple labels.
+
+## Reward models and RLHF
+
+In **reinforcement learning from human feedback**, or **RLHF**, preference data is often used to train a **reward model**. A reward model predicts which outputs humans would prefer.
+
+Then the language model is further trained to produce outputs that score well according to that reward model.
+
+Conceptually:
+
+```text
+human preferences -> reward model -> train assistant behavior
+```
+
+RLHF can improve helpfulness and reduce some unwanted behavior, but it can also create new problems if the reward signal is incomplete or exploitable.
+
+## DPO
+
+**Direct Preference Optimization**, or **DPO**, is another way to train from preference pairs. Instead of training a separate reward model and then using reinforcement learning, DPO directly adjusts the model to prefer chosen responses over rejected responses.
+
+For this course, the important distinction is simple: both RLHF and DPO use preference data to shape behavior, but they optimize from that data differently.
+
+## Safety tuning
+
+**Safety tuning** tries to reduce harmful behavior. It may teach the model to:
+
+- refuse certain dangerous requests
+- avoid private or sensitive information
+- be careful with medical, legal, or financial uncertainty
+- not assist with abuse, fraud, or violence
+- acknowledge limits instead of inventing answers
+
+Safety tuning is not only about refusals. A safer model should also help with benign requests, redirect risky requests when possible, and avoid unnecessary obstruction.
+
+<Note title="Helpful and harmless can conflict">
+  <p>
+    A model that answers everything may be helpful in a narrow sense but unsafe. A model that refuses too often may be safer in one sense but less useful. Alignment tries to manage these tradeoffs across many contexts.
+  </p>
+</Note>
+
+## Why alignment is not solved
+
+Alignment is difficult because models are flexible, users are diverse, and real situations are messy.
+
+A model can:
+
+- misunderstand intent
+- follow a harmful instruction too literally
+- refuse a harmless request
+- produce biased or unfair outputs
+- sound confident when uncertain
+- behave differently under small prompt changes
+- fail in situations unlike its training data
+
+<Warning title="Post-training changes behavior, not the laws of the model">
+  <p>
+    Alignment methods can greatly improve behavior, but they do not make a model perfectly truthful, fair, secure, or controllable.
+  </p>
+</Warning>
+
+<Quiz
+  id="q-post-training"
+  question="What is the main purpose of post-training?"
+  options={[
+    "To shape a pretrained model's behavior for useful and safer interaction.",
+    "To remove all parameters from the model.",
+    "To replace evaluation entirely.",
+  ]}
+  correctIndex={0}
+  explanation="Post-training uses instruction data, preference data, and safety work to make a pretrained model behave more like the intended system."
+/>
+
+## What to carry forward
+
+- post-training shapes behavior after pretraining
+- instruction tuning teaches models to follow requests
+- human feedback can train preferences that are hard to label directly
+- RLHF often uses a reward model
+- DPO directly trains from preference comparisons
+- safety tuning tries to balance helpfulness and harmlessness
+- alignment is important, practical, and still not solved
+
+The next lesson shifts from language to vision.

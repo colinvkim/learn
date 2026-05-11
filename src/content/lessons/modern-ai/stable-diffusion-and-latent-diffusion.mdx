@@ -1,0 +1,113 @@
+---
+title: "Stable Diffusion and latent diffusion"
+description: "Learn how Stable Diffusion-style systems combine latent space, autoencoders, text encoders, denoisers, guidance, and controls."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Stable Diffusion-style systems are not single magic boxes. They are pipelines.
+
+A simplified text-to-image pipeline looks like this:
+
+```text
+prompt -> text encoder -> conditioning
+noise in latent space -> denoiser steps -> latent image -> decoder -> pixels
+```
+
+## Pixel space is expensive
+
+A normal image can contain millions of pixel values. Generating directly in pixel space is expensive because the model must operate on all those values throughout sampling.
+
+**Latent diffusion** solves part of this problem by generating in a compressed representation called **latent space**.
+
+## Latent space
+
+A **latent** is a compact internal representation. It keeps important visual information while using fewer numbers than the full pixel image.
+
+The model denoises latents instead of full-resolution pixels. After sampling, another model converts the final latent into an image.
+
+This is one reason Stable Diffusion-style systems can run more efficiently than pixel-space diffusion systems.
+
+## Autoencoders
+
+An **autoencoder** has two main parts:
+
+- an **encoder** that compresses an image into a latent
+- a **decoder** that reconstructs an image from a latent
+
+In a latent diffusion pipeline, the decoder turns the generated latent into visible pixels at the end.
+
+## Text encoders
+
+A **text encoder** converts the prompt into vector representations. These representations condition the image generation process.
+
+The text encoder does not generate the image by itself. It provides guidance signals that the denoising model can use.
+
+## U-Net denoisers
+
+Many Stable Diffusion-style systems use a **U-Net** as the denoising model. A U-Net processes information at multiple resolutions, which helps it handle both broad structure and local detail.
+
+At each sampling step, the denoiser predicts how to adjust the noisy latent.
+
+## Cross-attention
+
+**Cross-attention** lets image-generation features attend to text features.
+
+In simple terms, it is one way the denoiser connects parts of the prompt to parts of the emerging image representation.
+
+This is how text can influence the image throughout denoising rather than only at the beginning.
+
+## Classifier-free guidance
+
+**Classifier-free guidance** is a technique for making generated images follow the prompt more strongly.
+
+The model compares a conditioned direction with a less-conditioned direction and amplifies the difference. Higher guidance can make images match the prompt more strongly, but too much can reduce naturalness or create artifacts.
+
+<Note title="Guidance is a tradeoff">
+  <p>
+    Stronger prompt following is not always better. Image quality, variety, realism, and prompt adherence can pull against each other.
+  </p>
+</Note>
+
+## Image-to-image and inpainting
+
+Text-to-image starts from noise. Other workflows start with an existing image.
+
+**Image-to-image** adds noise to an input image's latent and denoises it with new conditioning. This can preserve some structure while changing style or content.
+
+**Inpainting** edits selected regions while preserving the rest. The system receives a mask that marks where changes are allowed.
+
+## Control signals
+
+Some systems accept extra control signals, such as edge maps, depth maps, pose skeletons, segmentation maps, or layout sketches.
+
+These controls help guide structure more precisely than text alone.
+
+Text is good at describing intent. Control signals are often better at constraining geometry, position, or composition.
+
+<Quiz
+  id="q-latent-diffusion"
+  question="Why do latent diffusion systems generate in latent space?"
+  options={[
+    "It is more efficient than operating directly on full pixel images.",
+    "It prevents the model from using text conditioning.",
+    "It removes the need for a denoising model.",
+  ]}
+  correctIndex={0}
+  explanation="Latent space is a compressed representation, so the diffusion process can run with fewer numbers than full pixel space."
+/>
+
+## What to carry forward
+
+- Stable Diffusion-style systems are pipelines
+- latent diffusion denoises compressed image representations
+- autoencoders move between pixels and latents
+- text encoders turn prompts into conditioning signals
+- U-Net denoisers refine noisy latents over many steps
+- cross-attention connects text and image representations
+- guidance, image-to-image, inpainting, and control signals shape generation
+
+The next lesson connects text, image, audio, and other modalities.

@@ -1,0 +1,114 @@
+---
+title: "Embeddings and representations"
+description: "Learn how words, images, audio, and documents become vectors, and why similarity in vector space powers many AI systems."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+An **embedding** is a learned numeric representation of something.
+
+The "something" can be a word, sentence, image, audio clip, document, user, product, code file, or search query. The embedding is usually a list of numbers called a **vector**.
+
+```text
+"coffee" -> [0.12, -0.44, 0.08, ...]
+```
+
+The numbers are not meant for humans to read directly. They are useful because the model has learned to place related things near each other in vector space.
+
+## Vector space
+
+A vector is a point in a mathematical space. A small two-dimensional vector is easy to picture:
+
+```text
+              tea
+               *
+
+coffee  *          espresso *
+
+
+car *
+```
+
+Real embeddings often have hundreds or thousands of dimensions, not two. But the intuition is the same: nearby points tend to be similar according to what the model learned.
+
+## Similarity
+
+Once content is represented as vectors, software can compare vectors.
+
+If a search query and a document have similar embeddings, the document may be relevant even if it does not contain the exact same words.
+
+For example, a search for "reset my password" might match a document titled "Recover account access" because the meanings are close.
+
+This is different from simple keyword search. Keyword search matches surface text. Embedding search can match semantic similarity.
+
+## Representations are learned
+
+Embeddings are not manually assigned definitions. They come from training.
+
+A language model learns that words and phrases appear in patterns. An image model learns that visual structures appear in patterns. A multimodal model can learn relationships between captions and images.
+
+The resulting vector space reflects those learned patterns. It can capture useful relationships:
+
+- "king" is closer to "queen" than to "bicycle"
+- a photo of a golden retriever is close to other dog photos
+- two support tickets about the same problem can be close even with different wording
+
+<Note title="Embeddings are useful, not magical">
+  <p>
+    Similarity depends on the model, the data, and the training objective. An embedding space may capture topic, style, language, visual content, user behavior, or a mixture of signals.
+  </p>
+</Note>
+
+## Why embeddings matter
+
+Embeddings are a bridge between messy real-world data and computation.
+
+They support:
+
+- **semantic search:** find meaningfully related documents
+- **recommendation:** compare users, items, and behavior patterns
+- **retrieval:** fetch relevant context for a language model
+- **clustering:** group similar examples
+- **deduplication:** find near-duplicate content
+- **multimodal AI:** connect text, images, audio, and video in shared spaces
+
+Modern AI systems often depend on embeddings even when the user never sees them.
+
+## Same idea, many data types
+
+Text can become embeddings. Images can become embeddings. Audio can become embeddings. Whole documents can become embeddings.
+
+That is powerful because different kinds of data can sometimes be compared through vector representations. A text query can retrieve an image. An image can retrieve a caption. A document can retrieve related documents.
+
+This is one reason embeddings are central to modern AI. They make different forms of information searchable, comparable, and connectable.
+
+## Embeddings and internal representations
+
+The word **representation** is broader than embedding. A neural network forms many internal representations as data moves through layers. An embedding is often a representation we intentionally store or compare.
+
+For example, a language model may create internal representations for each token while processing a sentence. A separate embedding model may create one vector for an entire paragraph so a search system can retrieve it later.
+
+<Quiz
+  id="q-embedding"
+  question="Why are embeddings useful for search?"
+  options={[
+    "They let software compare meaningfully similar items as vectors.",
+    "They guarantee every result is factually correct.",
+    "They remove the need for datasets.",
+  ]}
+  correctIndex={0}
+  explanation="Embeddings turn content into vectors, making semantic similarity easier to compute."
+/>
+
+## What to carry forward
+
+- an embedding is a learned vector representation
+- nearby vectors often represent similar items
+- embeddings can represent text, images, audio, documents, and more
+- semantic search uses meaning-like similarity, not only exact keywords
+- embeddings power retrieval, recommendation, clustering, and multimodal systems
+
+The next lesson uses these ideas to explain language models.

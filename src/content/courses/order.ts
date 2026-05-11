@@ -186,6 +186,29 @@ export const courseLessonOrder: Record<string, string[]> = {
     "organizing-a-multi-file-project",
     "capstone-modern-cpp-system",
   ],
+  "modern-ai": [
+    // Module 1: Learned systems
+    "what-modern-ai-is",
+    "machine-learning-foundations",
+    "neural-networks-conceptually",
+    "embeddings-and-representations",
+    // Module 2: Language models
+    "language-models-and-token-prediction",
+    "transformers-and-attention",
+    "how-llms-are-trained",
+    "post-training-and-alignment",
+    // Module 3: Vision and generation
+    "computer-vision-foundations",
+    "diffusion-and-image-generation",
+    "stable-diffusion-and-latent-diffusion",
+    // Module 4: Connected AI systems
+    "multimodal-ai",
+    "retrieval-tools-and-ai-systems",
+    "evaluation-and-failure-modes",
+    "safety-ethics-and-responsible-ai",
+    // Module 5: Synthesis
+    "capstone-ai-systems-map",
+  ],
   typescript: [
     // Module 1: TypeScript mental model
     "what-typescript-adds",

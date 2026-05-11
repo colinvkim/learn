@@ -1,0 +1,130 @@
+---
+title: "Diffusion and image generation"
+description: "Understand diffusion models as systems that start with noise and gradually denoise it into coherent images."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Many modern image generators are based on **diffusion models**.
+
+The core idea is simple:
+
+```text
+start with noise -> remove noise step by step -> coherent image
+```
+
+The details can become mathematical, but the mental model is approachable.
+
+## Noise
+
+**Noise** is random variation. An image made of pure noise looks like static.
+
+A diffusion model learns how to move from random noise toward images that resemble the training data.
+
+It does not retrieve a single stored picture. It generates a new image by repeatedly predicting how to reduce noise.
+
+## Forward diffusion
+
+During training, the system takes real images and gradually adds noise to them.
+
+```text
+clear image -> slightly noisy image -> very noisy image -> almost pure noise
+```
+
+This is called the **forward diffusion** process. It creates training examples at many noise levels.
+
+The model's job is to learn the reverse task: given a noisy version, predict how to remove some of the noise.
+
+## Reverse diffusion
+
+**Reverse diffusion** is the generation process.
+
+At inference time, the system starts with random noise. Then it repeatedly uses the model to predict a cleaner version.
+
+```text
+noise
+  -> less noisy structure
+  -> rough image
+  -> clearer image
+  -> final image
+```
+
+Each step is small. Over many steps, small denoising decisions accumulate into an image.
+
+<Note title="Generation happens over many steps">
+  <p>
+    A diffusion model usually does not create the final image in one pass. It iteratively refines noise into structure, then detail.
+  </p>
+</Note>
+
+## Sampling
+
+**Sampling** is the process of generating an output from the model. In diffusion, sampling means running the reverse process from noise to image.
+
+Different sampling methods can trade off speed, quality, consistency, and variety. More steps can improve quality up to a point, but more steps also cost more computation.
+
+## Text conditioning
+
+Text-to-image systems add **conditioning**. Conditioning means giving the model extra information that guides generation.
+
+For a prompt like:
+
+```text
+a red bicycle leaning against a brick wall
+```
+
+the system uses a text representation to guide denoising toward images that match the prompt.
+
+The prompt does not directly paint pixels. It influences the model's denoising decisions at each step.
+
+## Why diffusion works well for images
+
+Images have structure at many levels:
+
+- broad composition
+- objects and positions
+- shapes
+- textures
+- lighting
+- small details
+
+Diffusion generation naturally moves from noise toward structure over many steps, which fits this layered nature of images.
+
+## Limits
+
+Diffusion models can produce impressive images, but they can still struggle with:
+
+- exact text inside images
+- precise counts
+- consistent hands, tools, and small objects
+- spatial relationships
+- identity consistency across images
+- following complex prompts exactly
+
+These failures make more sense when you remember the process: the model is repeatedly denoising according to learned patterns, not executing a symbolic scene plan.
+
+<Quiz
+  id="q-diffusion-core"
+  question="What is the core generation idea behind diffusion models?"
+  options={[
+    "Start with noise and gradually denoise it into an image.",
+    "Look up a matching image in a database and return it.",
+    "Render a 3D scene from exact geometry.",
+  ]}
+  correctIndex={0}
+  explanation="Diffusion image generation samples random noise and repeatedly removes noise to form a coherent image."
+/>
+
+## What to carry forward
+
+- diffusion models learn to denoise
+- training adds noise to real images and teaches the reverse direction
+- generation starts from random noise
+- sampling runs many denoising steps
+- text conditioning guides the denoising process
+- diffusion models generate images through learned visual patterns, not exact symbolic instructions
+
+The next lesson explains Stable Diffusion-style systems, which make diffusion more efficient and controllable.

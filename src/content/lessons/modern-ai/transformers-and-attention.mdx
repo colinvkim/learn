@@ -1,0 +1,114 @@
+---
+title: "Transformers and attention"
+description: "Understand attention as a way for a model to decide which parts of the input matter while processing sequences."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+A **transformer** is a neural network architecture designed to process sequences such as text.
+
+Transformers are central to modern language models because they handle long sequences more effectively than many older approaches and scale well with data and compute.
+
+## Why sequence modeling is hard
+
+Text is ordered. The meaning of a word depends on nearby words and sometimes on words much earlier in the sequence.
+
+In this sentence, "it" refers to "jacket":
+
+```text
+I put the jacket in the suitcase because it was cold.
+```
+
+In this sentence, "it" refers to "suitcase":
+
+```text
+I put the jacket in the suitcase because it was empty.
+```
+
+A language model needs a way to connect related parts of the context, even when they are not next to each other.
+
+## Attention
+
+**Attention** is a mechanism that lets the model weigh which parts of the input are relevant to each part it is processing.
+
+For each token, attention asks: which other tokens should influence this token's representation, and by how much?
+
+```text
+token being processed -> looks across context -> weights useful tokens more
+```
+
+This is not human attention or consciousness. It is a learned calculation for routing information.
+
+## Self-attention
+
+**Self-attention** means tokens in the same sequence attend to one another.
+
+If the model is processing a sentence, each token can gather information from other tokens in that sentence. This helps the model represent relationships such as:
+
+- subject and verb
+- pronoun and noun
+- question and answer
+- code variable and later use
+- instruction and requested output
+
+Self-attention is one reason transformers can build context-aware representations instead of treating each token in isolation.
+
+## Positional information
+
+Attention alone does not automatically know token order. The model needs **positional information** so it can distinguish "dog bites person" from "person bites dog."
+
+Transformers add position-related signals to token representations. Different transformer designs do this in different ways, but the purpose is the same: give the model information about where tokens appear in the sequence.
+
+## Transformer blocks
+
+A transformer is built from repeated **blocks**. Each block usually contains:
+
+- attention, which mixes information across tokens
+- a feedforward network, which transforms each token's representation
+- normalization and residual connections, which help training stay stable
+
+You do not need to implement these pieces to understand their roles. A transformer repeatedly updates token representations by combining context and learned transformations.
+
+<Note title="A transformer builds representations, not final words all at once">
+  <p>
+    The model processes token representations through many layers. At the end, it uses the final representation to predict probabilities for the next token.
+  </p>
+</Note>
+
+## Why transformers scale well
+
+Transformers became important partly because they can process many parts of a sequence in parallel during training. Older sequence models often had to process text step by step in a way that was harder to scale.
+
+Scaling well does not make transformers perfect. Long contexts are still expensive. They can still miss details, overfocus on irrelevant text, or generate errors. But transformers made it practical to train very large models on very large datasets.
+
+## Attention is not explanation
+
+It is tempting to treat attention weights as a complete explanation of why a model produced an answer. Be careful.
+
+Attention shows one part of the model's information flow, but the full computation includes many layers and transformations. Attention can help build intuition, but it is not a simple proof of reasoning.
+
+<Quiz
+  id="q-attention"
+  question="What is the basic role of attention in a transformer?"
+  options={[
+    "It lets tokens weigh which other tokens in the context are relevant.",
+    "It stores a permanent memory of every user conversation.",
+    "It replaces the need for training data.",
+  ]}
+  correctIndex={0}
+  explanation="Attention routes information by letting token representations use other relevant token representations in the context."
+/>
+
+## What to carry forward
+
+- transformers process sequences such as text
+- attention lets the model weigh relevant parts of the input
+- self-attention connects tokens within the same sequence
+- positional information tells the model about order
+- transformer blocks repeatedly update token representations
+- transformers scale well, which helped large language models become practical
+
+The next lesson follows the lifecycle of an LLM from raw data to deployment.

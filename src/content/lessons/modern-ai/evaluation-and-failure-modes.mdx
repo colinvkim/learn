@@ -1,0 +1,110 @@
+---
+title: "Evaluation and failure modes"
+description: "Learn how AI systems are evaluated beyond fluency, including benchmarks, human review, hallucination, bias, robustness, and data contamination."
+course: modern-ai
+status: published
+---
+
+import Warning from "../../../components/content/Warning.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+AI systems are not evaluated only by whether they sound good.
+
+Evaluation asks whether a system works for a task, for the intended users, under realistic conditions, with acceptable risks.
+
+## Benchmarks
+
+A **benchmark** is a standardized evaluation task or dataset. Benchmarks make it easier to compare models on specific abilities.
+
+Benchmarks can test math, coding, reading comprehension, image understanding, factual questions, reasoning, safety behavior, or domain-specific tasks.
+
+Benchmarks are useful, but they are incomplete. A high score on one benchmark does not prove broad reliability.
+
+## Human evaluation
+
+Human evaluation asks people to judge model outputs. Reviewers may assess correctness, clarity, helpfulness, tone, completeness, safety, and whether the answer follows instructions.
+
+Human review can catch issues benchmarks miss. It can also be inconsistent, expensive, and sensitive to reviewer instructions.
+
+Good evaluation often combines automated tests, human review, and real-world monitoring.
+
+## Hallucination
+
+A **hallucination** is an output that is unsupported, fabricated, or false while appearing plausible.
+
+Hallucinations happen because generative models produce likely outputs, not guaranteed facts. A model may fill gaps with patterns that sound right.
+
+Retrieval and citations can reduce hallucinations, but they do not eliminate them.
+
+## Bias
+
+**Bias** is systematic unfairness or distortion in outputs. It can come from training data, labels, deployment context, evaluation choices, or user behavior.
+
+Bias can appear as stereotypes, unequal performance across groups, unfair recommendations, or missing representation.
+
+Bias is not only a social issue. It is also a technical reliability issue: the system behaves differently depending on inputs in ways that may be unjustified or harmful.
+
+## Robustness
+
+**Robustness** means the system keeps working under variation.
+
+A robust model should handle phrasing changes, typos, lighting changes, noisy audio, unusual formatting, and realistic edge cases.
+
+Some models are surprisingly sensitive. A small change in wording or image conditions can change the output.
+
+## Calibration
+
+**Calibration** describes whether confidence matches correctness.
+
+A well-calibrated system is uncertain when it is likely wrong and confident when it is likely right. Many AI systems can sound confident even when they should be uncertain.
+
+This matters because users often rely on confidence cues.
+
+## Distribution shift
+
+**Distribution shift** happens when deployment data differs from training or evaluation data.
+
+For example, a medical imaging model trained on one hospital's equipment may perform worse at another hospital. A language model evaluated on clean benchmark questions may struggle with messy workplace documents.
+
+## Adversarial examples
+
+An **adversarial example** is an input designed to make a model fail.
+
+For image models, small changes can sometimes cause wrong classifications. For language models, carefully written prompts can try to bypass instructions or trigger unsafe behavior.
+
+Adversarial testing helps reveal brittle behavior before attackers or accidents do.
+
+## Data contamination
+
+**Data contamination** happens when evaluation examples appear in the training data.
+
+If a model has seen benchmark answers during training, the benchmark may overstate real capability. This is especially important for models trained on large web-scale datasets.
+
+<Warning title="One metric is not enough">
+  <p>
+    A model can improve on a public benchmark while getting worse for a specific product, user group, safety requirement, or real workflow.
+  </p>
+</Warning>
+
+<Quiz
+  id="q-calibration"
+  question="What does calibration measure?"
+  options={[
+    "Whether confidence matches the likelihood of being correct.",
+    "How many tokens the model can process.",
+    "Whether the model uses a transformer architecture.",
+  ]}
+  correctIndex={0}
+  explanation="Calibration is about matching confidence to actual reliability."
+/>
+
+## What to carry forward
+
+- evaluation must go beyond fluent output
+- benchmarks test specific tasks but do not prove universal quality
+- human evaluation captures qualities automated tests may miss
+- hallucinations are plausible but unsupported or false outputs
+- bias, robustness, calibration, and distribution shift affect reliability
+- adversarial examples and data contamination can distort evaluation
+
+The next lesson covers safety, ethics, and responsible AI in concrete terms.

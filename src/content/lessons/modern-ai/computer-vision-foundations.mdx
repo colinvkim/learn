@@ -1,0 +1,114 @@
+---
+title: "Computer vision foundations"
+description: "Learn how AI systems treat pixels as data for classification, detection, segmentation, and image embeddings."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+**Computer vision** is the field of AI focused on understanding images and video.
+
+To a person, an image contains objects, scenes, faces, text, lighting, and motion cues. To a model, an image starts as numbers.
+
+## Pixels as data
+
+A digital image is a grid of **pixels**. Each pixel stores color values, often red, green, and blue.
+
+```text
+image -> grid of pixels -> numbers -> model
+```
+
+Computer vision models learn patterns in those numbers. Early patterns might correspond to edges and textures. Later patterns might correspond to object parts, full objects, layouts, or scenes.
+
+## Image classification
+
+**Image classification** assigns one or more labels to an entire image.
+
+```text
+input: photo
+output: "dog"
+```
+
+Classification is useful when the question is "what is in this image overall?" It does not necessarily say where the object is.
+
+## Object detection
+
+**Object detection** identifies objects and their locations.
+
+The output may include labels and bounding boxes:
+
+```text
+dog: x=45, y=80, width=210, height=160
+person: x=260, y=40, width=90, height=260
+```
+
+Detection is useful when location matters, such as counting objects, reading scenes, or assisting robotics.
+
+## Segmentation
+
+**Segmentation** labels regions of an image, often at the pixel level.
+
+Instead of drawing a rough box around a dog, a segmentation model can mark which pixels belong to the dog.
+
+Segmentation is useful for medical imaging, photo editing, autonomous systems, and any task where shape boundaries matter.
+
+## Convolutional neural networks
+
+**Convolutional neural networks**, or **CNNs**, were a major architecture for vision. A convolution looks at small local regions of an image and learns filters for patterns such as edges, corners, and textures.
+
+CNNs are useful because images have local structure. Nearby pixels often relate to one another.
+
+You do not need to implement convolutions here. The key idea is that CNNs learn visual features by scanning local patterns across the image.
+
+## Vision transformers
+
+**Vision transformers** adapt transformer ideas to images. Instead of processing text tokens, they split an image into patches and process those patches with attention.
+
+This lets the model learn relationships between different image regions. Like language transformers, vision transformers can scale well with enough data and compute.
+
+CNNs and vision transformers are not enemies. Modern systems may use either architecture or combine ideas from both.
+
+## Image embeddings
+
+An **image embedding** is a vector representation of an image. Similar images can be close in vector space.
+
+Image embeddings support:
+
+- visual search
+- duplicate detection
+- recommendation
+- clustering photo collections
+- connecting images with text
+- retrieval for multimodal systems
+
+<Note title="Vision is not just naming objects">
+  <p>
+    A vision system might classify, detect, segment, compare, caption, generate, or answer questions about images. Those are related but distinct tasks.
+  </p>
+</Note>
+
+<Quiz
+  id="q-detection-segmentation"
+  question="How is segmentation different from object detection?"
+  options={[
+    "Segmentation labels regions or pixels, while detection usually returns object boxes.",
+    "Segmentation only works on text, while detection only works on images.",
+    "Segmentation means training without data.",
+  ]}
+  correctIndex={0}
+  explanation="Detection locates objects with boxes or similar regions. Segmentation marks more detailed regions, often down to pixels."
+/>
+
+## What to carry forward
+
+- images are grids of pixel values before they become model inputs
+- classification labels whole images
+- detection identifies objects and locations
+- segmentation labels image regions or pixels
+- CNNs learn local visual patterns
+- vision transformers process image patches with attention
+- image embeddings make visual similarity computable
+
+The next lesson explains how models can generate images instead of only analyzing them.

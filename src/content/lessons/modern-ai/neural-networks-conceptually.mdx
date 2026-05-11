@@ -1,0 +1,107 @@
+---
+title: "Neural networks, conceptually"
+description: "Understand neurons, layers, weights, activations, forward passes, and backpropagation without deriving the math."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+A **neural network** is a model built from many simple mathematical units connected together.
+
+The word "neural" is inspired by brains, but modern neural networks are not tiny digital brains. They are computation graphs with learned parameters.
+
+## Neurons
+
+A **neuron** takes input numbers, combines them with learned settings, and produces an output number.
+
+The learned settings are usually:
+
+- **weights:** numbers that control how strongly each input matters
+- **bias:** a number that shifts the result up or down
+
+In plain language, a neuron asks: which input signals matter, how much do they matter, and should this unit activate?
+
+## Activations
+
+An **activation function** transforms the neuron's combined value before passing it forward.
+
+Without activation functions, stacking many layers would collapse into a simpler linear calculation. Activations let networks model curves, thresholds, and complex relationships.
+
+You do not need to memorize activation names yet. The important idea is that activations introduce flexible nonlinearity.
+
+## Layers
+
+Neurons are arranged in **layers**. A layer takes a set of numbers and produces a new set of numbers.
+
+```text
+input layer -> hidden layer -> hidden layer -> output layer
+```
+
+The first layer receives the input representation. The final layer produces the output. Layers between them are called **hidden layers** because they are internal to the model.
+
+As data moves through layers, the network can build more useful internal representations. In an image model, early layers might respond to simple edges while later layers respond to larger shapes and objects.
+
+## The forward pass
+
+A **forward pass** is one run through the network from input to output.
+
+For example, an image classifier might:
+
+1. receive pixel values
+2. transform them through many layers
+3. produce scores for labels such as "cat," "dog," and "car"
+
+During inference, the forward pass is the main event. The model uses its already-learned weights and biases to compute an output.
+
+## Backpropagation
+
+During training, the model also needs to learn from mistakes. That is where **backpropagation** matters.
+
+Backpropagation is the method used to figure out how much each parameter contributed to the error. It sends error information backward through the network so the training algorithm can update weights and biases.
+
+<Note title="Backpropagation is bookkeeping for learning">
+  <p>
+    You do not need to derive it to understand its role. Forward passes produce predictions. Loss measures the error. Backpropagation tells the training process how to assign that error across the model's parameters.
+  </p>
+</Note>
+
+## Why depth helps
+
+A shallow model has fewer steps for transforming the input. A deeper network can build ideas in stages.
+
+For text, early layers might represent local token relationships while later layers combine broader context. For images, early layers might represent edges and textures while later layers represent object parts and scenes.
+
+Depth is useful because many real-world patterns are compositional. Simple parts combine into larger structures.
+
+That does not mean "deeper is always better." Larger networks need more data, compute, and careful training. But depth is one reason neural networks can learn complex patterns from raw inputs.
+
+## Neural networks are differentiable systems
+
+Most neural networks are designed so the training process can calculate how small parameter changes affect the loss. This property is called **differentiability**.
+
+That is what makes gradient-based learning practical. The system can adjust millions or billions of parameters through many small updates rather than guessing blindly.
+
+<Quiz
+  id="q-forward-backprop"
+  question="What does backpropagation help compute during training?"
+  options={[
+    "How each parameter should change to reduce the loss.",
+    "Which user should receive the model output.",
+    "How to split the dataset into files.",
+  ]}
+  correctIndex={0}
+  explanation="Backpropagation moves error information backward through the network so parameter updates can reduce loss."
+/>
+
+## What to carry forward
+
+- neural networks are connected layers of simple mathematical units
+- weights and biases are learned parameters
+- activation functions let networks model nonlinear patterns
+- a forward pass computes an output
+- backpropagation distributes error information for learning
+- deeper networks can build complex patterns from simpler ones
+
+The next lesson covers one of the most important ideas in modern AI: embeddings.

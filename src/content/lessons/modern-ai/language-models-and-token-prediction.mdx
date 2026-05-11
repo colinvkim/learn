@@ -1,0 +1,116 @@
+---
+title: "Language models and token prediction"
+description: "Learn how language models turn text into tokens, predict continuations, and produce fluent outputs that can still be wrong."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+A **language model** is a model that assigns probabilities to sequences of text.
+
+Modern large language models, or **LLMs**, are usually trained to predict the next piece of text given previous text. That sounds narrow, but it becomes surprisingly powerful at scale.
+
+## Tokens
+
+Language models do not usually process text as whole words. They process **tokens**.
+
+A token is a chunk of text. It might be a word, part of a word, punctuation, whitespace, or another text unit.
+
+```text
+"unbelievable" -> "un", "believ", "able"
+"AI systems" -> "AI", " systems"
+```
+
+The exact split depends on the **tokenizer**, the software that converts text into token IDs the model can process.
+
+Tokenization matters because the model predicts tokens, not ideas directly. The text you see is converted into token IDs, processed by the model, then converted back into text.
+
+## Next-token prediction
+
+The core training task is often:
+
+```text
+given: The capital of France is
+predict: Paris
+```
+
+More precisely, the model predicts a probability distribution over possible next tokens.
+
+```text
+Paris: 0.71
+Lyon: 0.04
+the: 0.02
+...
+```
+
+During generation, the system chooses a token from this distribution, appends it to the text, and repeats the process.
+
+```text
+prompt -> next token -> next token -> next token -> response
+```
+
+## Context windows
+
+The **context window** is the amount of text the model can consider at once. It includes the user's message, system instructions, previous conversation, retrieved documents, and the model's generated text so far.
+
+If information is outside the context window, the model cannot directly attend to it during that response. It may still rely on patterns stored in its parameters, but it is not reading the omitted text.
+
+<Note title="Context is not memory">
+  <p>
+    A long context window lets the model use more text at inference time. It does not mean the model permanently learned that text unless a separate training or memory system changes what future requests include.
+  </p>
+</Note>
+
+## Why text prediction creates broad abilities
+
+Text contains explanations, examples, arguments, code, instructions, stories, tables, conversations, and many traces of human reasoning.
+
+To predict text well, a model benefits from learning patterns about grammar, facts, style, reasoning steps, code structure, and the relationships between ideas. The training objective is simple, but the data is rich.
+
+This is why next-token prediction can support summarization, translation, question answering, code generation, and other tasks. The model has learned patterns that are useful across many text activities.
+
+## Fluency is not truth
+
+Language models are optimized to produce likely continuations, not to maintain a verified database of facts.
+
+This creates a major failure mode: a model can generate text that sounds coherent and confident while being false. This is often called a **hallucination**.
+
+<Warning title="A good-sounding answer still needs evaluation">
+  <p>
+    Language models are especially good at producing fluent text. Fluency should not be treated as evidence that the answer is true, complete, or grounded in reliable sources.
+  </p>
+</Warning>
+
+## Sampling
+
+Generation can be more or less predictable depending on how the system chooses from token probabilities.
+
+If it always chooses the most likely token, outputs may be stable but dull or brittle. If it samples from several likely tokens, outputs can be more varied but also less predictable.
+
+You do not need to tune sampling settings to understand LLMs. The important idea is that generation is probabilistic: the model repeatedly chooses from possible continuations.
+
+<Quiz
+  id="q-next-token"
+  question="What does an LLM usually predict during text generation?"
+  options={[
+    "A probability distribution over possible next tokens.",
+    "A single verified fact from a database.",
+    "The user's intention with perfect certainty.",
+  ]}
+  correctIndex={0}
+  explanation="Language models generate text by repeatedly predicting likely next tokens from the current context."
+/>
+
+## What to carry forward
+
+- LLMs process tokens, not raw human-visible words
+- tokenization converts text into model-readable units
+- next-token prediction produces probabilities over possible continuations
+- the context window limits what the model can directly use
+- broad abilities emerge because text contains many kinds of knowledge and reasoning traces
+- fluent output can still be wrong
+
+The next lesson explains the architecture that made modern LLMs scale so well: transformers.

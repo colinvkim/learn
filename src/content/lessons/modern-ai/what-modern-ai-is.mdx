@@ -1,0 +1,104 @@
+---
+title: "What modern AI is"
+description: "Understand AI as learned behavior, models as input-output functions, and the difference between training and inference."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Modern artificial intelligence is software whose behavior is learned from data instead of fully written by hand.
+
+Traditional software mostly follows explicit rules:
+
+```text
+if the password is correct:
+  sign the user in
+```
+
+Modern AI systems still use normal software around the edges, but their central behavior often comes from a **model**. A model is a learned function: it takes an input, performs internal computation, and produces an output.
+
+```text
+input -> model -> output
+```
+
+For example:
+
+- an email goes in, a spam score comes out
+- an image goes in, object labels come out
+- a sentence goes in, likely next words come out
+- a text prompt goes in, an image gradually comes out
+
+## Learned behavior
+
+A hand-written rule says exactly what should happen. A learned model is different. It is adjusted by examples.
+
+If a model sees many labeled examples of spam and normal email, it can learn patterns that tend to separate them. The developer did not write every spam rule. The developer chose the training process, the data, the model design, and the evaluation method.
+
+That distinction matters because learned systems can handle messy patterns that are hard to describe as rules. It also means their behavior can be less predictable than ordinary code.
+
+## Parameters
+
+Inside a model are **parameters**. Parameters are learned internal settings that control how the model transforms inputs into outputs.
+
+You can think of parameters as many tiny knobs. At the beginning, the knobs are not useful. During training, the system adjusts them so the model's outputs become closer to the desired outputs.
+
+Large models can have billions of parameters. The number sounds abstract, but the idea is simple: more parameters give the model more capacity to store and combine patterns, though capacity alone does not guarantee quality.
+
+## Training and inference
+
+Modern AI has two broad phases.
+
+**Training** is the process of adjusting parameters using data. Training is expensive because the model may process huge datasets many times while learning from mistakes.
+
+**Inference** is using a trained model to produce an output. When you ask a language model a question or run an image classifier on a photo, you are doing inference.
+
+Training changes the model. Inference usually does not.
+
+<Note title="Using a model is not the same as training it">
+  <p>
+    A deployed model can respond to new inputs without permanently learning from them. Some systems save conversation history or adapt through separate workflows, but plain inference means using fixed learned parameters.
+  </p>
+</Note>
+
+## Probabilistic outputs
+
+Modern AI systems often produce probabilities rather than single guaranteed answers. A classifier might estimate that an image is 82 percent likely to contain a cat. A language model might assign probabilities to many possible next tokens.
+
+This is why the same input can sometimes produce different outputs. The model is not following a single fixed script. It is choosing from likely possibilities according to learned patterns and system settings.
+
+Probabilistic behavior is useful for flexible tasks, but it also creates uncertainty. A fluent answer can be likely without being true.
+
+## Does AI understand?
+
+People use the word **understand** in different ways.
+
+A model can learn rich patterns about language, images, code, and the world as represented in data. It can use those patterns to answer questions, summarize text, classify images, or generate new content.
+
+But a model does not understand in the same way a person does. It does not have direct experience, intentions, or grounded common sense unless those ideas are carefully defined for a particular system. It may produce a correct explanation in one situation and a confident mistake in another.
+
+The practical stance is to ask a narrower question: what patterns has this system learned, what can it reliably do, and where does it fail?
+
+<Quiz
+  id="q-training-inference"
+  question="What is the main difference between training and inference?"
+  options={[
+    "Training adjusts the model's parameters; inference uses the trained model.",
+    "Training is only for images; inference is only for text.",
+    "Training happens after every user prompt.",
+  ]}
+  correctIndex={0}
+  explanation="Training changes the learned internal settings. Inference uses those settings to produce outputs for new inputs."
+/>
+
+## What to carry forward
+
+- modern AI learns behavior from data instead of relying only on hand-written rules
+- a model maps inputs to outputs
+- parameters are learned internal settings
+- training adjusts parameters; inference uses them
+- many AI outputs are probabilistic
+- "understanding" is a complicated word, so evaluate concrete capabilities and limits
+
+The next lesson explains the basic training ideas that make learned behavior possible.

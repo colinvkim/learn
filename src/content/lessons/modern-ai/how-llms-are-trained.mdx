@@ -1,0 +1,120 @@
+---
+title: "How LLMs are trained"
+description: "Learn the major stages of LLM development, from data collection and pretraining to fine-tuning, evaluation, and deployment."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+LLMs are not created by writing conversation rules by hand. They are built through a pipeline of data work, training, evaluation, and deployment.
+
+The details vary, but the high-level shape is common:
+
+```text
+data -> pretraining -> post-training -> evaluation -> deployment
+```
+
+## Data collection
+
+Training starts with data. For language models, that data may include books, web pages, documentation, code, articles, conversations, and other text sources.
+
+Collection is not just "get as much text as possible." Data choices shape what the model learns, what languages it supports, what style it imitates, and what risks it carries.
+
+## Cleaning and filtering
+
+Raw data contains duplicates, spam, private information, low-quality text, broken formatting, toxic content, and material that may not be appropriate to train on.
+
+Cleaning and filtering try to improve quality and reduce risk. This stage can include deduplication, language detection, removing obvious spam, filtering unsafe material, and balancing data sources.
+
+Filtering is never perfect. It can remove useful data, keep harmful data, or introduce its own biases.
+
+## Pretraining
+
+**Pretraining** is the large first training stage. The model learns broad language patterns by predicting tokens across a huge dataset.
+
+The result is a **base model**. A base model is good at continuing text, but it is not necessarily good at following user instructions safely or helpfully.
+
+For example, if prompted with a question, a base model might continue with another question, a document fragment, or a plausible answer. It has learned text patterns, not a polished assistant behavior.
+
+<Note title="Base model and assistant model">
+  <p>
+    A base model is trained for general text prediction. An assistant-style model has additional training so it is more likely to follow instructions, refuse some requests, and format responses helpfully.
+  </p>
+</Note>
+
+## Fine-tuning and instruction tuning
+
+**Fine-tuning** means training an already-pretrained model further on a smaller, more specific dataset.
+
+**Instruction tuning** is fine-tuning on examples of instructions and good responses. It teaches the model the pattern "when a user asks for something, respond in a helpful way."
+
+Instruction tuning does not create all the model's knowledge. Most broad capability comes from pretraining. Instruction tuning changes how the model uses and presents those capabilities.
+
+## Preference training
+
+After instruction tuning, developers may train the model using preference data. Humans or other evaluators compare outputs and indicate which are better.
+
+The model can then be adjusted to prefer outputs that are more helpful, honest, harmless, or aligned with the intended behavior.
+
+Preference training is part of post-training, which the next lesson covers more closely.
+
+## Evaluation
+
+Evaluation checks how the model behaves. It can include:
+
+- benchmark tasks
+- human review
+- safety tests
+- factuality checks
+- robustness tests
+- domain-specific tests
+- latency and cost measurements
+
+Evaluation is not a final checkbox. Models are evaluated throughout development and after deployment.
+
+## Deployment
+
+Deployment is making the model available inside a product or system. This usually involves more than the model file:
+
+- serving infrastructure
+- rate limits
+- monitoring
+- safety filters
+- retrieval systems
+- logging policies
+- fallback behavior
+- user interface decisions
+
+Modern AI products are systems, not just models.
+
+## Scaling laws
+
+Researchers have observed **scaling laws**: predictable relationships between model performance, model size, data size, and compute for some training setups.
+
+The simple lesson is that more parameters, more high-quality data, and more compute can improve performance when balanced well. But scaling is not free, and it does not solve every problem. Data quality, evaluation, architecture, post-training, and deployment design still matter.
+
+<Quiz
+  id="q-base-assistant"
+  question="What is a base model?"
+  options={[
+    "A pretrained model mainly optimized for text prediction, before assistant-style post-training.",
+    "A model that can only run on a user's laptop.",
+    "A model that has no parameters.",
+  ]}
+  correctIndex={0}
+  explanation="A base model has learned broad text patterns from pretraining but has not necessarily been tuned to behave like a helpful assistant."
+/>
+
+## What to carry forward
+
+- LLM development starts with data collection, cleaning, and filtering
+- pretraining teaches broad next-token prediction
+- a base model is not the same as an assistant-style model
+- fine-tuning adapts a pretrained model further
+- instruction tuning teaches models to respond to instructions
+- evaluation and deployment are part of the system, not afterthoughts
+- scale matters, but scale alone is not the whole story
+
+The next lesson focuses on post-training and alignment.

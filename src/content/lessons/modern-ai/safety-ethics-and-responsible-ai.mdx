@@ -1,0 +1,117 @@
+---
+title: "Safety, ethics, and responsible AI"
+description: "Understand concrete AI risks around bias, privacy, copyright, misinformation, misuse, transparency, red-teaming, and limitations."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+Responsible AI is not a separate moral appendix. It is part of building systems that behave reliably around people.
+
+The goal is not to make every lesson abstractly ethical. The goal is to understand concrete risks and the technical choices that affect them.
+
+## Dataset bias
+
+Training data reflects the world, the web, institutions, languages, cultures, and collection choices. It can contain stereotypes, omissions, errors, and unequal representation.
+
+If a model learns those patterns, it may reproduce or amplify them.
+
+Mitigation can include dataset review, balancing, filtering, targeted evaluation, feedback loops, and monitoring real-world outcomes. None of these is perfect by itself.
+
+## Privacy
+
+AI systems can create privacy risks when they train on, store, retrieve, or reveal sensitive information.
+
+Important questions include:
+
+- What data was collected?
+- Was consent required?
+- Can personal information be memorized?
+- What logs are stored?
+- Who can retrieve private documents?
+- How are access controls enforced?
+
+Privacy is not only about model training. It also includes product design, retention policies, permissions, and monitoring.
+
+## Copyright concerns
+
+Generative models raise copyright questions around training data, generated outputs, style imitation, and source attribution.
+
+This course does not try to settle legal debates. The practical point is that data rights, licensing, provenance, and output review matter when building or deploying AI systems.
+
+## Misinformation
+
+AI systems can generate misleading content quickly and at scale. They can also produce wrong answers accidentally.
+
+Misinformation risks are higher when outputs look authoritative, spread widely, or concern high-stakes topics such as health, law, finance, elections, or emergencies.
+
+Grounding, source display, uncertainty, rate limits, and human review can help, but system context matters.
+
+## Misuse
+
+**Misuse** means using a system for harmful purposes: fraud, harassment, malware, surveillance abuse, manipulation, or other damage.
+
+Safety work often includes policies, refusals, abuse detection, tool restrictions, monitoring, and escalation paths.
+
+The harder problem is dual use. Some knowledge can be helpful in benign contexts and harmful in others. The system must consider intent, detail level, user context, and potential impact.
+
+## Transparency and interpretability
+
+**Transparency** means users and operators can understand important facts about the system: what it can do, what it cannot do, what data it uses, and when outputs need verification.
+
+**Interpretability** tries to understand how models reach outputs internally. This is technically difficult for large neural networks.
+
+A system can still be more transparent even when the model is not fully interpretable. Clear source display, confidence signals, audit logs, and limitations all help.
+
+## Red-teaming
+
+**Red-teaming** is structured testing that tries to make a system fail before real users or attackers do.
+
+Red teams may test hallucination, prompt injection, unsafe requests, bias, privacy leakage, tool misuse, and edge cases.
+
+The point is not to embarrass the system. The point is to discover failure modes while they can still be fixed or mitigated.
+
+## Safety policies
+
+A **safety policy** defines what the system should and should not do. Policies guide training data, model behavior, product rules, human review, and monitoring.
+
+Good policies are concrete enough to apply, but flexible enough to handle context.
+
+<Note title="Safety is a system property">
+  <p>
+    Model behavior matters, but so do retrieval permissions, tool access, user interface design, logging, monitoring, and human escalation.
+  </p>
+</Note>
+
+## Uncertainty and limitations
+
+Responsible systems communicate uncertainty. They avoid pretending to know what they do not know.
+
+That can mean asking clarifying questions, citing sources, refusing unsafe requests, showing confidence carefully, or routing high-stakes cases to humans.
+
+<Quiz
+  id="q-responsible-ai"
+  question="Why is safety a system property rather than only a model property?"
+  options={[
+    "Because retrieval, tools, permissions, UI, logging, and monitoring also shape risk.",
+    "Because models never affect safety.",
+    "Because safety can be fully solved by one benchmark.",
+  ]}
+  correctIndex={0}
+  explanation="The model is important, but the surrounding system determines what information and actions are available and how failures are handled."
+/>
+
+## What to carry forward
+
+- responsible AI work is concrete engineering work around real risks
+- dataset bias can affect outputs and performance
+- privacy depends on data collection, storage, access, and retrieval
+- copyright and provenance matter for training data and outputs
+- misinformation and misuse risks depend on context and scale
+- transparency and interpretability are related but different
+- red-teaming helps find failures before deployment
+- uncertainty and limitations should be visible in system behavior
+
+The final lesson is a capstone project that asks you to connect the whole course.

@@ -1,0 +1,120 @@
+---
+title: "Multimodal AI"
+description: "Understand how AI systems connect text, images, audio, and other data through paired examples and shared representations."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+A **modality** is a kind of data, such as text, image, audio, video, code, or sensor data.
+
+**Multimodal AI** works across more than one modality. A multimodal system might caption an image, answer questions about a chart, search photos with text, or combine speech and documents in one assistant.
+
+## Text-image pairs
+
+Many multimodal systems learn from paired data.
+
+```text
+image: photo of a yellow bus
+text: "a yellow bus parked beside a school"
+```
+
+The pair teaches the system that a visual pattern and a language description can refer to the same thing.
+
+Large collections of image-caption pairs can train models to connect visual and textual representations.
+
+## Contrastive learning
+
+**Contrastive learning** trains a model to bring matching pairs closer together and push non-matching pairs farther apart.
+
+For text and images:
+
+- the embedding for a photo should be close to its real caption
+- the embedding should be farther from unrelated captions
+
+This creates a shared embedding space where text and images can be compared.
+
+## Shared embedding spaces
+
+A **shared embedding space** lets different modalities live in a compatible vector space.
+
+That makes cross-modal retrieval possible:
+
+- text query -> matching images
+- image -> related captions
+- audio clip -> related text
+- document screenshot -> extracted meaning
+
+The system is not making text and images identical. It is learning representations that can be compared.
+
+## Image captioning
+
+**Image captioning** generates text that describes an image.
+
+This usually requires a vision component to represent the image and a language component to produce text.
+
+Captioning is useful, but it can be incomplete or wrong. A caption model may describe obvious objects while missing context, uncertainty, or small details.
+
+## Visual question answering
+
+**Visual question answering** asks a model to answer questions about an image.
+
+```text
+image: chart
+question: Which month had the highest revenue?
+answer: March
+```
+
+This requires more than object labels. The system must connect the question with relevant visual evidence and produce an answer.
+
+## Multimodal assistants
+
+Multimodal assistants combine several capabilities:
+
+- reading text
+- inspecting images
+- following spoken instructions
+- using tools
+- retrieving documents
+- generating responses
+
+These systems are useful because real tasks rarely live in one clean data type. A support request might include text, screenshots, logs, and account data.
+
+## Why connecting modalities is hard
+
+Different modalities have different structure.
+
+Text is sequential. Images are spatial. Audio changes over time. Video combines space and time. Documents mix layout, text, and visual hierarchy.
+
+Connecting them requires good representations and careful evaluation. A system may understand the broad topic of an image while failing on exact counts, small text, spatial relationships, or domain-specific meaning.
+
+<Note title="Multimodal does not mean omniscient">
+  <p>
+    A system can accept multiple kinds of input and still miss details, misread evidence, or generate unsupported conclusions.
+  </p>
+</Note>
+
+<Quiz
+  id="q-contrastive"
+  question="What does contrastive learning try to do with matching text-image pairs?"
+  options={[
+    "Move matching representations closer and unrelated representations farther apart.",
+    "Convert every image into handwritten code.",
+    "Avoid using embeddings entirely.",
+  ]}
+  correctIndex={0}
+  explanation="Contrastive learning helps build shared spaces by making related items close and unrelated items less close."
+/>
+
+## What to carry forward
+
+- modalities are kinds of data such as text, image, audio, and video
+- multimodal AI connects more than one modality
+- paired examples help models learn relationships across modalities
+- contrastive learning can create shared embedding spaces
+- captioning and visual question answering combine vision and language
+- multimodal systems are powerful but still need careful evaluation
+
+The next lesson shows how models become parts of larger AI systems.

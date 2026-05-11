@@ -1,0 +1,123 @@
+---
+title: "Machine learning foundations"
+description: "Learn how datasets, labels, loss functions, gradient descent, and train-validation-test splits fit together."
+course: modern-ai
+status: published
+---
+
+import Note from "../../../components/content/Note.astro";
+import Warning from "../../../components/content/Warning.astro";
+import Quiz from "../../../components/content/Quiz.astro";
+
+**Machine learning** is the part of AI focused on systems that improve at a task by learning from data.
+
+The task might be simple, like predicting whether a message is spam. It might be broad, like predicting the next token in text. Either way, the basic loop is similar:
+
+```text
+data -> model -> prediction -> loss -> parameter update
+```
+
+## Datasets
+
+A **dataset** is a collection of examples. Each example contains information the model can learn from.
+
+For a house-price model, examples might include square footage, location, number of bedrooms, and sale price. For an image model, examples might be image files and labels such as "dog" or "stop sign."
+
+The data matters because the model can only learn patterns that are present, detectable, and useful in the examples it sees.
+
+## Features and representations
+
+A **feature** is an input signal the model can use. In older machine learning systems, people often designed features by hand: word counts, image edges, user age groups, and so on.
+
+Modern neural networks often learn their own **representations**. A representation is an internal form of the data that makes useful patterns easier to work with.
+
+For example, a vision model may turn pixels into internal signals for edges, shapes, textures, object parts, and whole objects. The programmer does not label every internal feature. The training process discovers useful structure.
+
+## Labels and unlabeled data
+
+A **label** is the target answer for an example.
+
+```text
+email: "Win a prize now"
+label: spam
+```
+
+**Supervised learning** uses labeled examples. The model predicts an answer, compares it with the label, and learns from the difference.
+
+**Unsupervised learning** looks for structure without explicit target labels, such as grouping similar documents.
+
+**Self-supervised learning** creates training signals from the data itself. Language models are usually trained this way: the text provides the input and the next-token target.
+
+<Note title="Self-supervised learning is why huge datasets matter">
+  <p>
+    Labeling billions of examples by hand would be unrealistic. Self-supervised tasks let models learn from raw text, images, audio, and other data at very large scale.
+  </p>
+</Note>
+
+## Loss
+
+A **loss function** measures how wrong the model's prediction is. Lower loss means the model's output is closer to the training target.
+
+For a classifier, loss increases when the model assigns low probability to the correct class. For a language model, loss increases when it assigns low probability to the actual next token.
+
+The loss is not the whole meaning of quality. It is a training signal: a number the system can reduce.
+
+## Gradient descent
+
+**Gradient descent** is the basic idea behind many training algorithms. It asks: how should each parameter change to reduce the loss a little?
+
+You do not need the math yet. Conceptually:
+
+1. the model makes predictions
+2. the loss measures errors
+3. the training algorithm estimates which parameter changes would reduce error
+4. the parameters move slightly in that direction
+5. the process repeats many times
+
+Each update is small. Large behavior emerges from many small adjustments across many examples.
+
+## Generalization and overfitting
+
+A model **generalizes** when it performs well on new examples, not just the examples it trained on.
+
+**Overfitting** happens when a model memorizes training data or learns patterns that do not transfer. It may look excellent during training and fail on fresh data.
+
+<Warning title="Low training error is not enough">
+  <p>
+    A model can score well on examples it has already seen while still being unreliable in the real world. Evaluation must include data that was not used for training.
+  </p>
+</Warning>
+
+## Train, validation, and test sets
+
+Datasets are often split into three parts:
+
+- **training set:** used to adjust parameters
+- **validation set:** used while developing the model and choosing settings
+- **test set:** held back for a final estimate of performance
+
+This separation helps detect overfitting. The model should not be judged only on the same data it learned from.
+
+<Quiz
+  id="q-overfitting"
+  question="What does overfitting mean?"
+  options={[
+    "The model performs well on training examples but poorly on new examples.",
+    "The model has too few parameters to learn anything.",
+    "The model runs inference too slowly.",
+  ]}
+  correctIndex={0}
+  explanation="Overfitting means the model has learned training-specific details instead of patterns that generalize."
+/>
+
+## What to carry forward
+
+- machine learning trains models from examples
+- datasets contain the signals a model can learn from
+- labels provide target answers in supervised learning
+- self-supervised learning creates targets from the data itself
+- loss measures error during training
+- gradient descent adjusts parameters to reduce loss
+- generalization matters more than memorizing the training set
+
+The next lesson looks at the model family behind much of modern AI: neural networks.

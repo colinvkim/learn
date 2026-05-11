@@ -1,0 +1,156 @@
+---
+title: "Capstone: map an AI system"
+description: "Create a concise systems map that explains how language models, diffusion, embeddings, retrieval, evaluation, and safety fit together."
+course: modern-ai
+status: published
+---
+
+import Steps from "../../../components/content/Steps.astro";
+import Tip from "../../../components/content/Tip.astro";
+
+The capstone is a written systems map. You will choose a realistic AI system and explain how its parts work together.
+
+This is not a product pitch and not a prompt collection. The goal is to show that you understand the concepts behind modern AI systems.
+
+## Choose a system
+
+Pick one system:
+
+- a documentation assistant
+- an image search tool
+- a text-to-image editor
+- a customer support assistant
+- a code explanation assistant
+- a visual question answering tool
+- your own small AI system idea
+
+Keep the scope modest. A small, clear system is better than a broad imaginary platform.
+
+## Required map
+
+Create a diagram or outline with these parts:
+
+- user input
+- model or models
+- embeddings or representations
+- context window or image latent
+- retrieval or external data, if used
+- tools or APIs, if used
+- generated output
+- evaluation checks
+- safety or policy checks
+- known limitations
+
+For a language assistant, your map might look like:
+
+```text
+user question
+  -> tokenize text
+  -> retrieve related documents with embeddings
+  -> add retrieved context to the prompt
+  -> transformer predicts response tokens
+  -> cite retrieved sources
+  -> run safety and quality checks
+  -> return answer with limitations
+```
+
+For an image generator, your map might look like:
+
+```text
+text prompt
+  -> text encoder creates conditioning
+  -> start with random latent noise
+  -> denoiser refines latent over many steps
+  -> decoder turns latent into pixels
+  -> review output for prompt match and safety
+```
+
+## Explain the core mechanisms
+
+Your writeup should explain:
+
+- how an LLM turns text into tokens and predicts continuations
+- how a transformer uses attention
+- how pretraining differs from post-training
+- why hallucinations can happen
+- how diffusion models generate images
+- how text controls image generation
+- how embeddings support search or multimodal comparison
+- why evaluation and safety are central, not optional
+
+You do not need to include every mechanism if your chosen system does not use it. If you choose a documentation assistant, explain diffusion briefly as a contrast. If you choose an image system, explain LLMs briefly if text interpretation is involved.
+
+## Evaluation plan
+
+Add a short evaluation plan with at least five checks.
+
+Possible checks:
+
+- factual accuracy against source documents
+- citation support
+- hallucination rate on unanswerable questions
+- robustness to reworded inputs
+- bias or unfair performance across user groups
+- image prompt adherence
+- visual artifacts
+- privacy leakage
+- unsafe request handling
+- latency and cost
+
+Do not rely on one score. Explain what each check measures and what kind of failure it might reveal.
+
+## Safety plan
+
+Add a short safety plan.
+
+Include:
+
+- what data the system can access
+- what actions it can take
+- what it should refuse or escalate
+- how users can tell when output is uncertain
+- how logs or feedback would be reviewed
+- what limitations should be visible to users
+
+<Tip title="Be specific">
+  <p>
+    "Make it safe" is too vague. Say what the system can access, what can go wrong, and what concrete checks or constraints reduce the risk.
+  </p>
+</Tip>
+
+## Build steps
+
+<Steps>
+  <ol>
+    <li>Choose one modest AI system.</li>
+    <li>Draw the input-to-output flow.</li>
+    <li>Name the model components and the data they receive.</li>
+    <li>Explain where embeddings, tokens, attention, latents, retrieval, or tools appear.</li>
+    <li>Describe at least three likely failure modes.</li>
+    <li>Write an evaluation plan with at least five checks.</li>
+    <li>Write a safety plan with access, limits, refusals, uncertainty, and monitoring.</li>
+    <li>Revise the map until a beginner could follow it.</li>
+  </ol>
+</Steps>
+
+## What success looks like
+
+By the end, you should be able to explain your chosen system without relying on vague phrases like "the AI understands it" or "the model just generates it."
+
+You should be able to say:
+
+- what data enters the system
+- what representations are created
+- what the model predicts or denoises
+- what external context or tools are used
+- where uncertainty enters
+- how outputs are checked
+- what the system should not be trusted to do
+
+## What to carry forward
+
+Modern AI systems are learned, probabilistic, representation-heavy systems wrapped in ordinary software.
+
+LLMs predict tokens. Transformers use attention to build context-aware representations. Diffusion models denoise from noise into images. Embeddings make similarity searchable across text, images, audio, and documents. Retrieval and tools connect models to external information and actions. Evaluation and safety determine whether the system is actually reliable enough for its intended use.
+
+That mental model will serve you better than memorizing a list of product names.
