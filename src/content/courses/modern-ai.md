@@ -4,7 +4,9 @@ description: Learn the core ideas behind modern AI systems, from training and ne
 status: published
 sortOrder: 9
 topics:
-  - AI
+  - AI1
+  - AI2
+  - AI3
 tags:
   - artificial intelligence
   - machine learning

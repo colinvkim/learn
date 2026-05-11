@@ -12,7 +12,9 @@ import CssIcon from "../icons/CssIcon.astro";
 import TailwindIcon from "../icons/TailwindIcon.astro";
 import SwiftIcon from "../icons/SwiftIcon.astro";
 import CppIcon from "../icons/CppIcon.astro";
-import AiIcon from "../icons/AiIcon.astro";
+import Ai1Icon from "../icons/Ai1Icon.astro";
+import Ai2Icon from "../icons/Ai2Icon.astro";
+import Ai3Icon from "../icons/Ai3Icon.astro";
 
 interface Props {
   topics: string[];
@@ -41,7 +43,9 @@ const iconMap = {
   python: PythonIcon,
   swift: SwiftIcon,
   "c++": CppIcon,
-  ai: AiIcon,
+  ai1: Ai1Icon,
+  ai2: Ai2Icon,
+  ai3: Ai3Icon,
 };
 
 const renderedTopics = visibleTopics.map((topic, index) => ({
