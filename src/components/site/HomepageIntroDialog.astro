@@ -12,7 +12,9 @@ import { Info, X } from "@lucide/astro";
 >
   <section data-learn-intro-panel class="p-5 sm:p-6">
     <div class="mb-5 flex items-start justify-between gap-4">
-      <div class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent ring-1 ring-accent/12">
+      <div
+        class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent ring-1 ring-accent/12"
+      >
         <Info class="h-5 w-5" aria-hidden="true" />
       </div>
 
@@ -31,7 +33,7 @@ import { Info, X } from "@lucide/astro";
         id="learn-intro-title"
         class="text-xl font-semibold tracking-[-0.03em] text-ink sm:text-2xl"
       >
-        A note about learn
+        A quick note about learn
       </h2>
 
       <div
@@ -39,16 +41,25 @@ import { Info, X } from "@lucide/astro";
         class="space-y-3 text-[0.95rem] leading-6.5 text-muted [&_a]:font-medium [&_a]:text-accent [&_a]:underline [&_a]:decoration-accent/30 [&_a]:underline-offset-4 hover:[&_a]:decoration-accent"
       >
         <p>
-          learn is an experiment in AI-assisted education. The lessons are created
-          through collaboration between different large language models, with each
-          model helping draft, revise, check, or refine the material.
+          learn is an experiment. This website itself is nothing special, but
+          all of the educational content on learn is created by various large
+          language models. I prompt the models and closely supervise course
+          generation, but I always try to avoid directly writing or editing the
+          material. For more information, visit <a
+            href="https://github.com/colinvkim/learn"
+            target="_blank"
+            rel="noopener">the source code of this site on GitHub</a
+          >.
         </p>
         <p>
-          The goal is to see whether coordinated AI systems can produce practical,
-          focused lessons for learning technical topics. Treat the material as a
-          useful guide for practice, and verify important details when accuracy
-          matters.
+          Thanks for checking out learn. Though they are largely created by AI,
+          I've done my best to make courses extremely accurate, informative, and
+          high-quality. If you have any feedback, feel free to send me a message
+          on <a href="https://x.com/colinkim.dev" target="_blank" rel="noopener"
+            >Twitter</a
+          >.
         </p>
+        <p>—Colin</p>
       </div>
     </div>
 
