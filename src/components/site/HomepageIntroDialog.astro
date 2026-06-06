@@ -1,0 +1,134 @@
+---
+import { Info, X } from "@lucide/astro";
+---
+
+<dialog
+  id="learn-intro-dialog"
+  data-learn-intro-dialog
+  class="fixed left-1/2 top-1/2 z-50 m-0 max-h-[min(34rem,calc(100dvh-2rem))] w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-panel border border-line/80 bg-panel p-0 text-ink shadow-[0_24px_80px_rgba(15,23,42,0.18)] ring-1 ring-white/60 backdrop:bg-ink/24 backdrop:backdrop-blur-[2px] dark:bg-canvas dark:ring-white/10 dark:backdrop:bg-black/42"
+  aria-labelledby="learn-intro-title"
+  aria-describedby="learn-intro-description"
+  aria-modal="true"
+>
+  <section data-learn-intro-panel class="p-5 sm:p-6">
+    <div class="mb-5 flex items-start justify-between gap-4">
+      <div class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent ring-1 ring-accent/12">
+        <Info class="h-5 w-5" aria-hidden="true" />
+      </div>
+
+      <button
+        type="button"
+        data-learn-intro-close
+        class="focus-ring-subtle inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line/80 bg-canvas/70 text-muted transition hover:text-ink"
+        aria-label="Close introduction"
+      >
+        <X class="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+
+    <div class="space-y-3">
+      <h2
+        id="learn-intro-title"
+        class="text-xl font-semibold tracking-[-0.03em] text-ink sm:text-2xl"
+      >
+        A note about learn
+      </h2>
+
+      <div
+        id="learn-intro-description"
+        class="space-y-3 text-[0.95rem] leading-6.5 text-muted"
+      >
+        <p>
+          learn is an experiment in AI-assisted education. The lessons are created
+          through collaboration between different large language models, with each
+          model helping draft, revise, check, or refine the material.
+        </p>
+        <p>
+          The goal is to see whether coordinated AI systems can produce practical,
+          focused lessons for learning technical topics. Treat the material as a
+          useful guide for practice, and verify important details when accuracy
+          matters.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end">
+      <button
+        type="button"
+        data-learn-intro-close
+        autofocus
+        class="focus-ring inline-flex h-10 items-center justify-center rounded-full bg-accent px-4 text-sm font-semibold text-white transition hover:bg-accent/90"
+      >
+        Got it
+      </button>
+    </div>
+  </section>
+</dialog>
+
+<script is:inline>
+  function initLearnIntroDialog() {
+    const dialog = document.querySelector("[data-learn-intro-dialog]");
+    if (!dialog || dialog.dataset.initialized === "true") return;
+
+    dialog.dataset.initialized = "true";
+
+    const cookieName = "learn_intro_seen";
+    const cookieValue = "v1";
+    const oneYear = 60 * 60 * 24 * 365;
+
+    function hasSeenIntro() {
+      return document.cookie
+        .split(";")
+        .map((cookie) => cookie.trim())
+        .includes(`${cookieName}=${cookieValue}`);
+    }
+
+    function markSeen() {
+      document.cookie = `${cookieName}=${cookieValue}; Max-Age=${oneYear}; Path=/; SameSite=Lax`;
+    }
+
+    function closeDialog() {
+      markSeen();
+
+      if (typeof dialog.close === "function" && dialog.open) {
+        dialog.close();
+        return;
+      }
+
+      dialog.removeAttribute("open");
+      dialog.hidden = true;
+    }
+
+    dialog.querySelectorAll("[data-learn-intro-close]").forEach((button) => {
+      button.addEventListener("click", closeDialog);
+    });
+
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDialog();
+    });
+
+    dialog.addEventListener("close", () => {
+      markSeen();
+      dialog.hidden = true;
+    });
+
+    if (hasSeenIntro()) return;
+
+    dialog.hidden = false;
+
+    try {
+      if (typeof dialog.showModal === "function") {
+        dialog.showModal();
+      } else {
+        dialog.setAttribute("open", "");
+      }
+    } catch {
+      dialog.setAttribute("open", "");
+    }
+
+    markSeen();
+  }
+
+  initLearnIntroDialog();
+  document.addEventListener("astro:page-load", initLearnIntroDialog);
+</script>

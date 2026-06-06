@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../components/site/BaseLayout.astro";
 import CourseGrid from "../components/site/CourseGrid.astro";
+import HomepageIntroDialog from "../components/site/HomepageIntroDialog.astro";
 import PageShell from "../components/site/PageShell.astro";
 import { getPublishedCourseSummaries } from "../lib/content/queries";
 
@@ -117,4 +118,6 @@ const summaries = await getPublishedCourseSummaries();
       </div>
     </section>
   </PageShell>
+
+  <HomepageIntroDialog />
 </BaseLayout>
